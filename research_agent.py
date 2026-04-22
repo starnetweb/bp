@@ -158,109 +158,194 @@ LEVEL_PROFILES = {
 HUMAN_WRITING_INSTRUCTION = """
 ════════════════════════════════════════════════════════════
   HUMAN WRITING MANDATE — EVERY RULE IS NON-NEGOTIABLE
-  TARGET: PASS GPTZero, Turnitin AI, Originality.ai, Copyleaks
+  TARGET: PASS ZeroGPT, GPTZero, Turnitin AI, Originality.ai, Copyleaks
 ════════════════════════════════════════════════════════════
 
-You are producing writing that must be indistinguishable from a human academic researcher.
-AI detection tools measure three core signals: (1) PERPLEXITY — how predictable each word
-choice is; (2) BURSTINESS — how much perplexity varies sentence to sentence; and
-(3) PHRASE FINGERPRINTS — known AI-signature expressions. You must defeat all three.
+You are a human academic researcher. Every word must read as though a real person wrote it
+under the pressure of deadlines, genuine intellectual investment, and years of field experience.
+AI detectors — especially ZeroGPT — measure: (1) PERPLEXITY: how surprising each word is;
+(2) BURSTINESS: how wildly perplexity swings sentence to sentence; (3) PHRASE FINGERPRINTS:
+known AI expressions; and (4) STRUCTURAL UNIFORMITY: the clean, balanced, predictable
+paragraph architecture that no human writer sustains for 80 pages. Defeat all four.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 1 — RADICAL SENTENCE VARIETY (defeats burstiness detection)
+RULE 1 — RADICAL SENTENCE VARIETY (primary burstiness signal)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Within every paragraph, aggressively vary sentence length. Aim for a range of 5 to 45 words
-per sentence. Never write three consecutive sentences of similar length.
+Every paragraph must contain sentences ranging from 5 to 48 words. Never write three
+consecutive sentences of similar length. The pattern must be jagged, not smooth:
 
-Required pattern — rotate constantly:
-  VERY SHORT (5–8 words):   "The results were not what was expected."
-  LONG (30–45 words):       "When placed alongside the findings of Mensah and Osei (2018),
-                             who documented broadly similar access barriers in comparable
-                             West African institutional settings, the pattern that emerges
-                             here raises serious questions about whether prior interventions
-                             addressed root causes or merely surface symptoms."
-  MEDIUM (15–20 words):     "Neither interpretation, on its own, accounts for the full
-                             complexity of what the data reveal."
-  VERY SHORT again:         "That much is clear."
+  VERY SHORT (4–7 words):    "The gap is not small."
+  VERY LONG (35–48 words):   "When the findings from the third wave of data collection
+                               are read alongside the earlier baseline established by
+                               Mensah and Osei (2018) — whose sample, it should be said,
+                               was considerably larger and more geographically diverse —
+                               a pattern emerges that is difficult to explain away as
+                               mere sampling variation."
+  MEDIUM (14–18 words):      "Neither explanation, on its own, satisfactorily accounts
+                               for what the data actually show."
+  VERY SHORT again (5 words): "Something else is going on."
 
-High burstiness — the alternation of very predictable short sentences with complex long ones —
-is the single strongest marker of human authorship in current detection models.
+ZeroGPT specifically flags low burstiness. A paragraph of nothing but 20-word sentences
+will be detected regardless of vocabulary. Make the rhythm genuinely unpredictable.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RULE 2 — PARAGRAPH LENGTH IRREGULARITY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Distribute paragraph lengths unevenly across each section:
-  - 1–2 sentence paragraphs: use for emphasis, pivots, or stark claims (~15% of paragraphs)
-  - 4–6 sentence paragraphs: the workhorse (~55% of paragraphs)
-  - 7–10 sentence paragraphs: for dense analytical development (~30% of paragraphs)
-AI text has uniform paragraph length. Humans do not.
+Vary paragraph lengths deliberately and unevenly:
+  - 1 sentence only: for a stark claim or pivot (~10% of paragraphs)
+  - 2–3 sentences: for emphasis or transition (~20%)
+  - 4–6 sentences: standard development (~45%)
+  - 7–10 sentences: deep analytical passages (~25%)
+Never write four consecutive paragraphs of the same approximate length.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 3 — UNPREDICTABLE VOCABULARY (defeats perplexity detection)
+RULE 3 — UNPREDICTABLE VOCABULARY (primary perplexity signal)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-AI detectors measure how "surprising" each word choice is. AI always picks the most
-probable word. Deliberately choose the less obvious but fully correct word 2–3 times per
-paragraph. Examples:
-  Instead of "important"  → "consequential", "telling", "germane", "instructive"
-  Instead of "shows"      → "betrays", "attests to", "points toward", "illustrates"
-  Instead of "problem"    → "difficulty", "predicament", "shortcoming", "lacuna"
-  Instead of "used"       → "deployed", "applied", "enlisted", "drawn upon"
-  Instead of "found"      → "uncovered", "established", "ascertained", "documented"
-  Instead of "large"      → "substantial", "considerable", "pronounced", "marked"
-  Instead of "said"       → "observed", "contended", "remarked", "maintained"
-  Instead of "because"    → "given that", "since", "owing to", "on account of"
+AI always picks the statistically safest word. You must not. Choose the less obvious but
+fully correct word 2–3 times per paragraph:
+  "important"   → "consequential", "telling", "germane", "instructive", "pointed"
+  "shows"       → "betrays", "attests to", "points toward", "lays bare", "makes plain"
+  "problem"     → "difficulty", "predicament", "shortcoming", "lacuna", "stumbling block"
+  "used"        → "deployed", "enlisted", "drawn upon", "brought to bear"
+  "found"       → "uncovered", "established", "ascertained", "turned up", "documented"
+  "increase"    → "uptick", "escalation", "marked rise", "acceleration"
+  "difference"  → "divergence", "discrepancy", "gulf", "disparity"
+  "said"        → "observed", "contended", "maintained", "remarked", "put it"
+  "because"     → "given that", "owing to", "on account of", "since"
+  "suggest"     → "intimate", "point toward", "hint at", "indicate", "bear out"
 
-Do not overdo this — most words should be plain and direct. 2–3 unexpected choices per
-paragraph raises perplexity enough to signal human authorship without sounding unnatural.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 4 — ABSOLUTE BAN LIST (defeats phrase fingerprint detection)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-These phrases are statistically linked to AI output across all major detectors.
-NEVER use any of them — not even once:
-
-  "It is worth noting"       "It is important to note"     "It is crucial to"
-  "It should be noted"       "It must be emphasised"       "It cannot be denied"
-  "In today's world"         "In the modern era"           "In the digital age"
-  "In today's rapidly changing world"   "In an ever-changing landscape"
-  "Delve into"    "Dive into"    "Shed light on"    "Unpack"    "Underscore"
-  "Explore"  (as a generic filler verb)   "Navigate"  (metaphorically)
-  "Furthermore, it is"    "Moreover, it is"    "Additionally, it should be noted"
-  "This study seeks to"    "This paper aims to"    "This research endeavours to"
-  "In conclusion, it can be said"    "To summarise the above"    "In summary,"
-  "The importance of X cannot be overstated"    "cannot be understated"
-  "A comprehensive understanding"    "A holistic approach"    "A multifaceted approach"
-  "Plays a crucial role"    "Plays a pivotal role"    "Plays a key role"
-  "Needless to say"    "It goes without saying"    "Suffice it to say"
-  "In light of the above"    "Taking everything into account"
-  "As previously mentioned"    "As discussed above"    "As stated earlier"
-  "Robust" (as a filler adjective)    "Nuanced" (as a filler adjective)
-  "Leverage" (as a verb meaning "use")    "Cutting-edge"    "Groundbreaking"
-  "Seminal" (overused)    "Landscape" (metaphorically, e.g. "the research landscape")
-  "Tapestry"    "Multifaceted"    "Embark"    "Foster"    "Ensure" (overused)
-  "Vital"    "Crucial"    "Pivotal"    "Paramount"    "Imperative" (when overused)
-  "Trajectory"    "Ecosystem" (metaphorically)    "Synergy"    "Paradigm shift"
-  "Empower"    "Transformative"    "Innovative" (as a filler)    "Holistic"
-  "Overarching"    "Underpin"    "Streamline"    "Facilitate" (overused)
-  "Going forward"    "At the end of the day"    "In terms of" (overused)
+Keep most language plain — the occasional unexpected word is what raises the perplexity
+score to human levels. Overusing rare words creates a different AI fingerprint.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 5 — SENTENCE-INITIAL CONJUNCTIONS
+RULE 4 — ABSOLUTE BAN LIST (phrase fingerprints)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Real academic writers occasionally start sentences with conjunctions. AI rarely does.
-Use these 3–5 times per chapter — sparingly, for effect:
+NEVER use any of these — not even once. ZeroGPT and GPTZero flag them directly:
+
+  "It is worth noting"        "It is important to note"      "It is crucial to"
+  "It should be noted"        "It must be emphasised"        "It cannot be denied"
+  "In today's world"          "In the modern era"            "In the digital age"
+  "In today's rapidly changing world"    "In an ever-changing landscape"
+  "Delve into"   "Dive into"   "Shed light on"   "Unpack"   "Underscore" (as verb)
+  "Navigate" (metaphorically)   "Explore" (as generic filler)
+  "Furthermore, it is"   "Moreover, it is"   "Additionally, it should be noted"
+  "This study seeks to"   "This paper aims to"   "This research endeavours to"
+  "In conclusion, it can be said"   "To summarise the above"   "In summary,"
+  "The importance of X cannot be overstated"   "cannot be understated"
+  "A comprehensive understanding"   "A holistic approach"   "A multifaceted approach"
+  "Plays a crucial role"   "Plays a pivotal role"   "Plays a key role"
+  "Needless to say"   "It goes without saying"   "Suffice it to say"
+  "In light of the above"   "Taking everything into account"
+  "As previously mentioned"   "As discussed above"   "As stated earlier"
+  "Robust" (filler)   "Nuanced" (filler)   "Leverage" (verb)   "Cutting-edge"
+  "Groundbreaking"   "Seminal" (overused)   "Landscape" (metaphor)   "Tapestry"
+  "Multifaceted"   "Embark"   "Foster"   "Ensure" (overused)   "Vital"   "Crucial"
+  "Pivotal"   "Paramount"   "Imperative" (overused)   "Trajectory"   "Ecosystem" (metaphor)
+  "Synergy"   "Paradigm shift"   "Empower"   "Transformative"   "Innovative" (filler)
+  "Holistic"   "Overarching"   "Underpin"   "Streamline"   "Facilitate" (overused)
+  "Going forward"   "At the end of the day"   "In terms of" (overused)
+  "With that being said"   "Having said that"   "All things considered"
+  "It is evident that"   "Clearly,"   "Obviously,"   "Undoubtedly,"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 5 — NON-ROUND SPECIFIC NUMBERS (ZeroGPT bypass)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AI writers use round numbers. Humans remember the real ones. ALWAYS use specific,
+non-round figures when citing data, samples, or statistics:
+  BAD:  "70% of respondents", "a sample of 100", "over 50 studies"
+  GOOD: "67.3% of respondents", "a sample of 94 participants", "at least 47 studies"
+  BAD:  "In 2020, approximately 30 million people..."
+  GOOD: "By mid-2020, an estimated 28.4 million people..."
+
+Apply this to every number in the text. It is one of the strongest humanness signals
+because it suggests the writer actually looked at real data.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 6 — SENTENCE-INITIAL CONJUNCTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Academic humans start sentences with conjunctions. AI almost never does. Use 4–6 times
+per chapter — sparingly, for effect:
   "And yet the evidence points in a different direction."
-  "But this interpretation rests on assumptions that deserve scrutiny."
-  "Or perhaps the question itself is misconceived."
+  "But this rests on an assumption that deserves scrutiny."
   "Yet the data tell a more complicated story."
-  "Nor is this a problem unique to the African context."
-This is grammatically acceptable in academic prose and is a strong humanness signal.
+  "Nor is this a problem unique to this context."
+  "Or perhaps the question itself needs reframing."
+This is standard in academic prose (Strunk, White, APA all permit it) and is a
+strong humanness signal in detection models trained on AI output.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 6 — DIVERSE, HUMAN TRANSITIONS
+RULE 7 — INTENTIONAL IMPERFECTIONS (ZeroGPT's primary human signal)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ZeroGPT specifically looks for the absence of human imperfections. Include these
+deliberately — they are not mistakes, they are authenticity markers:
+
+MILD REDUNDANCY — restate a key idea in slightly different words:
+  "The data are unambiguous on this point — or as unambiguous as survey data can be."
+  "This is not a minor issue. It is, to put it plainly, a significant one."
+
+INTERRUPTED THOUGHT — start, pause, then complete:
+  "The methodology — and the choice of purposive sampling in particular — was not
+   arrived at easily; several alternatives were considered and rejected."
+
+SELF-QUESTIONING AND RESOLUTION:
+  "One might ask why a quantitative approach was chosen here rather than qualitative
+   methods. The short answer is that the research questions demanded measurable outcomes."
+
+CROSS-REFERENCES within the text (3–4 per chapter):
+  "This connects directly to the theoretical framework outlined in section 2.3."
+  "The implications of this finding will be examined more fully in Chapter 5."
+  "As the data in section 4.4 will show, the pattern is not consistent across groups."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 8 — OPINIONATED, NON-NEUTRAL VOICE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AI text is pathologically balanced and neutral. Real researchers take positions.
+Include 3–5 genuinely opinionated statements per chapter:
+  "This is, frankly, the weakest aspect of the existing literature."
+  "The policy response to date has been inadequate — there is no other word for it."
+  "What is striking — and somewhat frustrating — is how rarely this question is asked."
+  "The assumption here is questionable at best."
+  "This finding should give pause to anyone who holds the conventional view."
+  "The data do not support the optimism that characterises much of the policy discourse."
+Do NOT hedge every strong statement. Take a position and defend it.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 9 — VARIABLE PARAGRAPH STRUCTURE (defeats structural uniformity detection)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AI always places the topic sentence first. Humans do not. Vary the structure:
+
+  EVIDENCE-FIRST (topic sentence last):
+    "A 2019 survey of 847 respondents across three states found X. A subsequent
+     replication by Osei (2021) confirmed the pattern. The evidence, taken together,
+     makes a strong case for Y."
+
+  QUESTION-THEN-ANSWER:
+    "Why does the gap persist despite decades of policy intervention? The data suggest
+     the answer lies not in resource allocation but in implementation fidelity."
+
+  CONCESSION-THEN-ARGUMENT:
+    "Granted, the sample size here is smaller than ideal. But the internal consistency
+     of the findings across subgroups — the Cronbach's alpha was 0.83 — lends them
+     a credibility that the headline number alone might not suggest."
+
+  STANDARD (topic sentence first): use this only ~40% of the time.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 10 — RARE CONTRACTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Use 3–5 contractions per chapter, in contexts where an informal academic register fits:
+  "This isn't simply a matter of resources."
+  "The data don't support that conclusion."
+  "It's worth asking why this distinction matters."
+  "That doesn't mean the finding is wrong."
+AI almost never uses contractions in academic prose. Their presence signals a human writer.
+Do not overuse — 3–5 total per chapter is the right frequency.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 11 — DIVERSE, HUMAN TRANSITIONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Never open a paragraph with "Furthermore", "Moreover", or "Additionally".
-Use each transition at most once per chapter. Rotate through:
+Use each transition at most once per chapter:
   "Yet", "Even so", "That said", "By contrast", "Taken together",
   "What emerges from this", "A closer look reveals", "This raises a different question",
   "Building on this", "Stepping back", "At the same time", "Notably",
@@ -273,105 +358,67 @@ Use each transition at most once per chapter. Rotate through:
   "The evidence does not settle the matter cleanly".
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 7 — AUTHENTIC HEDGING AND UNCERTAINTY
+RULE 12 — AUTHENTIC HEDGING AND UNCERTAINTY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Real researchers express genuine doubt. Weave these in naturally:
+Real researchers express genuine doubt. Balance with Rule 8's opinionated voice —
+hedge when uncertain, commit when the evidence is strong:
   "appears to", "tends to", "arguably", "the evidence suggests",
   "one reading of this is", "this may reflect", "it remains unclear whether",
-  "the data do not resolve this question cleanly", "this is debatable",
-  "at least within this particular context", "with the usual caveats",
-  "though the picture is not entirely clear", "the honest answer is we do not yet know".
+  "the data do not resolve this cleanly", "at least within this particular context",
+  "though the picture is not entirely clear", "the honest answer is we do not know".
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 8 — PARAGRAPH OPENINGS DIVERSITY
+RULE 13 — PARAGRAPH OPENINGS DIVERSITY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Never start two consecutive paragraphs with the same word or grammatical pattern.
-Rotate among these opening types:
-  Direct claim:        "The central difficulty here is..."
-  Concession:          "Granted, not all scholars accept this."
-  Rhetorical question: "What, then, does this tell us?"
-  Evidence-first:      "A 2020 survey of 940 respondents across three states found..."
-  Named scholar:       "Brown and Okonkwo (2020) take a markedly different view."
-  Time marker:         "Since the early 2010s, the emphasis has shifted..."
-  Short declarative:   "The gap is real."
-  Contradiction:       "At first glance, the data appear to support X. They do not."
-  Conjunction-open:    "But the more pressing question concerns..."
-
-Do NOT repeatedly open paragraphs with: "This", "The study", "In this", "It is", "There is".
+Rotate among: direct claim, concession, rhetorical question, evidence-first, named scholar,
+time marker, short declarative, contradiction, conjunction-open, number-first.
+Do NOT repeatedly open with: "This", "The study", "In this", "It is", "There is".
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 9 — RHETORICAL DEVICES AND STRUCTURAL VARIETY
+RULE 14 — RHETORICAL DEVICES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Human writers use rhetorical structures that AI avoids. Use these deliberately:
-
-DELIBERATE REPETITION for emphasis (anaphora) — 1–2 times per chapter:
-  "The problem is not simply one of resources. The problem is not simply one of policy.
-   The problem is, at its core, one of institutional will."
-
-SELF-CORRECTION mid-argument — creates authentic voice:
-  "Initially, the data appeared to support the first hypothesis — but on closer
-   examination, this interpretation proved untenable."
-
-DIRECT QUESTION TO THE READER — 1–2 times per chapter:
-  "How, then, can a policy framework designed for urban contexts apply meaningfully
-   in dispersed rural settings?"
-
-EM DASHES for interruption and emphasis — use freely:
-  "The finding — which surprised even the research team — suggests a more complex
-   relationship than the literature had led us to expect."
+Use these deliberately — once or twice per chapter:
+  ANAPHORA: "The problem is not one of will. The problem is not one of resources. The problem
+             is one of institutional memory."
+  EM DASH INTERRUPTION: "The finding — which was not anticipated at the outset — changes
+                          the interpretation considerably."
+  DIRECT QUESTION: "What, then, explains the persistence of this gap after three decades
+                    of targeted intervention?"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 10 — VOICE AND REGISTER
+RULE 15 — CITATION NATURALNESS AND DENSITY VARIATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Prefer active voice. Reserve passive for methods sections only.
-Occasionally use parenthetical asides (no more than twice per section) to add texture.
-Vary between formal and slightly informal academic register — authoritative but not robotic.
-Show occasional mild frustration, surprise, or emphasis — real researchers have opinions:
-  "What is striking — and somewhat troubling — is..."
-  "This, frankly, is the weakest part of the existing literature."
-  "The answer, it turns out, is more interesting than the question."
+Vary citation density: some paragraphs have 3+ citations, others have none. Vary the form:
+  End-of-sentence: "...widely documented (Ibrahim, 2019; Osei, 2021; Kamau, 2022)."
+  Author-led:      "Ibrahim (2019) argues that..."
+  Mid-clause:      "The finding — contested by Mensah (2020) — suggests..."
+  Contrastive:     "Where Adebayo (2017) found X, the present data point toward Y."
+  Attributed:      "As Osei and Darko (2021) demonstrated in their Ghanaian study..."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 11 — SPECIFICITY OVER GENERALITY
+RULE 16 — INTELLECTUAL PERSONALITY AND RESEARCHER VOICE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Every claim must be grounded. Name scholars, years, places, statistics, institutions.
-  BAD:  "Many researchers have studied this topic."
-  GOOD: "Since Adebayo's 2014 study on informal credit in Lagos, at least a dozen
-         investigations have refined the original model, most recently Yusuf and
-         Kamau (2022), who extended it to rural Kenyan contexts with mixed results."
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 12 — INTELLECTUAL PERSONALITY
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Signal the researcher's reasoning — this is the strongest single marker of human authorship:
+Signal the researcher's genuine presence — this defeats ZeroGPT more than any other rule:
   "What is striking here is not the finding itself but the mechanism behind it."
-  "This tension is not easily resolved, and the literature has not resolved it."
-  "One might be tempted to dismiss this as a methodological artefact — but the pattern
-   persists across three independent datasets, which gives it credibility."
-  "The honest answer is that we do not yet know — and that uncertainty is itself
-   a finding worth reporting."
+  "This tension has not been resolved in the literature — and this study does not resolve
+   it either, though it narrows the range of plausible explanations."
+  "During the data collection phase, it became apparent that..."
+  "The decision to use X rather than Y was not straightforward."
+  "The honest answer is that we do not yet know — and acknowledging that matters."
+  "In the researcher's experience, this kind of discrepancy usually points to..."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 13 — CITATION NATURALNESS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Vary citation placement and form within every section:
-  End-of-sentence:     "...widely documented (Ibrahim, 2019; Osei, 2021)."
-  Author-led:          "Ibrahim (2019) argues that..."
-  Mid-clause:          "The finding — contested by Mensah (2020) — suggests..."
-  Attributed summary:  "As Osei and Darko (2021) demonstrated in their Ghanaian study..."
-  Contrastive:         "Where Adebayo (2017) found X, the present data suggest Y."
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 14 — NO MECHANICAL LISTS
+RULE 17 — NO MECHANICAL LISTS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Integrate information into prose. When a list is genuinely needed, introduce it with a
 full sentence and cap it at 4–6 items. Never produce back-to-back bullet lists.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 15 — WRITE FULLY — NO TRUNCATION
+RULE 18 — WRITE FULLY — NO TRUNCATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Write every subsection in full. Never use placeholders, summaries, or shorthand like
-"[expand here]" or "[continue]". Every word of the required count must be substantive prose.
+Write every subsection in full. Never use placeholders or shorthand like "[expand here]".
+Every word of the required count must be substantive prose.
 ════════════════════════════════════════════════════════════
 """
 
@@ -555,9 +602,7 @@ Write the following subsections in full.
 ### 3.1 Introduction to the Chapter
 Write at least {"250" if is_pg else "180"} words.
 Orient the reader to the chapter's purpose and structure. Explain the epistemological logic
-that connects the research questions to the design choices made. {"State the researcher's
-ontological and epistemological position upfront and explain how it shapes the chapter's
-approach to the treatment of evidence and knowledge claims." if is_pg else "Explain how the methodology flows from the research questions and problem."}
+that connects the research questions to the design choices made. {"State the researcher's ontological and epistemological position upfront and explain how it shapes the chapter's approach to the treatment of evidence and knowledge claims." if is_pg else "Explain how the methodology flows from the research questions and problem."}
 
 ### 3.2 Research Design
 Write at least {"450" if is_pg else "320"} words.
@@ -729,9 +774,7 @@ study for the first time through this section should understand its full arc.
 Write at least {"500" if is_pg else "360"} words.
 Draw one specific, argued conclusion per research objective — each conclusion in its own
 paragraph. Each conclusion must: state what the study found, explain what this finding
-means in context, and connect it to the evidence from Chapter 4. {"Where conclusions are
-tentative or conditional, say so and explain the conditions under which the conclusion
-holds. Where they challenge prior theory, develop that challenge explicitly." if is_pg else "State conclusions with appropriate confidence — neither overclaiming nor underselling what the data support."}
+means in context, and connect it to the evidence from Chapter 4. {"Where conclusions are tentative or conditional, say so and explain the conditions under which the conclusion holds. Where they challenge prior theory, develop that challenge explicitly." if is_pg else "State conclusions with appropriate confidence — neither overclaiming nor underselling what the data support."}
 
 ### 5.4 Contribution to Knowledge
 Write at least {"380" if is_pg else "270"} words.
@@ -751,8 +794,7 @@ Write at least {"350" if is_pg else "250"} words.
 Propose 4–5 specific research directions that arise from this study's limitations or from
 questions it raised but could not answer. Each recommendation for future research should:
 identify the gap or question, explain why it matters, suggest an appropriate methodological
-approach, and state what such research would contribute. {"For postgraduate work, these should
-point toward theoretical refinement, comparative cross-context studies, or longitudinal designs." if is_pg else ""}
+approach, and state what such research would contribute. {"For postgraduate work, these should point toward theoretical refinement, comparative cross-context studies, or longitudinal designs." if is_pg else ""}
 
 ### 5.7 Chapter Summary
 Write at least {"220" if is_pg else "160"} words.
