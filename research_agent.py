@@ -11,7 +11,7 @@ import anthropic
 
 from docx import Document
 from docx.shared import Pt, Inches, RGBColor
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
@@ -419,6 +419,47 @@ RULE 18 — WRITE FULLY — NO TRUNCATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Write every subsection in full. Never use placeholders or shorthand like "[expand here]".
 Every word of the required count must be substantive prose.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MANDATORY REFERENCE — PARAGRAPH STYLE EXAMPLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Every paragraph you write must look like the GOOD example, never the BAD one.
+ZeroGPT will flag the BAD example as 90%+ AI. The GOOD example scores under 10%.
+
+BAD (AI-detected — do NOT write like this):
+"The study revealed that organisational factors significantly influence employee satisfaction.
+Research indicates that leadership style, workplace culture, and compensation packages all
+contribute to overall satisfaction levels. Furthermore, the findings suggest that communication
+plays a central role in mediating these relationships. Additionally, the data demonstrates that
+training and development opportunities enhance employee engagement and commitment."
+
+GOOD (human-quality — model all your paragraphs on this):
+"Three things stood out immediately from the data. First — and this surprised the research
+team — leadership style accounted for only 23.7% of the variance in satisfaction scores,
+considerably less than the 40% or higher that earlier studies like Mensah (2019) and
+Osei-Kwame (2021) had documented in comparable West African institutional contexts. Why
+the discrepancy? The answer, this researcher believes, has less to do with leadership itself
+than with how satisfaction is operationalised: prior instruments conflated satisfaction with
+engagement, inflating the leadership coefficient. When the measure is cleaner — as it is
+here — the picture changes. Compensation matters more. So does the quality of immediate
+supervision, which is a different thing from 'leadership style' in the abstract sense that
+much of the literature deploys that phrase. This distinction isn't merely semantic. It has
+real consequences for how organisations invest their development budgets, and the fact
+that it has gone largely unremarked in the literature is, frankly, telling."
+
+NOTICE what makes the GOOD paragraph human:
+  ✓ Sentence lengths: 5 words → 44 words → 4 words → 39 words → 7 words → 8 words → 46 words
+  ✓ Evidence-first structure (topic idea arrives late)
+  ✓ Direct question mid-paragraph ("Why the discrepancy?")
+  ✓ Specific non-round number (23.7%, not 25%)
+  ✓ Contraction ("isn't")
+  ✓ Opinionated voice ("frankly, telling")
+  ✓ Researcher presence ("this researcher believes")
+  ✓ Named scholars with years
+  ✓ Em dash interruption
+  ✓ No banned phrases
+
+Write EVERY paragraph with this level of variation and personality.
 ════════════════════════════════════════════════════════════
 """
 
@@ -976,9 +1017,9 @@ def set_document_defaults(doc):
     style.font.name  = "Times New Roman"
     style.font.size  = Pt(13)
     pf = style.paragraph_format
-    pf.alignment     = WD_ALIGN_PARAGRAPH.JUSTIFY
-    pf.line_spacing  = Pt(24)
-    pf.space_after   = Pt(0)
+    pf.alignment          = WD_ALIGN_PARAGRAPH.JUSTIFY
+    pf.line_spacing_rule  = WD_LINE_SPACING.DOUBLE   # true double spacing (2× font height)
+    pf.space_after        = Pt(0)
 
 
 def build_title_page(doc, topic, research_level):
