@@ -1319,14 +1319,28 @@ def build_document(topic: str, research_level: str,
 def _stream_content(client, system: str, prompt: str,
                     model: str, max_tokens: int) -> str:
     use_thinking = model in ("claude-opus-4-6", "claude-sonnet-4-6")
-    kwargs = dict(
-        model=model,
-        max_tokens=max_tokens,
-        system=system,
-        messages=[{"role": "user", "content": prompt}],
-    )
+
+    THINKING_BUDGET = 8000   # tokens reserved for Claude's internal reasoning
+    MIN_OUTPUT      = 12000  # minimum tokens guaranteed for actual text output
+
     if use_thinking:
-        kwargs["thinking"] = {"type": "adaptive"}
+        # max_tokens must cover thinking budget + output budget
+        # Never let adaptive thinking swallow the output capacity
+        actual_max = max(max_tokens, THINKING_BUDGET + MIN_OUTPUT)
+        kwargs = dict(
+            model=model,
+            max_tokens=actual_max,
+            thinking={"type": "enabled", "budget_tokens": THINKING_BUDGET},
+            system=system,
+            messages=[{"role": "user", "content": prompt}],
+        )
+    else:
+        kwargs = dict(
+            model=model,
+            max_tokens=max_tokens,
+            system=system,
+            messages=[{"role": "user", "content": prompt}],
+        )
 
     with client.messages.stream(**kwargs) as stream:
         return "".join(stream.text_stream)
@@ -1426,7 +1440,7 @@ def generate_front_matter(client, topic: str, research_level: str,
         )
 
     print("  [Front Matter] generating...", end=" ", flush=True)
-    text = _stream_content(client, system, prompt, model, 3000)
+    text = _stream_content(client, system, prompt, model, 5000)
     print(f"done ({len(text):,} chars)")
     return text
 
