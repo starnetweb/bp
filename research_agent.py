@@ -907,63 +907,34 @@ _FN_INLINE_RE   = re.compile(r'\(\(FN:\s*(.+?)\)\)', re.DOTALL)
 
 class FootnoteManager:
     """
-    Creates and manages Word footnotes (word/footnotes.xml) for a Document.
+    Manages Word footnotes using a post-save zip-injection strategy.
 
-    Usage:
-        fm = FootnoteManager(doc)
-        fm.add_footnote(paragraph, "footnote text")
+    Strategy:
+        1. add_footnote() writes the <w:footnoteReference> superscript into the
+           body paragraph (standard OxmlElement — no internal API required).
+        2. The footnote text is queued in self._footnotes.
+        3. After doc.save(path), call fn_mgr.inject(path) to inject
+           word/footnotes.xml plus the required relationships/content-types
+           directly into the .docx zip file.
 
-    Clicking the superscript in the body jumps to the footnote at page bottom,
-    and clicking the footnote number jumps back — standard Word behaviour.
+    Result: clicking the superscript in Word jumps to the footnote at the
+    bottom of the page, and clicking the footnote number jumps back.
     """
 
     def __init__(self, doc):
-        self.doc      = doc
-        self._next_id = 1
-        self._root    = None   # lxml element for <w:footnotes>
-        self._part    = None
-
-    # ── internal ──────────────────────────────────────────
-
-    def _ensure_part(self):
-        if self._part is not None:
-            return
-        from docx.opc.part    import XmlPart
-        from docx.opc.packuri import PackURI
-
-        W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
-        xml = (
-            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
-            f'<w:footnotes xmlns:w="{W}">'
-            '<w:footnote w:type="separator" w:id="-1">'
-            '<w:p><w:r><w:separator/></w:r></w:p>'
-            '</w:footnote>'
-            '<w:footnote w:type="continuationSeparator" w:id="0">'
-            '<w:p><w:r><w:continuationSeparator/></w:r></w:p>'
-            '</w:footnote>'
-            '</w:footnotes>'
-        )
-        self._part = XmlPart(
-            PackURI('/word/footnotes.xml'),
-            _FOOTNOTES_CT,
-            xml.encode('utf-8'),
-            self.doc.part.package,
-        )
-        self.doc.part.relate_to(self._part, _FOOTNOTES_REL)
-        self._root = self._part._element
-
-    # ── public ────────────────────────────────────────────
+        self.doc        = doc
+        self._next_id   = 1
+        self._footnotes = []   # list of (id, text) pairs
 
     def add_footnote(self, paragraph, footnote_text: str) -> int:
         """
-        Append a superscript footnote reference to *paragraph* and register
-        the footnote content.  Returns the footnote id used.
+        Insert a superscript footnote reference into *paragraph*.
+        Returns the footnote id.  Call inject() after doc.save().
         """
-        self._ensure_part()
         fn_id = self._next_id
         self._next_id += 1
 
-        # ── body reference (superscript number) ──────────
+        # Superscript reference in body text
         r = OxmlElement('w:r')
         rPr = OxmlElement('w:rPr')
         rStyle = OxmlElement('w:rStyle')
@@ -975,31 +946,99 @@ class FootnoteManager:
         r.append(ref)
         paragraph._p.append(r)
 
-        # ── footnote content (bottom of page) ────────────
-        fn = OxmlElement('w:footnote')
-        fn.set(qn('w:id'), str(fn_id))
-
-        p = OxmlElement('w:p')
-
-        r_num = OxmlElement('w:r')
-        rPr_n = OxmlElement('w:rPr')
-        rs_n  = OxmlElement('w:rStyle')
-        rs_n.set(qn('w:val'), 'FootnoteReference')
-        rPr_n.append(rs_n)
-        r_num.append(rPr_n)
-        r_num.append(OxmlElement('w:footnoteRef'))
-        p.append(r_num)
-
-        r_txt = OxmlElement('w:r')
-        t     = OxmlElement('w:t')
-        t.set('{http://www.w3.org/XML/1998/namespace}space', 'preserve')
-        t.text = ' ' + footnote_text.strip()
-        r_txt.append(t)
-        p.append(r_txt)
-
-        fn.append(p)
-        self._root.append(fn)
+        self._footnotes.append((fn_id, footnote_text.strip()))
         return fn_id
+
+    def inject(self, docx_path: str):
+        """
+        Post-process the saved .docx zip to insert word/footnotes.xml
+        and the required relationship + content-type entries.
+        Must be called AFTER doc.save(docx_path).
+        """
+        if not self._footnotes:
+            return
+
+        import zipfile
+        from lxml import etree
+
+        W       = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+        XML_NS  = 'http://www.w3.org/XML/1998/namespace'
+        FN_REL  = ('http://schemas.openxmlformats.org/officeDocument/'
+                   '2006/relationships/footnotes')
+        FN_CT   = ('application/vnd.openxmlformats-officedocument'
+                   '.wordprocessingml.footnotes+xml')
+
+        # ── Build footnotes.xml ──────────────────────────
+        root = etree.Element(f'{{{W}}}footnotes', nsmap={'w': W})
+
+        for sep_id, sep_tag in [('-1', 'separator'), ('0', 'continuationSeparator')]:
+            fn = etree.SubElement(root, f'{{{W}}}footnote')
+            fn.set(f'{{{W}}}type', sep_tag)
+            fn.set(f'{{{W}}}id', sep_id)
+            p = etree.SubElement(fn, f'{{{W}}}p')
+            r = etree.SubElement(p, f'{{{W}}}r')
+            etree.SubElement(r, f'{{{W}}}{sep_tag}')
+
+        for fn_id, fn_text in self._footnotes:
+            fn = etree.SubElement(root, f'{{{W}}}footnote')
+            fn.set(f'{{{W}}}id', str(fn_id))
+            p = etree.SubElement(fn, f'{{{W}}}p')
+
+            r_num = etree.SubElement(p, f'{{{W}}}r')
+            rPr   = etree.SubElement(r_num, f'{{{W}}}rPr')
+            rs    = etree.SubElement(rPr, f'{{{W}}}rStyle')
+            rs.set(f'{{{W}}}val', 'FootnoteReference')
+            etree.SubElement(r_num, f'{{{W}}}footnoteRef')
+
+            r_txt = etree.SubElement(p, f'{{{W}}}r')
+            t     = etree.SubElement(r_txt, f'{{{W}}}t')
+            t.set(f'{{{XML_NS}}}space', 'preserve')
+            t.text = ' ' + fn_text
+
+        footnotes_xml = etree.tostring(
+            root, xml_declaration=True, encoding='UTF-8', standalone=True
+        )
+
+        # ── Rewrite the .docx zip ────────────────────────
+        tmp = docx_path + '.fn.tmp'
+        try:
+            with zipfile.ZipFile(docx_path, 'r') as zin, \
+                 zipfile.ZipFile(tmp, 'w', zipfile.ZIP_DEFLATED) as zout:
+
+                has_footnotes_xml = False
+                for item in zin.infolist():
+                    data = zin.read(item.filename)
+
+                    if item.filename == 'word/_rels/document.xml.rels':
+                        rel_entry = (
+                            f'<Relationship Id="rFnotes1" '
+                            f'Type="{FN_REL}" Target="footnotes.xml"/>'
+                        ).encode()
+                        data = data.replace(b'</Relationships>',
+                                            rel_entry + b'</Relationships>')
+
+                    elif item.filename == '[Content_Types].xml':
+                        ct_entry = (
+                            f'<Override PartName="/word/footnotes.xml" '
+                            f'ContentType="{FN_CT}"/>'
+                        ).encode()
+                        data = data.replace(b'</Types>', ct_entry + b'</Types>')
+
+                    elif item.filename == 'word/footnotes.xml':
+                        has_footnotes_xml = True
+                        data = footnotes_xml   # replace existing
+
+                    zout.writestr(item, data)
+
+                if not has_footnotes_xml:
+                    zout.writestr('word/footnotes.xml', footnotes_xml)
+
+            os.replace(tmp, docx_path)
+
+        except Exception:
+            if os.path.exists(tmp):
+                os.remove(tmp)
+            raise
 
 
 # ─────────────────────────────────────────────────────────

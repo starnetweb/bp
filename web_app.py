@@ -796,6 +796,10 @@ def _run_agent(job_id: str, topic: str, research_level: str,
 
         doc.save(out_path)
 
+        # Inject footnotes.xml into the zip AFTER saving (zip-injection approach
+        # avoids python-docx internal API issues with XmlPart._element)
+        fn_mgr.inject(out_path)
+
         job["file_path"] = out_path
         job["filename"]  = filename
         job["status"]    = "done"
