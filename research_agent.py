@@ -127,11 +127,11 @@ LEVEL_PROFILES = {
             "Analysis should be solid but does not need to engage deeply with meta-theoretical debates. "
             "WORD COUNT IS CRITICAL: every subsection must be fully developed with multiple paragraphs. "
             "Do not summarise when you can explain. Do not list when you can discuss. "
-            "Each main subsection should be at least 300-400 words of substantive prose."
+            "Each main subsection should be at least 150-200 words of substantive prose."
         ),
         "depth":        "substantive but accessible",
-        "word_targets": {1: 2400, 2: 3400, 3: 3800, 4: 2600, 5: 2400},
-        "front_words":  600,
+        "word_targets": {1: 1200, 2: 1700, 3: 1900, 4: 1300, 5: 1200},  # reduced 50%
+        "front_words":  300,
     },
     "postgraduate": {
         "label":        "Postgraduate",
@@ -144,11 +144,11 @@ LEVEL_PROFILES = {
             "Identify tensions, contradictions, and limitations in the literature and in your own approach. "
             "WORD COUNT IS CRITICAL: every subsection must be richly developed. "
             "Do not skim — excavate. Each argument deserves full development across multiple paragraphs. "
-            "Each main subsection should be at least 450-600 words of dense, substantive prose."
+            "Each main subsection should be at least 315-420 words of dense, substantive prose."
         ),
         "depth":        "critical, theoretically sophisticated, and reflexive",
-        "word_targets": {1: 3200, 2: 4600, 3: 5200, 4: 3800, 5: 3200},
-        "front_words":  850,
+        "word_targets": {1: 2240, 2: 3220, 3: 3640, 4: 2660, 5: 2240},  # reduced 30%
+        "front_words":  595,
     },
 }
 
@@ -474,22 +474,40 @@ def _chapter_prompts(level_key: str) -> dict:
     targets = profile["word_targets"]
     is_pg   = (level_key == "postgraduate")
 
+    # Subsection word-count helper (UG reduced 50%, PG reduced 30% from original targets)
+    def w(ug, pg): return str(pg if is_pg else ug)
+
+    # Footnote format note appended to every chapter
+    _FN_NOTE = (
+        "\nFOOTNOTE FORMAT: When a footnote is needed, insert it inline using "
+        "((FN: your footnote text here)) — it will become a proper Word footnote "
+        "with a superscript number in the body and the note at the bottom of the page."
+    )
+
+    # No-references instruction for chapters 1-4
+    _NO_REF = (
+        "\nDo NOT include a reference list, bibliography, or works-cited section "
+        "anywhere in this chapter. All references will be compiled on a dedicated "
+        "References page at the end of the document.\n"
+    )
+
     return {
         1: f"""You are writing CHAPTER ONE — INTRODUCTION for an academic research project.
 Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[1]} words of substantive prose. You MUST reach this minimum.
 Do not stop writing until you have fully developed every subsection. If in doubt, write more.
-
+{_NO_REF}
 {tone}
 
 {HUMAN_WRITING_INSTRUCTION}
+{_FN_NOTE}
 
 Write the following subsections, each introduced with a ### heading.
 Every subsection must be written in full, developed paragraphs — no bullet summaries, no placeholders.
 
 ### 1.1 Background of the Study
-Write at least {"500" if is_pg else "350"} words for this subsection.
+Write at least {w(175, 350)} words for this subsection.
 Provide {depth} contextual grounding. Open with a striking observation or statistic that
 immediately establishes why this topic matters. Then trace the historical evolution of the
 problem across at least three distinct time periods, naming key turning points, policy shifts,
@@ -498,7 +516,7 @@ evidence — named scholars, years, places, and figures. Close by narrowing the 
 broad context toward the precise issue this study addresses.
 
 ### 1.2 Statement of the Problem
-Write at least {"400" if is_pg else "280"} words for this subsection.
+Write at least {w(140, 280)} words for this subsection.
 Open with a clear, declarative statement of what is wrong or poorly understood. Then build
 the case across multiple paragraphs: explain the nature of the problem, who it affects, how
 long it has persisted, and why existing responses have been insufficient. Name the specific
@@ -506,26 +524,26 @@ gap, contradiction, or blind spot that this study addresses. The problem stateme
 urgent — the reader should finish this section convinced that the study was necessary.
 
 ### 1.3 Purpose of the Study
-Write at least {"200" if is_pg else "150"} words for this subsection.
+Write at least {w(75, 140)} words for this subsection.
 State the overarching aim in one or two precise sentences. Then elaborate: explain the
 theoretical and practical orientation of the study, what kind of knowledge it seeks to
 produce, and how the purpose connects directly to the problem articulated in 1.2.
 
 ### 1.4 Research Objectives
-Write at least {"250" if is_pg else "180"} words for this subsection.
+Write at least {w(90, 175)} words for this subsection.
 State 4–5 specific, measurable objectives. Each should be action-oriented (examine, assess,
 determine, explore, compare, evaluate). After listing them, write a short paragraph explaining
 how they collectively address the research problem and how they will be operationalised
 through the methodology described in Chapter 3.
 
 ### 1.5 Research Questions
-Write at least {"200" if is_pg else "150"} words for this subsection.
+Write at least {w(75, 140)} words for this subsection.
 Formulate 3–5 focused, answerable questions derived from the objectives. After stating the
 questions, briefly explain the logic connecting each question to its corresponding objective
 and the type of evidence that would constitute an answer.
 
 ### 1.6 Significance of the Study
-Write at least {"350" if is_pg else "250"} words for this subsection.
+Write at least {w(125, 245)} words for this subsection.
 Develop this across multiple distinct paragraphs — at minimum one paragraph each for:
 theoretical significance (what this study adds to scholarly debates), practical significance
 (what changes in practice, policy, or service delivery), and beneficiary groups (academics,
@@ -533,27 +551,27 @@ practitioners, policymakers, communities). Be concrete rather than generic — n
 specific journals, policy areas, or organisations that would benefit.
 
 ### 1.7 Scope and Delimitations
-Write at least {"280" if is_pg else "200"} words for this subsection.
+Write at least {w(100, 196)} words for this subsection.
 Define the geographic, temporal, and thematic boundaries with precision. For each
 boundary, explain not just what is excluded but why the exclusion is methodologically
 justified rather than a limitation of convenience. Acknowledge the trade-offs involved.
 
 ### 1.8 Limitations of the Study
-Write at least {"280" if is_pg else "200"} words for this subsection.
+Write at least {w(100, 196)} words for this subsection.
 Identify at least four genuine constraints — methodological, practical, or contextual.
 For each, explain what the limitation is, how it arose, and what steps were taken to
 minimise its impact on the validity and transferability of findings. Be candid: real
 researchers acknowledge imperfection.
 
 ### 1.9 Definition of Key Terms
-Write at least {"300" if is_pg else "220"} words for this subsection.
+Write at least {w(110, 210)} words for this subsection.
 Define 6–8 terms that carry specific technical or conceptual meanings in this study.
 For each term: provide a working definition grounded in at least one cited scholar,
 explain how this study's usage compares to or departs from common usage, and note any
 definitional controversies relevant to the research.
 
 ### 1.10 Organisation of the Study
-Write at least {"180" if is_pg else "130"} words for this subsection.
+Write at least {w(65, 126)} words for this subsection.
 Describe what each chapter covers in two to three sentences per chapter — not a list,
 but short, flowing paragraphs. Explain the logical progression from chapter to chapter.
 
@@ -564,22 +582,23 @@ Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[2]} words of substantive prose. You MUST reach this minimum.
 The literature review is the longest and most intellectually demanding chapter. Write with depth.
-
+{_NO_REF}
 {tone}
 
 {HUMAN_WRITING_INSTRUCTION}
+{_FN_NOTE}
 
 Write the following subsections in full. Every subsection demands extended, analytical prose.
 
 ### 2.1 Introduction to the Chapter
-Write at least {"300" if is_pg else "200"} words.
+Write at least {w(100, 210)} words.
 Open by situating the literature review within the study's broader purpose. Explain how
 this chapter is organised and why that organisational logic was chosen. Describe the scope
 of literature reviewed — databases, date range, inclusion criteria — without being mechanical.
 End with a statement of what the review reveals and how it sets up the research gap.
 
 ### 2.2 Conceptual Review
-Write at least {"600" if is_pg else "420"} words.
+Write at least {w(210, 420)} words.
 Identify the 4–6 central concepts of this study. For each concept: trace its intellectual
 history (who coined or defined it, when, and in what context), map the range of definitions
 across the literature (noting where scholars converge and diverge), and state explicitly
@@ -588,7 +607,7 @@ not as a series of dictionary definitions.
 {"Engage with conceptual tensions and competing paradigms — do not smooth them over." if is_pg else ""}
 
 ### 2.3 Theoretical Framework
-Write at least {"700" if is_pg else "480"} words.
+Write at least {w(240, 490)} words.
 Identify 2–3 theories or models that directly inform this study. For each theory, develop
 a full sub-argument across multiple paragraphs: name the originator and intellectual
 tradition, describe the core propositions, trace how it has been applied and tested in
@@ -596,8 +615,8 @@ empirical research over the past decade, and make explicit how it will guide thi
 analytical framework. {"Critically evaluate each theory — identify its explanatory strengths, its known limitations, and how scholars have critiqued or refined it." if is_pg else "Explain how each theory applies to the specific context of this study."}
 
 ### 2.4 Empirical Review
-Write at least {"900" if is_pg else "650"} words.
-Critically review at least {"12-15" if is_pg else "8-10"} prior studies. Organise the
+Write at least {w(325, 630)} words.
+Critically review at least {"10-12" if is_pg else "6-8"} prior studies. Organise the
 review thematically rather than chronologically. For each thematic cluster: identify the
 key studies, summarise their findings and methodological approaches, note where results
 converge, flag contradictions or anomalies in the evidence base, and comment on methodological
@@ -605,7 +624,7 @@ quality. {"Evaluate sample sizes, research designs, and contextual applicability
 This section must read as a genuine scholarly conversation, not a descriptive catalogue.
 
 ### 2.5 Review of Related Studies
-Write at least {"600" if is_pg else "420"} words.
+Write at least {w(210, 420)} words.
 Focus specifically on studies conducted in comparable contexts or addressing analogous
 sub-questions. For each study reviewed: explain what it investigated, summarise its
 principal findings, assess what it contributes to this study's conceptual or empirical
@@ -613,14 +632,14 @@ foundations, and — critically — identify precisely where it falls short rela
 present study's aims. This section should make the research gap feel inevitable.
 
 ### 2.6 Research Gap
-Write at least {"400" if is_pg else "280"} words.
+Write at least {w(140, 280)} words.
 Do not simply assert that a gap exists — argue for it. Draw together the evidence from the
 preceding sections to show exactly what has been studied, what remains unstudied, why the
 existing studies are insufficient for this particular problem, and why this gap matters.
 {"Distinguish between empirical gaps (what data are missing), theoretical gaps (what explanatory frameworks have not been tested here), and methodological gaps (how prior studies' designs could be improved)." if is_pg else "Make clear why filling this gap produces knowledge that is both novel and useful."}
 
 ### 2.7 Chapter Summary
-Write at least {"350" if is_pg else "250"} words.
+Write at least {w(125, 245)} words.
 Do not list what was covered. Instead, synthesise: identify the 2–3 most important
 intellectual threads that emerge from the review, explain how they relate to each other,
 and show explicitly how they set up the methodological choices and analytical framework
@@ -633,20 +652,21 @@ Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[3]} words of substantive prose. You MUST reach this minimum.
 The methodology chapter must be precise, justified, and replicable. Write with rigour.
-
+{_NO_REF}
 {tone}
 
 {HUMAN_WRITING_INSTRUCTION}
+{_FN_NOTE}
 
 Write the following subsections in full.
 
 ### 3.1 Introduction to the Chapter
-Write at least {"250" if is_pg else "180"} words.
+Write at least {w(90, 175)} words.
 Orient the reader to the chapter's purpose and structure. Explain the epistemological logic
 that connects the research questions to the design choices made. {"State the researcher's ontological and epistemological position upfront and explain how it shapes the chapter's approach to the treatment of evidence and knowledge claims." if is_pg else "Explain how the methodology flows from the research questions and problem."}
 
 ### 3.2 Research Design
-Write at least {"450" if is_pg else "320"} words.
+Write at least {w(160, 315)} words.
 Describe the overall research strategy and justify the choice of qualitative, quantitative,
 or mixed-methods design by reference to the nature of the research questions. Cite at least
 three methodologists who support this design choice. Explain what this design can and cannot
@@ -654,34 +674,34 @@ do — including what it sacrifices — and defend the choice against obvious al
 {"Connect the design explicitly to the epistemological position stated in 3.1." if is_pg else ""}
 
 ### 3.3 Research Philosophy and Paradigm
-Write at least {"500" if is_pg else "320"} words.
+Write at least {w(160, 350)} words.
 {"Develop the philosophical grounding in detail. Discuss the ontological position (what the researcher believes about the nature of reality — is it singular and knowable, or multiple and constructed?), the epistemological position (what counts as valid knowledge, and how it can be acquired), and how these positions connect to the chosen methodology. Distinguish between positivism, interpretivism, constructivism, pragmatism, and critical realism with enough precision that the reader understands which stance is adopted here and why." if is_pg else "Identify the research paradigm (e.g., interpretivist, positivist, pragmatist) and explain in clear terms how it shapes the study's approach to data, evidence, and knowledge. Draw on at least two methodologists to justify the paradigmatic choice."}
 
 ### 3.4 Research Approach
-Write at least {"280" if is_pg else "200"} words.
+Write at least {w(100, 196)} words.
 {"Specify whether the study uses inductive, deductive, or abductive reasoning. Justify this choice by reference to the research questions and the nature of the evidence being collected. Explain how the approach shapes the analytical process in Chapter 4." if is_pg else "Specify the reasoning approach (inductive or deductive) and explain how it guides data analysis. Connect this to the research design."}
 
 ### 3.5 Study Area and Setting
-Write at least {"320" if is_pg else "230"} words.
+Write at least {w(115, 224)} words.
 Describe the physical, institutional, or organisational setting with enough specificity that
 the reader can visualise it. Explain why this setting was chosen — what makes it appropriate
 for answering these research questions. Discuss access, gatekeeping, and any contextual
 factors (political, cultural, institutional) that shaped the fieldwork.
 
 ### 3.6 Target Population
-Write at least {"280" if is_pg else "200"} words.
+Write at least {w(100, 196)} words.
 Define the population with precision — who qualifies, why they qualify, and how large the
 total population is (with a source if applicable). Explain the relevance of this population
 to the research questions. Address any challenges in defining or accessing the population.
 
 ### 3.7 Sample Size and Sampling Technique
-Write at least {"380" if is_pg else "270"} words.
+Write at least {w(135, 266)} words.
 Specify the sample size and justify it — cite at least two sources on sample size adequacy
 for the chosen design. Describe the sampling technique in precise operational terms: exactly
 how participants were identified, approached, screened, and recruited. {"Discuss how the technique addresses issues of representativeness (quantitative) or theoretical saturation and transferability (qualitative)." if is_pg else "Explain how the sample is representative of the population."} Address any non-response and how it was handled.
 
 ### 3.8 Data Collection Instruments
-Write at least {"400" if is_pg else "280"} words.
+Write at least {w(140, 280)} words.
 Describe each instrument used (questionnaire, semi-structured interview guide, observation
 protocol, document analysis schedule). For each instrument: explain the rationale for its
 design, describe its structure (sections, item types, scale formats), explain the piloting
@@ -689,11 +709,11 @@ process and any revisions made, and justify its appropriateness for collecting t
 required by each research objective.
 
 ### 3.9 Validity and Reliability
-Write at least {"380" if is_pg else "270"} words.
+Write at least {w(135, 266)} words.
 {"Address validity and reliability using the criteria appropriate to the paradigm. For quantitative work: construct validity, criterion validity, internal consistency (Cronbach's alpha), and test-retest reliability. For qualitative work: credibility (member-checking, triangulation), transferability (thick description), dependability (audit trail), and confirmability (reflexivity) — drawing on Lincoln and Guba (1985). Explain specifically how each criterion was operationalised in this study." if is_pg else "Explain what steps were taken to ensure the instruments measure what they intend to measure and produce consistent results. Discuss any piloting and revision process. Address both internal validity and reliability."}
 
 ### 3.10 Data Collection Procedure
-Write at least {"350" if is_pg else "250"} words.
+Write at least {w(125, 245)} words.
 Describe the data collection process as a step-by-step chronological narrative: ethics
 clearance, participant recruitment, informed consent, instrument administration, data
 recording, and quality checks. Include time frames and quantities (how many interviews
@@ -701,11 +721,11 @@ conducted over how many weeks, response rate for questionnaires). Be specific en
 that a researcher could replicate this procedure.
 
 ### 3.11 Data Analysis Methods
-Write at least {"400" if is_pg else "280"} words.
+Write at least {w(140, 280)} words.
 Explain the analytical approach in enough detail for replication. {"Name the specific software used (SPSS, NVivo, Atlas.ti, R, Python) and justify the choice. Describe the analytical procedures step by step: coding (open, axial, selective), thematic analysis phases, statistical tests applied and their assumptions, regression models and their specification. Connect each analytical step to the specific research questions it addresses." if is_pg else "Describe the analytical approach clearly: how data were organised, coded, and interpreted. Name any software used and explain how it was applied. Connect the analysis to the research questions."}
 
 ### 3.12 Ethical Considerations
-Write at least {"300" if is_pg else "220"} words.
+Write at least {w(110, 210)} words.
 Address at least six ethical dimensions: informed consent (what participants were told and
 how consent was obtained), anonymity and confidentiality (how data were anonymised and
 protected), right to withdraw (how this was communicated and facilitated), data storage
@@ -714,7 +734,7 @@ and security (how data are stored and for how long), institutional ethics approv
 (how the researcher's background may have influenced data collection and interpretation).
 
 ### 3.13 Chapter Summary
-Write at least {"280" if is_pg else "200"} words.
+Write at least {w(100, 196)} words.
 Synthesise the methodological choices made in this chapter as a coherent whole. Explain
 how design, philosophy, sampling, instruments, and analysis hang together as a unified
 approach to answering the research questions. {"Address how the methodology addresses the research gap identified in Chapter 2 and positions the study within its paradigmatic tradition." if is_pg else "Show how the methodology directly serves the research objectives stated in Chapter 1."}
@@ -726,26 +746,27 @@ Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[4]} words of substantive prose. You MUST reach this minimum.
 Present rich, specific, interpreted findings. This chapter must demonstrate analytical depth.
-
+{_NO_REF}
 {tone}
 
 {HUMAN_WRITING_INSTRUCTION}
+{_FN_NOTE}
 
 Write the following subsections in full.
 
 ### 4.1 Introduction to the Chapter
-Write at least {"250" if is_pg else "180"} words.
+Write at least {w(90, 175)} words.
 Explain how the chapter is structured and why. Briefly recap the research objectives so
 the reader knows what findings will address. {"State the analytical framework guiding interpretation and how it connects to the theoretical framework in Chapter 2." if is_pg else "Orient the reader to how findings are organised."}
 
 ### 4.2 Sample / Response Rate Overview
-Write at least {"300" if is_pg else "220"} words.
+Write at least {w(110, 210)} words.
 Present the demographic and descriptive profile of the sample across multiple characteristics
 (age, gender, education, experience, geographic distribution — as relevant). Discuss the
 response rate if applicable and explain patterns in non-response. {"Compare the achieved sample to the target population and discuss implications for transferability." if is_pg else "Comment on how representative the sample appears to be."}
 
 ### 4.3 Findings Related to Objective 1
-Write at least {"500" if is_pg else "360"} words.
+Write at least {w(180, 350)} words.
 Present specific, detailed findings for the first research objective. Use plausible
 quantitative values (percentages, means, frequencies) or qualitative themes with
 representative illustrative evidence. Interpret the findings rather than just reporting
@@ -753,32 +774,32 @@ them: explain what patterns emerge, what they mean, and what accounts for them.
 {"Connect findings explicitly to the theoretical framework from Chapter 2. Where results confirm prior theory, explain why. Where they challenge it, explore the implications." if is_pg else "Relate findings directly to relevant literature reviewed in Chapter 2."}
 
 ### 4.4 Findings Related to Objective 2
-Write at least {"500" if is_pg else "360"} words.
+Write at least {w(180, 350)} words.
 Apply the same approach as 4.3 to the second research objective. Ensure this section has
 its own narrative arc — do not simply replicate the structure of 4.3. Introduce any
 unexpected or contradictory findings and engage with them analytically.
 
 ### 4.5 Findings Related to Objective 3
-Write at least {"500" if is_pg else "360"} words.
+Write at least {w(180, 350)} words.
 Apply the same approach to the third objective. {"At this stage, begin drawing connections between findings across objectives — note where patterns reinforce each other or where tensions emerge." if is_pg else "Discuss how these findings relate to those in 4.3 and 4.4."}
 
 ### 4.6 Findings Related to Objective 4
-Write at least {"450" if is_pg else "320"} words.
+Write at least {w(160, 315)} words.
 Present findings for the fourth objective with the same analytical rigour. By the end of
 this section, all major findings should be on the table, setting up the synthesis in 4.7.
 
 ### 4.7 Synthesis and Discussion of Major Findings
-Write at least {"600" if is_pg else "420"} words.
+Write at least {w(210, 420)} words.
 {"This is the intellectual heart of the chapter. Do not merely summarise the preceding sections. Instead, synthesise: identify overarching themes that cut across the four sets of findings, explore unexpected results and what they suggest, address contradictions between data sources, and situate the findings in relation to the theoretical framework and empirical literature from Chapter 2. Where findings confirm prior scholarship, say so with precision. Where they challenge or extend it, develop that argument fully." if is_pg else "Bring together the key patterns across all four sets of findings. Identify the most important themes that emerge when the findings are considered as a whole. Connect them to the literature reviewed in Chapter 2 — where do findings confirm, contradict, or extend existing knowledge?"}
 
 ### 4.8 Implications of the Findings
-Write at least {"400" if is_pg else "280"} words.
+Write at least {w(140, 280)} words.
 Discuss implications for theory, practice, and policy separately across dedicated paragraphs.
 Name specific stakeholders and explain precisely what each set of findings means for them.
 {"For theory: what does this study add to, refine, or challenge in the existing theoretical models? For practice: what specific changes in professional practice are warranted? For policy: what specific policy recommendations emerge, addressed to named agencies or decision-makers?" if is_pg else "Be concrete: name institutions, policy areas, and professional communities that should act on these findings."}
 
 ### 4.9 Chapter Summary
-Write at least {"280" if is_pg else "200"} words.
+Write at least {w(100, 196)} words.
 Distil the most important results and analytical insights in two to three substantive
 paragraphs. Do not list findings — synthesise. End with a transition that sets up the
 conclusions and recommendations in Chapter 5.
@@ -794,17 +815,18 @@ This chapter must deliver a satisfying intellectual conclusion — not a mechani
 {tone}
 
 {HUMAN_WRITING_INSTRUCTION}
+{_FN_NOTE}
 
 Write the following subsections in full.
 
 ### 5.1 Introduction to the Chapter
-Write at least {"200" if is_pg else "150"} words.
+Write at least {w(75, 140)} words.
 Orient the reader to the chapter's purpose and structure. Briefly explain how this chapter
 brings the entire study to a close and what it aims to deliver beyond simply summarising
 earlier chapters.
 
 ### 5.2 Summary of the Study
-Write at least {"450" if is_pg else "320"} words.
+Write at least {w(160, 315)} words.
 Recount the entire research journey in a flowing, synthesised narrative across at least
 four substantive paragraphs: the problem and its context, the objectives and theoretical
 framework, the methodology and its justification, and the principal findings. Do not
@@ -812,18 +834,18 @@ quote verbatim from earlier chapters — reframe and integrate. A reader encount
 study for the first time through this section should understand its full arc.
 
 ### 5.3 Conclusions
-Write at least {"500" if is_pg else "360"} words.
+Write at least {w(180, 350)} words.
 Draw one specific, argued conclusion per research objective — each conclusion in its own
 paragraph. Each conclusion must: state what the study found, explain what this finding
 means in context, and connect it to the evidence from Chapter 4. {"Where conclusions are tentative or conditional, say so and explain the conditions under which the conclusion holds. Where they challenge prior theory, develop that challenge explicitly." if is_pg else "State conclusions with appropriate confidence — neither overclaiming nor underselling what the data support."}
 
 ### 5.4 Contribution to Knowledge
-Write at least {"380" if is_pg else "270"} words.
+Write at least {w(135, 266)} words.
 {"Articulate the study's contribution across at least three dimensions: theoretical (how it extends, refines, or challenges existing theoretical models), empirical (what new data or patterns it adds to the evidence base), and methodological (whether it demonstrates a novel application of method in this context). Be precise — 'this study contributes to the literature' is not a contribution; naming exactly what it adds is." if is_pg else "Explain in concrete terms what is new or valuable about what this study found. How does it advance understanding beyond what was known before? What practical problems does it help solve?"}
 
 ### 5.5 Recommendations
-Write at least {"450" if is_pg else "320"} words.
-Provide 6–8 specific, actionable, evidence-grounded recommendations. Write each as a
+Write at least {w(160, 315)} words.
+Provide 5–6 specific, actionable, evidence-grounded recommendations. Write each as a
 full paragraph rather than a bullet point: name the recommendation, identify the specific
 finding that supports it, name the stakeholder or institution it is directed at, and
 describe what implementing it would look like in practice. Recommendations must flow
@@ -831,14 +853,14 @@ directly from the findings — no recommendation should appear without a groundi
 Chapter 4.
 
 ### 5.6 Recommendations for Future Research
-Write at least {"350" if is_pg else "250"} words.
-Propose 4–5 specific research directions that arise from this study's limitations or from
+Write at least {w(125, 245)} words.
+Propose 3–4 specific research directions that arise from this study's limitations or from
 questions it raised but could not answer. Each recommendation for future research should:
 identify the gap or question, explain why it matters, suggest an appropriate methodological
 approach, and state what such research would contribute. {"For postgraduate work, these should point toward theoretical refinement, comparative cross-context studies, or longitudinal designs." if is_pg else ""}
 
 ### 5.7 Chapter Summary
-Write at least {"220" if is_pg else "160"} words.
+Write at least {w(80, 154)} words.
 A dignified, forward-looking closing that does not merely repeat the conclusions. Reflect
 on what the study set out to do and what it achieved. End with a final paragraph that
 gestures toward the broader significance of the work — without overreaching.
@@ -848,21 +870,21 @@ gestures toward the broader significance of the work — without overreaching.
 After 5.7, write the following two sections:
 
 ## REFERENCES
-List at least {"25" if is_pg else "18"} academic references in APA 7th edition format.
+List at least {w(9, 18)} academic references in APA 7th edition format.
 References must be plausible, field-relevant, diverse, and correctly formatted.
 Include: journal articles (majority), books, book chapters, institutional/government
 reports, and conference papers. Span at least 2005–2023. Mix foundational texts with
-recent scholarship (at least 8 references from 2018 onwards).
+recent scholarship (at least 6 references from 2018 onwards).
 Format each exactly as:
   Author, A. A., & Author, B. B. (Year). Title of article. Journal Name, Volume(Issue), pages. https://doi.org/xxxxx
 
 ## APPENDICES
 
 ### Appendix A: Research Instrument
-Provide a complete {"interview guide (20+ open and semi-structured questions across thematic sections)" if is_pg else "questionnaire (20+ items using Likert scales, multiple choice, and open-ended questions)"}, appropriate to the research design described in Chapter 3. Include an introduction/preamble and section headings.
+Provide a complete {"interview guide (14+ open and semi-structured questions across thematic sections)" if is_pg else "questionnaire (10+ items using Likert scales, multiple choice, and open-ended questions)"}, appropriate to the research design described in Chapter 3. Include an introduction/preamble and section headings.
 
 ### Appendix B: Data Collection Timeline
-A structured {"10" if is_pg else "8"}-week timeline table for the data collection phase, with activities, responsible parties, and expected outputs for each week.
+A structured {"7" if is_pg else "4"}-week timeline table for the data collection phase, with activities, responsible parties, and expected outputs for each week.
 
 ### Appendix C: Ethical Clearance Template
 A sample informed consent form that would be used with participants in this study,
@@ -870,6 +892,147 @@ including all required elements (study description, risks, rights, confidentiali
 
 Do NOT write a chapter title heading at the very top — begin directly with section ### 5.1.""",
     }
+
+
+# ─────────────────────────────────────────────────────────
+#  WORD FOOTNOTE SUPPORT
+# ─────────────────────────────────────────────────────────
+
+_FOOTNOTES_REL  = ('http://schemas.openxmlformats.org/officeDocument/'
+                   '2006/relationships/footnotes')
+_FOOTNOTES_CT   = ('application/vnd.openxmlformats-officedocument'
+                   '.wordprocessingml.footnotes+xml')
+_FN_INLINE_RE   = re.compile(r'\(\(FN:\s*(.+?)\)\)', re.DOTALL)
+
+
+class FootnoteManager:
+    """
+    Creates and manages Word footnotes (word/footnotes.xml) for a Document.
+
+    Usage:
+        fm = FootnoteManager(doc)
+        fm.add_footnote(paragraph, "footnote text")
+
+    Clicking the superscript in the body jumps to the footnote at page bottom,
+    and clicking the footnote number jumps back — standard Word behaviour.
+    """
+
+    def __init__(self, doc):
+        self.doc      = doc
+        self._next_id = 1
+        self._root    = None   # lxml element for <w:footnotes>
+        self._part    = None
+
+    # ── internal ──────────────────────────────────────────
+
+    def _ensure_part(self):
+        if self._part is not None:
+            return
+        from docx.opc.part    import XmlPart
+        from docx.opc.packuri import PackURI
+
+        W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
+        xml = (
+            '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+            f'<w:footnotes xmlns:w="{W}">'
+            '<w:footnote w:type="separator" w:id="-1">'
+            '<w:p><w:r><w:separator/></w:r></w:p>'
+            '</w:footnote>'
+            '<w:footnote w:type="continuationSeparator" w:id="0">'
+            '<w:p><w:r><w:continuationSeparator/></w:r></w:p>'
+            '</w:footnote>'
+            '</w:footnotes>'
+        )
+        self._part = XmlPart(
+            PackURI('/word/footnotes.xml'),
+            _FOOTNOTES_CT,
+            xml.encode('utf-8'),
+            self.doc.part.package,
+        )
+        self.doc.part.relate_to(self._part, _FOOTNOTES_REL)
+        self._root = self._part._element
+
+    # ── public ────────────────────────────────────────────
+
+    def add_footnote(self, paragraph, footnote_text: str) -> int:
+        """
+        Append a superscript footnote reference to *paragraph* and register
+        the footnote content.  Returns the footnote id used.
+        """
+        self._ensure_part()
+        fn_id = self._next_id
+        self._next_id += 1
+
+        # ── body reference (superscript number) ──────────
+        r = OxmlElement('w:r')
+        rPr = OxmlElement('w:rPr')
+        rStyle = OxmlElement('w:rStyle')
+        rStyle.set(qn('w:val'), 'FootnoteReference')
+        rPr.append(rStyle)
+        r.append(rPr)
+        ref = OxmlElement('w:footnoteReference')
+        ref.set(qn('w:id'), str(fn_id))
+        r.append(ref)
+        paragraph._p.append(r)
+
+        # ── footnote content (bottom of page) ────────────
+        fn = OxmlElement('w:footnote')
+        fn.set(qn('w:id'), str(fn_id))
+
+        p = OxmlElement('w:p')
+
+        r_num = OxmlElement('w:r')
+        rPr_n = OxmlElement('w:rPr')
+        rs_n  = OxmlElement('w:rStyle')
+        rs_n.set(qn('w:val'), 'FootnoteReference')
+        rPr_n.append(rs_n)
+        r_num.append(rPr_n)
+        r_num.append(OxmlElement('w:footnoteRef'))
+        p.append(r_num)
+
+        r_txt = OxmlElement('w:r')
+        t     = OxmlElement('w:t')
+        t.set('{http://www.w3.org/XML/1998/namespace}space', 'preserve')
+        t.text = ' ' + footnote_text.strip()
+        r_txt.append(t)
+        p.append(r_txt)
+
+        fn.append(p)
+        self._root.append(fn)
+        return fn_id
+
+
+# ─────────────────────────────────────────────────────────
+#  REFERENCES PAGE BUILDER
+# ─────────────────────────────────────────────────────────
+
+def build_references_page(doc, references_text: str):
+    """Render the ## REFERENCES block on its own page."""
+    add_page_break(doc)
+    hdr = doc.add_paragraph()
+    hdr.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r = hdr.add_run("REFERENCES")
+    r.font.size  = Pt(14)
+    r.font.bold  = True
+    r.font.color.rgb = DARK_BLUE
+    hdr.paragraph_format.space_after = Pt(4)
+    add_horizontal_rule(doc, color="1F497D", thickness="8")
+    doc.add_paragraph().paragraph_format.space_after = Pt(6)
+
+    # Strip leading ## REFERENCES heading if Claude included it
+    body = re.sub(r'(?im)^##\s*REFERENCES\s*$', '', references_text).strip()
+
+    # Each non-empty line is one reference entry
+    for line in body.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        p = doc.add_paragraph()
+        p.add_run(line)
+        p.paragraph_format.left_indent   = Inches(0.5)
+        p.paragraph_format.first_line_indent = Inches(-0.5)   # hanging indent
+        p.paragraph_format.space_after   = Pt(4)
+        p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
 
 
 # ─────────────────────────────────────────────────────────
@@ -939,7 +1102,22 @@ def _style_section_heading(paragraph, level):
         paragraph.paragraph_format.space_after  = Pt(4)
 
 
-def _add_inline_formatting(paragraph, text):
+def _add_inline_formatting(paragraph, text, fn_mgr=None):
+    """Add text to paragraph with bold/italic and optional footnote support."""
+    # First split on footnote markers if a manager is supplied
+    if fn_mgr and _FN_INLINE_RE.search(text):
+        segments = _FN_INLINE_RE.split(text)
+        # split with one capture group gives [text, fn, text, fn, ...]
+        for idx, seg in enumerate(segments):
+            if idx % 2 == 0:
+                # Regular text — apply bold/italic
+                _add_inline_formatting(paragraph, seg, fn_mgr=None)
+            else:
+                # Footnote text — insert real Word footnote
+                fn_mgr.add_footnote(paragraph, seg)
+        return
+
+    # Plain bold/italic processing
     parts = re.split(r"(\*\*[^*]+\*\*|\*[^*]+\*)", text)
     for part in parts:
         if part.startswith("**") and part.endswith("**"):
@@ -950,7 +1128,12 @@ def _add_inline_formatting(paragraph, text):
             paragraph.add_run(part)
 
 
-def parse_chapter_content(doc, content):
+def parse_chapter_content(doc, content, fn_mgr=None):
+    """
+    Render markdown-ish chapter content into the Word document.
+    fn_mgr — a FootnoteManager instance; if supplied, ((FN: text)) markers
+              become real Word footnotes with page-bottom hyperlinks.
+    """
     lines = content.split("\n")
     i = 0
     while i < len(lines):
@@ -975,7 +1158,7 @@ def parse_chapter_content(doc, content):
         elif re.match(r"^[\-\*] ", line):
             text = line[2:].strip()
             p    = doc.add_paragraph(style="List Bullet")
-            _add_inline_formatting(p, text)
+            _add_inline_formatting(p, text, fn_mgr)
             p.paragraph_format.left_indent  = Inches(0.3)
             p.paragraph_format.space_after  = Pt(3)
             i += 1
@@ -983,7 +1166,7 @@ def parse_chapter_content(doc, content):
         elif re.match(r"^\d+\. ", line):
             text = re.sub(r"^\d+\. ", "", line).strip()
             p    = doc.add_paragraph(style="List Number")
-            _add_inline_formatting(p, text)
+            _add_inline_formatting(p, text, fn_mgr)
             p.paragraph_format.left_indent  = Inches(0.3)
             p.paragraph_format.space_after  = Pt(3)
             i += 1
@@ -1002,7 +1185,7 @@ def parse_chapter_content(doc, content):
             text = " ".join(para_lines).strip()
             if text:
                 p = doc.add_paragraph()
-                _add_inline_formatting(p, text)
+                _add_inline_formatting(p, text, fn_mgr)
                 p.alignment                          = WD_ALIGN_PARAGRAPH.JUSTIFY
                 p.paragraph_format.space_after       = Pt(6)
                 p.paragraph_format.first_line_indent = Inches(0.3)
@@ -1286,10 +1469,10 @@ def build_abbreviations_page(doc):
         p.paragraph_format.space_after = Pt(3)
 
 
-def build_chapter_page(doc, chapter_num, chapter_content):
+def build_chapter_page(doc, chapter_num, chapter_content, fn_mgr=None):
     add_page_break(doc)
     add_chapter_header(doc, chapter_num)
-    parse_chapter_content(doc, chapter_content)
+    parse_chapter_content(doc, chapter_content, fn_mgr=fn_mgr)
 
 
 def build_document(topic: str, research_level: str,

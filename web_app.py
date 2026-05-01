@@ -742,7 +742,7 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         log(f"► Front matter ({fm_label})...", "accent")
         front = research_agent.generate_front_matter(
             client, topic, research_level, model=config.MODEL,
-            front_matter_sections=fm_include or None,
+            front_matter_sections=fm_include,   # pass [] when all deselected, not None (None = include all)
             custom_instructions=custom_instructions
         )
         log(f"  ✓ Front matter — {len(front):,} chars", "success")
@@ -760,6 +760,14 @@ def _run_agent(job_id: str, topic: str, research_level: str,
             log(f"  ✓ Chapter {num} complete — {len(chapters[num]):,} chars", "success")
             log("")
 
+        # ── Extract ## REFERENCES from chapter 5 (Issue 3) ──────────────
+        references_text = ""
+        if 5 in chapters:
+            ref_match = re.search(r'\n## REFERENCES', chapters[5], re.IGNORECASE)
+            if ref_match:
+                references_text = chapters[5][ref_match.start():]
+                chapters[5]     = chapters[5][:ref_match.start()]
+
         # Build document
         log("► Assembling Word document...", "accent")
         safe     = re.sub(r"[^\w\s-]", "", topic).strip().replace(" ", "_")[:50]
@@ -773,10 +781,19 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         research_agent.build_toc_page(doc, research_level,
                                       chapters_list=chapters_list,
                                       custom_toc=custom_toc,
-                                      front_matter_sections=fm_include or None)
+                                      front_matter_sections=fm_include)  # pass [] not None
         research_agent.build_abbreviations_page(doc)
+
+        # One FootnoteManager per document — shared across all chapters
+        fn_mgr = research_agent.FootnoteManager(doc)
+
         for num in chapters_list:
-            research_agent.build_chapter_page(doc, num, chapters[num])
+            research_agent.build_chapter_page(doc, num, chapters[num], fn_mgr=fn_mgr)
+
+        # Dedicated references page (always after chapters, never inside them)
+        if references_text.strip():
+            research_agent.build_references_page(doc, references_text)
+
         doc.save(out_path)
 
         job["file_path"] = out_path
