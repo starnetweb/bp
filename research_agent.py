@@ -127,11 +127,11 @@ LEVEL_PROFILES = {
             "Analysis should be solid but does not need to engage deeply with meta-theoretical debates. "
             "WORD COUNT IS CRITICAL: every subsection must be fully developed with multiple paragraphs. "
             "Do not summarise when you can explain. Do not list when you can discuss. "
-            "Each main subsection should be at least 150-200 words of substantive prose."
+            "Each main subsection should be at least 120-160 words of substantive prose."
         ),
         "depth":        "substantive but accessible",
-        "word_targets": {1: 1200, 2: 1700, 3: 1900, 4: 1300, 5: 1200},  # reduced 50%
-        "front_words":  300,
+        "word_targets": {1: 960, 2: 1360, 3: 1520, 4: 1040, 5: 960},   # reduced 50%+20%
+        "front_words":  240,
     },
     "postgraduate": {
         "label":        "Postgraduate",
@@ -144,11 +144,11 @@ LEVEL_PROFILES = {
             "Identify tensions, contradictions, and limitations in the literature and in your own approach. "
             "WORD COUNT IS CRITICAL: every subsection must be richly developed. "
             "Do not skim — excavate. Each argument deserves full development across multiple paragraphs. "
-            "Each main subsection should be at least 315-420 words of dense, substantive prose."
+            "Each main subsection should be at least 250-340 words of dense, substantive prose."
         ),
         "depth":        "critical, theoretically sophisticated, and reflexive",
-        "word_targets": {1: 2240, 2: 3220, 3: 3640, 4: 2660, 5: 2240},  # reduced 30%
-        "front_words":  595,
+        "word_targets": {1: 1792, 2: 2576, 3: 2912, 4: 2128, 5: 1792},  # reduced 30%+20%
+        "front_words":  476,
     },
 }
 
@@ -474,8 +474,8 @@ def _chapter_prompts(level_key: str) -> dict:
     targets = profile["word_targets"]
     is_pg   = (level_key == "postgraduate")
 
-    # Subsection word-count helper (UG reduced 50%, PG reduced 30% from original targets)
-    def w(ug, pg): return str(pg if is_pg else ug)
+    # Subsection word-count helper — applies additional 20% reduction to all targets
+    def w(ug, pg): return str(round(pg * 0.8) if is_pg else round(ug * 0.8))
 
     # Footnote format note appended to every chapter
     _FN_NOTE = (
@@ -491,6 +491,14 @@ def _chapter_prompts(level_key: str) -> dict:
         "References page at the end of the document.\n"
     )
 
+    # No-asterisks instruction for all chapters
+    _NO_AST = (
+        "\nFORMATTING RULE — NO ASTERISKS: Do NOT use asterisks (*) anywhere in your "
+        "output — not for bold, italic, bullet points, emphasis, or any other purpose. "
+        "Use plain prose. For lists, use numbered items (1. 2. 3.) or introduce them "
+        "as flowing sentences. Never place a * character anywhere in the text.\n"
+    )
+
     return {
         1: f"""You are writing CHAPTER ONE — INTRODUCTION for an academic research project.
 Topic: {{topic}}
@@ -502,6 +510,7 @@ Do not stop writing until you have fully developed every subsection. If in doubt
 
 {HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
+{_NO_AST}
 
 Write the following subsections, each introduced with a ### heading.
 Every subsection must be written in full, developed paragraphs — no bullet summaries, no placeholders.
@@ -587,6 +596,7 @@ The literature review is the longest and most intellectually demanding chapter. 
 
 {HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
+{_NO_AST}
 
 Write the following subsections in full. Every subsection demands extended, analytical prose.
 
@@ -657,6 +667,7 @@ The methodology chapter must be precise, justified, and replicable. Write with r
 
 {HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
+{_NO_AST}
 
 Write the following subsections in full.
 
@@ -751,6 +762,7 @@ Present rich, specific, interpreted findings. This chapter must demonstrate anal
 
 {HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
+{_NO_AST}
 
 Write the following subsections in full.
 
@@ -816,6 +828,7 @@ This chapter must deliver a satisfying intellectual conclusion — not a mechani
 
 {HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
+{_NO_AST}
 
 Write the following subsections in full.
 
@@ -1141,6 +1154,16 @@ def _style_section_heading(paragraph, level):
         paragraph.paragraph_format.space_after  = Pt(4)
 
 
+def _strip_stray_asterisks(text: str) -> str:
+    """Remove any remaining lone asterisks that aren't part of bold/italic markup."""
+    # Remove *** bold-italic markers (convert to plain text)
+    text = re.sub(r'\*\*\*(.+?)\*\*\*', r'\1', text)
+    # After bold/italic has been parsed, strip any leftover bare asterisks
+    # (ones not forming complete **…** or *…* pairs)
+    text = re.sub(r'\*+', '', text)
+    return text
+
+
 def _add_inline_formatting(paragraph, text, fn_mgr=None):
     """Add text to paragraph with bold/italic and optional footnote support."""
     # First split on footnote markers if a manager is supplied
@@ -1156,15 +1179,76 @@ def _add_inline_formatting(paragraph, text, fn_mgr=None):
                 fn_mgr.add_footnote(paragraph, seg)
         return
 
-    # Plain bold/italic processing
-    parts = re.split(r"(\*\*[^*]+\*\*|\*[^*]+\*)", text)
+    # Bold/italic processing — then strip any leftover asterisks
+    parts = re.split(r"(\*\*\*[^*]+\*\*\*|\*\*[^*]+\*\*|\*[^*]+\*)", text)
     for part in parts:
-        if part.startswith("**") and part.endswith("**"):
+        if part.startswith("***") and part.endswith("***"):
+            r = paragraph.add_run(part[3:-3])
+            r.bold = True
+            r.italic = True
+        elif part.startswith("**") and part.endswith("**"):
             paragraph.add_run(part[2:-2]).bold = True
         elif part.startswith("*") and part.endswith("*"):
             paragraph.add_run(part[1:-1]).italic = True
         else:
-            paragraph.add_run(part)
+            # Strip any residual bare asterisks from non-markup fragments
+            paragraph.add_run(part.replace("*", ""))
+
+
+def _render_table(doc, table_lines):
+    """
+    Render a list of markdown pipe-table lines as a Word Table.
+
+    Handles:
+      | Col A | Col B |        ← header row
+      |---|---|                ← separator row (skipped)
+      | data  | data  |        ← body rows
+
+    The first non-separator row becomes the header (bold, shaded).
+    """
+    # Parse each row into a list of cell strings
+    def parse_row(line):
+        line = line.strip().strip("|")
+        return [cell.strip() for cell in line.split("|")]
+
+    # Filter out pure separator rows (only dashes/colons/pipes/spaces)
+    rows = []
+    for line in table_lines:
+        if re.match(r'^[\s|:\-]+$', line):
+            continue           # skip separator rows
+        cells = parse_row(line)
+        if any(cells):
+            rows.append(cells)
+
+    if not rows:
+        return
+
+    # Normalise column count
+    col_count = max(len(r) for r in rows)
+    rows = [r + [''] * (col_count - len(r)) for r in rows]
+
+    tbl = doc.add_table(rows=len(rows), cols=col_count)
+    try:
+        tbl.style = 'Table Grid'
+    except Exception:
+        pass
+
+    for r_idx, row_data in enumerate(rows):
+        row = tbl.rows[r_idx]
+        for c_idx, cell_text in enumerate(row_data):
+            cell = row.cells[c_idx]
+            # Clear default empty paragraph
+            for p in cell.paragraphs:
+                p.clear()
+            p = cell.paragraphs[0] if cell.paragraphs else cell.add_paragraph()
+            run = p.add_run(cell_text)
+            if r_idx == 0:                 # header row — bold
+                run.bold = True
+            p.paragraph_format.space_after  = Pt(2)
+            p.paragraph_format.space_before = Pt(2)
+
+    # Space after table
+    doc.add_paragraph().paragraph_format.space_after = Pt(6)
 
 
 def parse_chapter_content(doc, content, fn_mgr=None):
@@ -1181,8 +1265,19 @@ def parse_chapter_content(doc, content, fn_mgr=None):
             i += 1
             continue
 
+        # ── Markdown pipe table ──────────────────────────────
+        if line.lstrip().startswith("|"):
+            table_lines = []
+            while i < len(lines):
+                l = lines[i].rstrip()
+                if not l.lstrip().startswith("|"):
+                    break
+                table_lines.append(l)
+                i += 1
+            _render_table(doc, table_lines)
+            continue
+
         if re.match(r"^#{1,2} ", line) and not line.startswith("###"):
-            level = 2 if line.startswith("## ") else 2
             text  = re.sub(r"^#{1,2} ", "", line).strip()
             p     = doc.add_heading(text, level=2)
             _style_section_heading(p, 2)
@@ -1217,7 +1312,8 @@ def parse_chapter_content(doc, content, fn_mgr=None):
                 if (not l.strip()
                         or re.match(r"^#{1,3} ", l)
                         or re.match(r"^[\-\*] ", l)
-                        or re.match(r"^\d+\. ", l)):
+                        or re.match(r"^\d+\. ", l)
+                        or l.lstrip().startswith("|")):
                     break
                 para_lines.append(l)
                 i += 1
