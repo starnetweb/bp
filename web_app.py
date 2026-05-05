@@ -37,7 +37,6 @@ OUTPUT_DIR = (
     else os.path.join(os.path.dirname(os.path.abspath(__file__)), "downloads")
 )
 os.makedirs(OUTPUT_DIR, exist_ok=True)
-print(f"[INIT] OUTPUT_DIR = {OUTPUT_DIR}")
 
 
 # ─────────────────────────────────────────────────────────
@@ -774,9 +773,7 @@ def download(job_id):
     if job_id not in JOBS:
         abort(404)
     path = JOBS[job_id].get("file_path")
-    print(f"[DEBUG] Download requested for {job_id}: path={path}, exists={os.path.exists(path) if path else False}")
     if not path or not os.path.exists(path):
-        print(f"[DEBUG] File not found at {path}")
         abort(404)
     return send_file(
         path,
