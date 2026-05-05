@@ -1,5 +1,5 @@
 # ── Sensitive config (never commit real credentials) ──────
-config.py
+# config.py  [TEMPORARILY COMMENTED FOR HOSTINGER DEPLOYMENT]
 
 # ── Generated documents ───────────────────────────────────
 downloads/
