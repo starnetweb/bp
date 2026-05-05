@@ -32,8 +32,8 @@ app.secret_key = os.urandom(24)
 
 JOBS: dict[str, dict] = {}
 OUTPUT_DIR = (
-    "/tmp/research_downloads"
-    if os.name != "nt"
+    "/app/downloads"
+    if os.path.exists("/app")
     else os.path.join(os.path.dirname(os.path.abspath(__file__)), "downloads")
 )
 os.makedirs(OUTPUT_DIR, exist_ok=True)
