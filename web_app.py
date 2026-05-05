@@ -770,32 +770,15 @@ def job_status(job_id):
 
 @app.route("/download/<job_id>")
 def download(job_id):
-    # Try to get file info from in-memory JOBS dict
-    if job_id in JOBS:
-        path = JOBS[job_id].get("file_path")
-        filename = JOBS[job_id].get("filename")
-    else:
-        # If job not in memory, search downloads directory
-        # Look for files matching pattern: {job_id}_*.docx
-        path = None
-        filename = None
-        if os.path.exists(OUTPUT_DIR):
-            for file in os.listdir(OUTPUT_DIR):
-                if file.startswith(job_id) and file.endswith(".docx"):
-                    path = os.path.join(OUTPUT_DIR, file)
-                    filename = file
-                    break
-
-        if not path:
-            abort(404)
-
+    if job_id not in JOBS:
+        abort(404)
+    path = JOBS[job_id].get("file_path")
     if not path or not os.path.exists(path):
         abort(404)
-
     return send_file(
         path,
         as_attachment=True,
-        download_name=filename,
+        download_name=JOBS[job_id]["filename"],
         mimetype=(
             "application/vnd.openxmlformats-officedocument"
             ".wordprocessingml.document"
