@@ -733,39 +733,45 @@ def stream(job_id):
 @app.route("/api/job-status/<job_id>")
 def job_status(job_id):
     """Polling endpoint for job status (fallback if SSE fails)."""
-    import json
-    if job_id not in JOBS:
-        abort(404)
+    try:
+        import json
+        if job_id not in JOBS:
+            return jsonify({"status": "error", "error": "Job not found"}), 404
 
-    job = JOBS[job_id]
-    logs = []
+        job = JOBS[job_id]
+        logs = []
 
-    # Drain all logs from queue without blocking
-    while not job["log_queue"].empty():
+        # Drain all logs from queue without blocking
         try:
-            item = job["log_queue"].get_nowait()
-            if item["type"] == "log":
-                logs.append({"msg": item["msg"], "tag": item["tag"]})
-            elif item["type"] == "done":
-                return jsonify({
-                    "status": "done",
-                    "filename": item["filename"],
-                    "emailed": item["emailed"],
-                    "logs": logs
-                })
-            elif item["type"] == "error":
-                return jsonify({
-                    "status": "error",
-                    "error": item["msg"],
-                    "logs": logs
-                })
+            while not job["log_queue"].empty():
+                try:
+                    item = job["log_queue"].get_nowait()
+                    if item["type"] == "log":
+                        logs.append({"msg": item["msg"], "tag": item["tag"]})
+                    elif item["type"] == "done":
+                        return jsonify({
+                            "status": "done",
+                            "filename": item["filename"],
+                            "emailed": item["emailed"],
+                            "logs": logs
+                        })
+                    elif item["type"] == "error":
+                        return jsonify({
+                            "status": "error",
+                            "error": item["msg"],
+                            "logs": logs
+                        })
+                except:
+                    break
         except:
-            break
+            pass
 
-    return jsonify({
-        "status": "generating",
-        "logs": logs
-    })
+        return jsonify({
+            "status": "generating",
+            "logs": logs
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "error": str(e)}), 500
 
 
 @app.route("/debug/jobs")
