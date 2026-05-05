@@ -871,6 +871,7 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         safe     = re.sub(r"[^\w\s-]", "", topic).strip().replace(" ", "_")[:50]
         filename = f"Research_{safe}.docx"
         out_path = os.path.join(OUTPUT_DIR, f"{job_id}_{filename}")
+        log(f"  Saving to: {out_path}", "info")
 
         doc = research_agent.Document()
         research_agent.set_document_defaults(doc)
