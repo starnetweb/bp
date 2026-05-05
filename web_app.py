@@ -768,6 +768,20 @@ def job_status(job_id):
     })
 
 
+@app.route("/debug/jobs")
+def debug_jobs():
+    """Debug endpoint: show all jobs in memory"""
+    jobs_info = {}
+    for jid, job in JOBS.items():
+        jobs_info[jid] = {
+            "status": job.get("status"),
+            "filename": job.get("filename"),
+            "file_path": job.get("file_path"),
+            "exists": os.path.exists(job.get("file_path", "")) if job.get("file_path") else False
+        }
+    return jsonify(jobs_info)
+
+
 @app.route("/download/<job_id>")
 def download(job_id):
     if job_id not in JOBS:
