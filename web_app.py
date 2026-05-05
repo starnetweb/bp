@@ -776,14 +776,18 @@ def download(job_id):
         filename = JOBS[job_id].get("filename")
     else:
         # If job not in memory, search downloads directory
-        # Look for files matching pattern: {job_id}_Research_*.docx
-        import glob
-        pattern = os.path.join(OUTPUT_DIR, f"{job_id}_Research_*.docx")
-        matches = glob.glob(pattern)
-        if not matches:
+        # Look for files matching pattern: {job_id}_*.docx
+        path = None
+        filename = None
+        if os.path.exists(OUTPUT_DIR):
+            for file in os.listdir(OUTPUT_DIR):
+                if file.startswith(job_id) and file.endswith(".docx"):
+                    path = os.path.join(OUTPUT_DIR, file)
+                    filename = file
+                    break
+
+        if not path:
             abort(404)
-        path = matches[0]
-        filename = os.path.basename(path)
 
     if not path or not os.path.exists(path):
         abort(404)
