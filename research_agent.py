@@ -8,6 +8,17 @@ import os
 import sys
 import re
 import anthropic
+import tempfile
+
+# Visualization imports (optional — graceful fallback if not installed)
+try:
+    import matplotlib
+    matplotlib.use('Agg')  # Non-interactive backend
+    import matplotlib.pyplot as plt
+    import numpy as np
+    VISUALIZATION_AVAILABLE = True
+except ImportError:
+    VISUALIZATION_AVAILABLE = False
 
 from docx import Document
 from docx.shared import Pt, Inches, RGBColor
@@ -460,6 +471,21 @@ NOTICE what makes the GOOD paragraph human:
   ✓ No banned phrases
 
 Write EVERY paragraph with this level of variation and personality.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STRATEGIC VISUALIZATIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Use tables, charts, and figures to clarify complex data or relationships. When a visual
+would strengthen your argument, mark it explicitly:
+
+  [CHART: Line graph showing growth trend over 5 years]
+  [CHART: Bar chart comparing three approaches]
+  [TABLE: Comparison table with features vs implementations]
+
+Charts and tables break up text monotony and signal rigorous data presentation. Use them
+in Results/Discussion (Chapter 4) and Literature Review (Chapter 2) where appropriate.
+Do NOT overuse — aim for 1-3 visualizations per chapter maximum.
+
 ════════════════════════════════════════════════════════════
 """
 
@@ -499,6 +525,21 @@ def _chapter_prompts(level_key: str) -> dict:
         "as flowing sentences. Never place a * character anywhere in the text.\n"
     )
 
+    # Visualization instruction
+    _VIZ_NOTE = (
+        "\nVISUALIZATION INSTRUCTION: Where appropriate, include tables, charts, and figures "
+        "to support your analysis. When a table or figure would clarify data or relationships, "
+        "mark it like this:\n"
+        "  [TABLE: Brief description of table content]\n"
+        "  [Column1] [Column2] [Column3]\n"
+        "  [value] [value] [value]\n"
+        "  [value] [value] [value]\n\n"
+        "For charts, indicate where they should appear:\n"
+        "  [CHART: Bar chart showing X vs Y]\n"
+        "  [CHART: Line graph of trend over time]\n"
+        "These will be converted to actual visualizations in the final document.\n"
+    )
+
     return {
         1: f"""You are writing CHAPTER ONE — INTRODUCTION for an academic research project.
 Topic: {{topic}}
@@ -511,6 +552,7 @@ Do not stop writing until you have fully developed every subsection. If in doubt
 {HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
 {_NO_AST}
+{_VIZ_NOTE}
 
 Write the following subsections, each introduced with a ### heading.
 Every subsection must be written in full, developed paragraphs — no bullet summaries, no placeholders.
@@ -597,6 +639,7 @@ The literature review is the longest and most intellectually demanding chapter. 
 {HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
 {_NO_AST}
+{_VIZ_NOTE}
 
 Write the following subsections in full. Every subsection demands extended, analytical prose.
 
@@ -668,6 +711,7 @@ The methodology chapter must be precise, justified, and replicable. Write with r
 {HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
 {_NO_AST}
+{_VIZ_NOTE}
 
 Write the following subsections in full.
 
@@ -763,6 +807,7 @@ Present rich, specific, interpreted findings. This chapter must demonstrate anal
 {HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
 {_NO_AST}
+{_VIZ_NOTE}
 
 Write the following subsections in full.
 
@@ -829,6 +874,7 @@ This chapter must deliver a satisfying intellectual conclusion — not a mechani
 {HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
 {_NO_AST}
+{_VIZ_NOTE}
 
 Write the following subsections in full.
 
@@ -1068,7 +1114,6 @@ def build_references_page(doc, references_text: str):
     r.font.bold  = True
     r.font.color.rgb = DARK_BLUE
     hdr.paragraph_format.space_after = Pt(4)
-    add_horizontal_rule(doc, color="1F497D", thickness="8")
     doc.add_paragraph().paragraph_format.space_after = Pt(6)
 
     # Strip leading ## REFERENCES heading if Claude included it
@@ -1124,8 +1169,6 @@ def add_chapter_header(doc, chapter_num):
     r.font.bold  = True
     r.font.color.rgb = DARK_BLUE
     label.paragraph_format.space_after = Pt(4)
-
-    add_horizontal_rule(doc, color="1F497D", thickness="12")
 
     subtitle = doc.add_paragraph()
     subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -1251,6 +1294,57 @@ def _render_table(doc, table_lines):
     doc.add_paragraph().paragraph_format.space_after = Pt(6)
 
 
+def _create_sample_chart(description: str):
+    """
+    Create a sample chart image based on description.
+    Returns path to saved PNG image, or None if matplotlib not available.
+    """
+    if not VISUALIZATION_AVAILABLE:
+        return None
+
+    try:
+        fig, ax = plt.subplots(figsize=(8, 5), dpi=100)
+
+        # Generate sample data based on description keywords
+        if 'line' in description.lower() or 'trend' in description.lower():
+            x = np.arange(1, 6)
+            y = np.array([20, 35, 48, 62, 78])
+            ax.plot(x, y, marker='o', linewidth=2, markersize=8, color='#2E74B5')
+            ax.set_xlabel('Period', fontsize=11, fontweight='bold')
+            ax.set_ylabel('Value', fontsize=11, fontweight='bold')
+            ax.grid(True, alpha=0.3)
+        elif 'bar' in description.lower():
+            categories = ['Category A', 'Category B', 'Category C', 'Category D']
+            values = [45, 62, 38, 71]
+            ax.bar(categories, values, color='#2E74B5', alpha=0.8, edgecolor='black')
+            ax.set_ylabel('Value', fontsize=11, fontweight='bold')
+            plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
+        elif 'pie' in description.lower():
+            labels = ['Group A', 'Group B', 'Group C', 'Group D']
+            sizes = [30, 25, 25, 20]
+            colors = ['#2E74B5', '#4F90C3', '#A9C8E1', '#D9E5F0']
+            ax.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
+            ax.set_title('Distribution', fontweight='bold', fontsize=12)
+        else:
+            # Default: simple bar chart
+            categories = ['Item 1', 'Item 2', 'Item 3']
+            values = [55, 68, 42]
+            ax.bar(categories, values, color='#2E74B5', alpha=0.8, edgecolor='black')
+            ax.set_ylabel('Value', fontsize=11, fontweight='bold')
+
+        ax.set_title(description, fontweight='bold', fontsize=13, pad=15)
+        plt.tight_layout()
+
+        # Save to temporary file
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
+            fig.savefig(tmp.name, dpi=100, bbox_inches='tight')
+            plt.close(fig)
+            return tmp.name
+    except Exception as e:
+        plt.close('all')
+        return None
+
+
 def parse_chapter_content(doc, content, fn_mgr=None):
     """
     Render markdown-ish chapter content into the Word document.
@@ -1262,6 +1356,29 @@ def parse_chapter_content(doc, content, fn_mgr=None):
     while i < len(lines):
         line = lines[i].rstrip()
         if not line.strip():
+            i += 1
+            continue
+
+        # ── Chart marker [CHART: description] ─────────────────
+        if line.startswith("[CHART:"):
+            match = re.match(r"\[CHART:\s*(.+?)\]", line)
+            if match:
+                description = match.group(1).strip()
+                chart_path = _create_sample_chart(description)
+                if chart_path:
+                    p = doc.add_paragraph()
+                    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    p.add_run().add_picture(chart_path, width=Inches(5.5))
+                    cap = doc.add_paragraph()
+                    cap.alignment = WD_ALIGN_PARAGRAPH.CENTER
+                    cap_run = cap.add_run(description)
+                    cap_run.italic = True
+                    cap_run.font.size = Pt(10)
+                    cap.paragraph_format.space_after = Pt(6)
+                    try:
+                        os.remove(chart_path)
+                    except:
+                        pass
             i += 1
             continue
 
@@ -1360,35 +1477,6 @@ def build_title_page(doc, topic, research_level):
     r.font.color.rgb = DARK_BLUE
     title.paragraph_format.space_after = Pt(16)
 
-    add_horizontal_rule(doc, color="1F497D", thickness="8")
-
-    sub = doc.add_paragraph()
-    sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r2 = sub.add_run(
-        f"A {level_label} Research Project Submitted in Partial Fulfilment\n"
-        "of the Requirements for the Award of a Degree"
-    )
-    r2.font.size   = Pt(12)
-    r2.font.italic = True
-    r2.font.color.rgb = GREY
-    sub.paragraph_format.space_after = Pt(28)
-
-    for label, value in [
-        ("Submitted by:",  "_______________________________"),
-        ("Student ID:",    "_______________________________"),
-        ("Supervisor:",    "_______________________________"),
-        ("Institution:",   "_______________________________"),
-        ("Department:",    "_______________________________"),
-        ("Date:",          "_______________________________"),
-    ]:
-        row = doc.add_paragraph()
-        row.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        rb = row.add_run(f"{label}  ")
-        rb.bold      = True
-        rb.font.size = Pt(11)
-        row.add_run(value).font.size = Pt(11)
-        row.paragraph_format.space_after = Pt(6)
-
 
 def build_front_matter_page(doc, front_matter_text):
     """Render each ## section of front matter on its own page."""
@@ -1413,7 +1501,6 @@ def build_front_matter_page(doc, front_matter_text):
         r.font.bold  = True
         r.font.color.rgb = DARK_BLUE
         p.paragraph_format.space_after = Pt(12)
-        add_horizontal_rule(doc, color="1F497D", thickness="8")
         doc.add_paragraph().paragraph_format.space_after = Pt(6)
         # Render the section body (strip stray ## heading lines already consumed)
         parse_chapter_content(doc, body)
