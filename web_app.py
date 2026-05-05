@@ -920,9 +920,9 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         # One FootnoteManager per document — shared across all chapters
         fn_mgr = research_agent.FootnoteManager(doc)
 
-        # [TEMPORARY] Skipping chapter pages to save tokens during download troubleshooting
-        # for num in chapters_list:
-        #     research_agent.build_chapter_page(doc, num, chapters[num], fn_mgr=fn_mgr)
+        # Add chapters to document
+        for num in chapters_list:
+            research_agent.build_chapter_page(doc, num, chapters[num], fn_mgr=fn_mgr)
 
         # Dedicated references page (always after chapters, never inside them)
         if references_text.strip():
