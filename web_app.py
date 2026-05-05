@@ -790,20 +790,34 @@ def debug_jobs():
 
 @app.route("/download/<job_id>")
 def download(job_id):
-    if job_id not in JOBS:
-        abort(404)
-    path = JOBS[job_id].get("file_path")
-    if not path or not os.path.exists(path):
-        abort(404)
-    return send_file(
-        path,
-        as_attachment=True,
-        download_name=JOBS[job_id]["filename"],
-        mimetype=(
-            "application/vnd.openxmlformats-officedocument"
-            ".wordprocessingml.document"
-        )
-    )
+    # First try in-memory JOBS
+    if job_id in JOBS and JOBS[job_id].get("file_path"):
+        path = JOBS[job_id]["file_path"]
+        filename = JOBS[job_id]["filename"]
+        if os.path.exists(path):
+            return send_file(
+                path,
+                as_attachment=True,
+                download_name=filename,
+                mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            )
+
+    # Fallback: search filesystem for file matching job_id
+    try:
+        for file in os.listdir(OUTPUT_DIR):
+            if file.startswith(job_id) and file.endswith(".docx"):
+                path = os.path.join(OUTPUT_DIR, file)
+                if os.path.exists(path):
+                    return send_file(
+                        path,
+                        as_attachment=True,
+                        download_name=file.split("_", 1)[1] if "_" in file else file,
+                        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    )
+    except:
+        pass
+
+    abort(404)
 
 
 # ─────────────────────────────────────────────────────────
