@@ -514,6 +514,12 @@ async function start(){
   jobId=data.job_id;
 
   sse=new EventSource('/stream/'+jobId);
+  let sseConnected=false;
+  let pollTimeout;
+
+  // Try SSE first
+  sse.addEventListener('open',()=>sseConnected=true);
+
   sse.addEventListener('log',e=>{
     const d=JSON.parse(e.data);
     const cls={success:'ls',error:'le',accent:'la',header:'lh'}[d.tag]||'';
@@ -521,16 +527,62 @@ async function start(){
   });
   sse.addEventListener('done',e=>{
     sse.close();
+    clearTimeout(pollTimeout);
     const d=JSON.parse(e.data);
     showDownload(d.filename,d.job_id,d.emailed);
   });
   sse.addEventListener('error_event',e=>{
     sse.close();
+    clearTimeout(pollTimeout);
     log('\n❌ '+JSON.parse(e.data).msg,'le');
     document.getElementById('gen-btn').disabled=false;
     document.getElementById('gen-btn').textContent='⚡ Generate Research Document';
   });
-  sse.onerror=()=>sse.close();
+
+  // Fallback: if SSE fails after 3 seconds, poll status instead
+  sse.onerror=()=>{
+    if(!sseConnected){
+      sse.close();
+      log('Connecting via polling...','la');
+      pollJobStatus(jobId);
+    }
+  };
+
+  setTimeout(()=>{
+    if(!sseConnected){
+      sse.close();
+      log('Using polling for real-time updates...','la');
+      pollJobStatus(jobId);
+    }
+  },3000);
+}
+
+function pollJobStatus(jobId){
+  async function checkStatus(){
+    try{
+      const res=await fetch('/api/job-status/'+jobId);
+      const job=await res.json();
+      if(job.logs){
+        job.logs.forEach(l=>{
+          const cls={success:'ls',error:'le',accent:'la',header:'lh'}[l.tag]||'';
+          log(l.msg,cls);
+        });
+      }
+      if(job.status==='done'){
+        showDownload(job.filename,jobId,job.emailed);
+      }else if(job.status==='error'){
+        log('\n❌ '+job.error,'le');
+        document.getElementById('gen-btn').disabled=false;
+        document.getElementById('gen-btn').textContent='⚡ Generate Research Document';
+      }else{
+        setTimeout(checkStatus,2000);
+      }
+    }catch(e){
+      log('Status check failed: '+e.message,'le');
+      setTimeout(checkStatus,5000);
+    }
+  }
+  checkStatus();
 }
 
 function showDownload(filename,jid,emailed){
@@ -666,8 +718,54 @@ def stream(job_id):
                 break
 
     return Response(generate_events(), mimetype="text/event-stream",
-                    headers={"Cache-Control": "no-cache",
-                             "X-Accel-Buffering": "no"})
+                    headers={
+                        "Cache-Control": "no-cache, no-store, must-revalidate",
+                        "Pragma": "no-cache",
+                        "Expires": "0",
+                        "X-Accel-Buffering": "no",
+                        "Connection": "keep-alive",
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Methods": "GET, OPTIONS",
+                        "Access-Control-Allow-Headers": "Content-Type"
+                    })
+
+
+@app.route("/api/job-status/<job_id>")
+def job_status(job_id):
+    """Polling endpoint for job status (fallback if SSE fails)."""
+    import json
+    if job_id not in JOBS:
+        abort(404)
+
+    job = JOBS[job_id]
+    logs = []
+
+    # Drain all logs from queue without blocking
+    while not job["log_queue"].empty():
+        try:
+            item = job["log_queue"].get_nowait()
+            if item["type"] == "log":
+                logs.append({"msg": item["msg"], "tag": item["tag"]})
+            elif item["type"] == "done":
+                return jsonify({
+                    "status": "done",
+                    "filename": item["filename"],
+                    "emailed": item["emailed"],
+                    "logs": logs
+                })
+            elif item["type"] == "error":
+                return jsonify({
+                    "status": "error",
+                    "error": item["msg"],
+                    "logs": logs
+                })
+        except:
+            break
+
+    return jsonify({
+        "status": "generating",
+        "logs": logs
+    })
 
 
 @app.route("/download/<job_id>")
