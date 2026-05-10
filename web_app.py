@@ -284,15 +284,15 @@ input:focus{border-color:var(--accent)}
       <div class="form-group">
         <label>Front Matter Sections</label>
         <div class="fm-checks">
-          <div class="fm-check active" data-fm="declaration" onclick="toggleFm(this)">
+          <div class="fm-check" data-fm="declaration" onclick="toggleFm(this)">
             <span class="fm-check-icon">📜</span>
             <span class="fm-check-label">Declaration</span>
           </div>
-          <div class="fm-check active" data-fm="dedication" onclick="toggleFm(this)">
+          <div class="fm-check" data-fm="dedication" onclick="toggleFm(this)">
             <span class="fm-check-icon">❤️</span>
             <span class="fm-check-label">Dedication</span>
           </div>
-          <div class="fm-check active" data-fm="acknowledgements" onclick="toggleFm(this)">
+          <div class="fm-check" data-fm="acknowledgements" onclick="toggleFm(this)">
             <span class="fm-check-icon">🙏</span>
             <span class="fm-check-label">Acknowledgements</span>
           </div>
@@ -610,7 +610,14 @@ function reset(){
   document.getElementById('ci-wrap').style.display='none';
   selectedLevel='undergraduate';
   document.querySelectorAll('.level-card').forEach((c,i)=>c.classList.toggle('selected',i===0));
-  document.querySelectorAll('.fm-check').forEach(c=>c.classList.add('active'));
+  // Declaration, Dedication, Acknowledgements default to unselected
+  document.querySelectorAll('.fm-check').forEach(c=>{
+    if(['declaration','dedication','acknowledgements'].includes(c.dataset.fm)){
+      c.classList.remove('active');
+    }else{
+      c.classList.add('active');
+    }
+  });
   setChapters('all');
   setStep(1);
 }
@@ -920,9 +927,15 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         # One FootnoteManager per document — shared across all chapters
         fn_mgr = research_agent.FootnoteManager(doc)
 
+        # Extract custom chapter titles from custom TOC if provided
+        custom_chapter_titles = {}
+        if custom_toc and custom_toc.strip():
+            custom_chapter_titles = research_agent.extract_chapter_titles_from_custom_toc(custom_toc)
+
         # Add chapters to document
         for num in chapters_list:
-            research_agent.build_chapter_page(doc, num, chapters[num], fn_mgr=fn_mgr)
+            custom_subtitle = custom_chapter_titles.get(num)
+            research_agent.build_chapter_page(doc, num, chapters[num], fn_mgr=fn_mgr, custom_subtitle=custom_subtitle)
 
         # Dedicated references page (always after chapters, never inside them)
         if references_text.strip():
