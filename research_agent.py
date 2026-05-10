@@ -138,11 +138,11 @@ LEVEL_PROFILES = {
             "Analysis should be solid but does not need to engage deeply with meta-theoretical debates. "
             "WORD COUNT IS CRITICAL: every subsection must be fully developed with multiple paragraphs. "
             "Do not summarise when you can explain. Do not list when you can discuss. "
-            "Each main subsection should be at least 120-160 words of substantive prose."
+            "Each main subsection should be at least 110-150 words of substantive prose."
         ),
         "depth":        "substantive but accessible",
-        "word_targets": {1: 960, 2: 1360, 3: 1520, 4: 1040, 5: 960},   # reduced 50%+20%
-        "front_words":  240,
+        "word_targets": {1: 768, 2: 1088, 3: 1216, 4: 832, 5: 768},   # -20% from base
+        "front_words":  192,
     },
     "postgraduate": {
         "label":        "Postgraduate",
@@ -155,11 +155,11 @@ LEVEL_PROFILES = {
             "Identify tensions, contradictions, and limitations in the literature and in your own approach. "
             "WORD COUNT IS CRITICAL: every subsection must be richly developed. "
             "Do not skim — excavate. Each argument deserves full development across multiple paragraphs. "
-            "Each main subsection should be at least 250-340 words of dense, substantive prose."
+            "Each main subsection should be at least 200-275 words of dense, substantive prose."
         ),
         "depth":        "critical, theoretically sophisticated, and reflexive",
-        "word_targets": {1: 1792, 2: 2576, 3: 2912, 4: 2128, 5: 1792},  # reduced 30%+20%
-        "front_words":  476,
+        "word_targets": {1: 1434, 2: 2061, 3: 2330, 4: 1702, 5: 1434},  # -20% from base
+        "front_words":  381,
     },
 }
 
@@ -528,16 +528,16 @@ def _chapter_prompts(level_key: str) -> dict:
     # Visualization instruction
     _VIZ_NOTE = (
         "\nVISUALIZATION INSTRUCTION: Where appropriate, include tables, charts, and figures "
-        "to support your analysis. When a table or figure would clarify data or relationships, "
-        "mark it like this:\n"
-        "  [TABLE: Brief description of table content]\n"
-        "  [Column1] [Column2] [Column3]\n"
-        "  [value] [value] [value]\n"
-        "  [value] [value] [value]\n\n"
+        "to support your analysis. When a table would clarify data or relationships, format it like this:\n"
+        "  [TABLE: Descriptive title]\n"
+        "  HeaderCol1 | HeaderCol2 | HeaderCol3\n"
+        "  DataValue1 | DataValue2 | DataValue3\n"
+        "  DataValue1 | DataValue2 | DataValue3\n\n"
+        "Use ' | ' (space-pipe-space) to separate columns. Put each logical row on one line.\n"
         "For charts, indicate where they should appear:\n"
         "  [CHART: Bar chart showing X vs Y]\n"
         "  [CHART: Line graph of trend over time]\n"
-        "These will be converted to actual visualizations in the final document.\n"
+        "Tables and charts will be converted to professional visualizations in the final document.\n"
     )
 
     return {
@@ -1159,7 +1159,7 @@ def add_horizontal_rule(doc, color="2E74B5", thickness="8"):
     p.paragraph_format.space_after  = Pt(4)
 
 
-def add_chapter_header(doc, chapter_num):
+def add_chapter_header(doc, chapter_num, custom_subtitle=None):
     doc.add_paragraph().paragraph_format.space_after = Pt(20)
 
     label = doc.add_paragraph()
@@ -1172,7 +1172,9 @@ def add_chapter_header(doc, chapter_num):
 
     subtitle = doc.add_paragraph()
     subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r2 = subtitle.add_run(CHAPTER_SUBTITLES[chapter_num])
+    # Use custom subtitle if provided, otherwise use default
+    subtitle_text = custom_subtitle if custom_subtitle else CHAPTER_SUBTITLES[chapter_num]
+    r2 = subtitle.add_run(subtitle_text)
     r2.font.size  = Pt(16)
     r2.font.bold  = True
     r2.font.color.rgb = MID_BLUE
@@ -1249,6 +1251,11 @@ def _render_table(doc, table_lines):
 
     The first non-separator row becomes the header (bold, shaded).
     """
+    from docx.shared import Inches
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.oxml.ns import qn
+    from docx.oxml import OxmlElement
+
     # Parse each row into a list of cell strings
     def parse_row(line):
         line = line.strip().strip("|")
@@ -1271,24 +1278,45 @@ def _render_table(doc, table_lines):
     rows = [r + [''] * (col_count - len(r)) for r in rows]
 
     tbl = doc.add_table(rows=len(rows), cols=col_count)
+    tbl.autofit = False
     try:
         tbl.style = 'Table Grid'
     except Exception:
         pass
 
+    # Set column widths
+    for col_idx in range(col_count):
+        width = Inches(1.2 * col_count / col_count)
+        for row in tbl.rows:
+            row.cells[col_idx].width = width
+
     for r_idx, row_data in enumerate(rows):
         row = tbl.rows[r_idx]
+        if r_idx == 0:
+            row.height = Inches(0.3)
+
         for c_idx, cell_text in enumerate(row_data):
             cell = row.cells[c_idx]
+            cell.vertical_alignment = 1
+
             # Clear default empty paragraph
             for p in cell.paragraphs:
                 p.clear()
             p = cell.paragraphs[0] if cell.paragraphs else cell.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER if r_idx == 0 else WD_ALIGN_PARAGRAPH.LEFT
+
             run = p.add_run(cell_text)
-            if r_idx == 0:                 # header row — bold
+            if r_idx == 0:
                 run.bold = True
-            p.paragraph_format.space_after  = Pt(2)
-            p.paragraph_format.space_before = Pt(2)
+                run.font.size = Pt(11)
+                shading_elm = OxmlElement('w:shd')
+                shading_elm.set(qn('w:fill'), 'D3D3D3')
+                cell._element.get_or_add_tcPr().append(shading_elm)
+
+            p.paragraph_format.space_after  = Pt(4)
+            p.paragraph_format.space_before = Pt(4)
+            p.paragraph_format.left_indent = Pt(6)
+            p.paragraph_format.right_indent = Pt(6)
 
     # Space after table
     doc.add_paragraph().paragraph_format.space_after = Pt(6)
@@ -1359,6 +1387,97 @@ def parse_chapter_content(doc, content, fn_mgr=None):
             i += 1
             continue
 
+        # ── Table marker [TABLE: description] ────────────────
+        if line.startswith("[TABLE:"):
+            # Match [TABLE: ...] with optional content after closing bracket
+            match = re.match(r"\[TABLE:\s*(.+?)\](.*)", line)
+            if match:
+                table_title = match.group(1).strip()
+                table_content = match.group(2).strip()
+
+                # If no content on same line, collect from next lines
+                collected_lines = []
+                if not table_content:
+                    i += 1
+                    while i < len(lines):
+                        next_line = lines[i].rstrip()
+                        if not next_line.strip():
+                            i += 1
+                            continue
+                        if re.match(r"^#{1,3} ", next_line) or next_line.startswith("["):
+                            break
+                        if next_line.count("|") >= 3:  # Table-like line
+                            collected_lines.append(next_line)
+                            i += 1
+                        else:
+                            break
+
+                # Parse table content if we have any
+                table_lines = []
+
+                if collected_lines:
+                    # Process collected lines (each line is a row with | separators)
+                    for line in collected_lines:
+                        cells = [cell.strip() for cell in line.split("|")]
+                        cells = [c for c in cells if c]  # Remove empty cells
+                        if cells:
+                            pipe_line = "| " + " | ".join(cells) + " |"
+                            table_lines.append(pipe_line)
+
+                    # Add separator after first row (header)
+                    if len(table_lines) > 1 and collected_lines:
+                        col_count = len([c for c in collected_lines[0].split("|") if c.strip()])
+                        separator = "| " + " | ".join(["---"] * col_count) + " |"
+                        table_lines.insert(1, separator)
+
+                elif table_content and ' | ' in table_content:
+                    # Inline content (all on one line with | separators)
+                    all_cells = [cell.strip() for cell in table_content.split(' | ')]
+
+                    if all_cells and len(all_cells) >= 4:
+                        # For inline content, infer column count
+                        # Prefer common table sizes (4, 5, 6 columns)
+                        col_count = None
+                        for preferred_cols in [4, 5, 6, 3, 7]:
+                            if len(all_cells) % preferred_cols == 0:
+                                col_count = preferred_cols
+                                break
+
+                        # Fallback
+                        if col_count is None:
+                            for test_cols in range(2, min(10, len(all_cells) // 2 + 1)):
+                                if len(all_cells) % test_cols == 0:
+                                    col_count = test_cols
+                                    break
+
+                        if col_count is None:
+                            col_count = max(2, len(all_cells) // 3)
+
+                        # Group cells into rows by column count
+                        rows = []
+                        for idx in range(0, len(all_cells), col_count):
+                            row = all_cells[idx:idx + col_count]
+                            if len(row) == col_count:
+                                rows.append(row)
+
+                        # Convert to pipe-table format
+                        if rows:
+                            for row in rows:
+                                pipe_line = "| " + " | ".join(row) + " |"
+                                table_lines.append(pipe_line)
+
+                            # Add separator after header
+                            if len(table_lines) > 1:
+                                separator = "| " + " | ".join(["---"] * col_count) + " |"
+                                table_lines.insert(1, separator)
+
+                # Render the table if we have any lines
+                if table_lines:
+                    _render_table(doc, table_lines)
+
+            i += 1
+            continue
+
         # ── Chart marker [CHART: description] ─────────────────
         if line.startswith("[CHART:"):
             match = re.match(r"\[CHART:\s*(.+?)\]", line)
@@ -1423,6 +1542,58 @@ def parse_chapter_content(doc, content, fn_mgr=None):
             i += 1
 
         else:
+            # ── Check for inline table (line with many | separators) ──
+            if line.count("|") >= 4:
+                # This looks like a table embedded in a line
+                # Try to parse it as a table
+                cells = [cell.strip() for cell in line.split("|")]
+                cells = [c for c in cells if c]  # remove empty cells
+
+                if len(cells) >= 4:
+                    # Collect all consecutive table-like lines
+                    table_lines = []
+                    table_lines.append(line)
+                    i += 1
+
+                    # Collect more table rows
+                    while i < len(lines):
+                        next_line = lines[i].rstrip()
+                        if not next_line.strip() or next_line.count("|") < 4:
+                            break
+                        table_lines.append(next_line)
+                        i += 1
+
+                    # Parse collected table lines
+                    if table_lines:
+                        parsed_table = []
+                        col_count = None
+
+                        for tbl_line in table_lines:
+                            row_cells = [cell.strip() for cell in tbl_line.split("|")]
+                            row_cells = [c for c in row_cells if c]
+
+                            if row_cells:
+                                if col_count is None:
+                                    col_count = len(row_cells)
+
+                                # Pad or trim to match column count
+                                while len(row_cells) < col_count:
+                                    row_cells.append("")
+                                row_cells = row_cells[:col_count]
+
+                                pipe_line = "| " + " | ".join(row_cells) + " |"
+                                parsed_table.append(pipe_line)
+
+                        # Add separator after header if multiple rows
+                        if len(parsed_table) > 1 and col_count:
+                            separator = "| " + " | ".join(["---"] * col_count) + " |"
+                            parsed_table.insert(1, separator)
+
+                        if parsed_table:
+                            _render_table(doc, parsed_table)
+                    continue
+
+            # ── Regular paragraph ──
             para_lines = []
             while i < len(lines):
                 l = lines[i].rstrip()
@@ -1430,7 +1601,8 @@ def parse_chapter_content(doc, content, fn_mgr=None):
                         or re.match(r"^#{1,3} ", l)
                         or re.match(r"^[\-\*] ", l)
                         or re.match(r"^\d+\. ", l)
-                        or l.lstrip().startswith("|")):
+                        or l.lstrip().startswith("|")
+                        or l.count("|") >= 4):  # Skip inline tables
                     break
                 para_lines.append(l)
                 i += 1
@@ -1506,6 +1678,60 @@ def build_front_matter_page(doc, front_matter_text):
         parse_chapter_content(doc, body)
 
 
+def extract_chapter_titles_from_custom_toc(custom_toc: str) -> dict:
+    """
+    Parse custom TOC text and extract chapter titles for chapters 1-5.
+
+    Expected format (flexible):
+      CHAPTER ONE: INTRODUCTION
+        1.1 Background
+      CHAPTER THREE: SYSTEM DESIGN
+        3.1 Architecture
+      etc.
+
+    Returns dict: {1: "INTRODUCTION", 3: "SYSTEM DESIGN", ...}
+    """
+    chapter_titles = {}
+    if not custom_toc or not custom_toc.strip():
+        return chapter_titles
+
+    lines = custom_toc.strip().splitlines()
+    for line in lines:
+        line = line.strip()
+        # Match patterns like: "CHAPTER ONE: INTRODUCTION", "CHAPTER 3: SYSTEM DESIGN"
+        match = re.search(r'CHAPTER\s+(?:ONE|1)[:\s–-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        if match:
+            title = match.group(1).strip()
+            chapter_titles[1] = title.upper()
+            continue
+
+        match = re.search(r'CHAPTER\s+(?:TWO|2)[:\s–-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        if match:
+            title = match.group(1).strip()
+            chapter_titles[2] = title.upper()
+            continue
+
+        match = re.search(r'CHAPTER\s+(?:THREE|3)[:\s–-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        if match:
+            title = match.group(1).strip()
+            chapter_titles[3] = title.upper()
+            continue
+
+        match = re.search(r'CHAPTER\s+(?:FOUR|4)[:\s–-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        if match:
+            title = match.group(1).strip()
+            chapter_titles[4] = title.upper()
+            continue
+
+        match = re.search(r'CHAPTER\s+(?:FIVE|5)[:\s–-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        if match:
+            title = match.group(1).strip()
+            chapter_titles[5] = title.upper()
+            continue
+
+    return chapter_titles
+
+
 def build_toc_page(doc, research_level, chapters_list=None, custom_toc=None,
                    front_matter_sections=None):
     """
@@ -1564,6 +1790,7 @@ def build_toc_page(doc, research_level, chapters_list=None, custom_toc=None,
     entries += [
         ("Abstract",               True),
         ("Table of Contents",      True),
+        ("List of Tables",         True),
         ("List of Abbreviations",  True),
         ("", False),
     ]
@@ -1657,6 +1884,54 @@ def build_toc_page(doc, research_level, chapters_list=None, custom_toc=None,
         p.add_run("____").font.size = Pt(10)
 
 
+def build_list_of_tables_page(doc):
+    """Build a List of Tables page."""
+    add_page_break(doc)
+
+    hdr = doc.add_paragraph()
+    hdr.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r = hdr.add_run("LIST OF TABLES")
+    r.font.size  = Pt(14)
+    r.font.bold  = True
+    r.font.color.rgb = DARK_BLUE
+    hdr.paragraph_format.space_after = Pt(4)
+    add_horizontal_rule(doc, color="1F497D", thickness="8")
+    doc.add_paragraph().paragraph_format.space_after = Pt(4)
+
+    # Count tables in the document
+    table_count = len(doc.tables)
+
+    if table_count == 0:
+        # No tables found
+        p = doc.add_paragraph("No tables in this document.")
+        p.paragraph_format.space_after = Pt(6)
+        return
+
+    # Generate list of tables
+    for table_idx, table in enumerate(doc.tables, 1):
+        # Create table entry with number and description
+        # Try to extract a meaningful description from the first row
+        if table.rows:
+            first_row_text = " | ".join([cell.text[:15] for cell in table.rows[0].cells])
+            caption = f"Table {table_idx}: {first_row_text}..."
+        else:
+            caption = f"Table {table_idx}"
+
+        p = doc.add_paragraph()
+        p.paragraph_format.space_after = Pt(1)
+        p.paragraph_format.line_spacing = Pt(18)
+        p.paragraph_format.left_indent = Inches(0.3)
+
+        rn = p.add_run(caption)
+        rn.font.size = Pt(11)
+        rn.font.color.rgb = RGBColor(0x20, 0x20, 0x20)
+
+        # Add dots and page number placeholder
+        dots = max(2, 55 - len(caption))
+        p.add_run(" " + ("." * dots) + " ")
+        p.add_run("____").font.size = Pt(10)
+
+
 def build_abbreviations_page(doc):
     add_page_break(doc)
     hdr = doc.add_paragraph()
@@ -1691,9 +1966,9 @@ def build_abbreviations_page(doc):
         p.paragraph_format.space_after = Pt(3)
 
 
-def build_chapter_page(doc, chapter_num, chapter_content, fn_mgr=None):
+def build_chapter_page(doc, chapter_num, chapter_content, fn_mgr=None, custom_subtitle=None):
     add_page_break(doc)
-    add_chapter_header(doc, chapter_num)
+    add_chapter_header(doc, chapter_num, custom_subtitle=custom_subtitle)
     parse_chapter_content(doc, chapter_content, fn_mgr=fn_mgr)
 
 
@@ -1707,8 +1982,13 @@ def build_document(topic: str, research_level: str,
     build_front_matter_page(doc, front_matter)
     build_toc_page(doc, research_level)
     build_abbreviations_page(doc)
+
+    # Build all chapters (this creates the tables)
     for num in range(1, 6):
         build_chapter_page(doc, num, chapters[num])
+
+    # Build List of Tables after all chapters (so we can count all tables)
+    build_list_of_tables_page(doc)
 
     safe     = re.sub(r"[^\w\s-]", "", topic).strip().replace(" ", "_")[:50]
     filename = f"Research_{safe}.docx"
