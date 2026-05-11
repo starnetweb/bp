@@ -1502,52 +1502,134 @@ def _render_table(doc, table_lines):
 def _create_sample_chart(description: str):
     """
     Create a sample chart image based on description.
-    Returns path to saved PNG image, or None if matplotlib not available.
+    Returns path to saved PNG image.
+
+    Strategy:
+    1. Try matplotlib (best quality)
+    2. Fallback to PIL/Pillow (simple charts)
+    3. Fallback to text-based placeholder
     """
-    if not VISUALIZATION_AVAILABLE:
-        return None
 
+    # ─── TRY MATPLOTLIB FIRST ───────────────────────────────────
+    if VISUALIZATION_AVAILABLE:
+        try:
+            fig, ax = plt.subplots(figsize=(8, 5), dpi=100)
+
+            # Generate sample data based on description keywords
+            if 'line' in description.lower() or 'trend' in description.lower():
+                x = np.arange(1, 6)
+                y = np.array([20, 35, 48, 62, 78])
+                ax.plot(x, y, marker='o', linewidth=2, markersize=8, color='#2E74B5')
+                ax.set_xlabel('Period', fontsize=11, fontweight='bold')
+                ax.set_ylabel('Value', fontsize=11, fontweight='bold')
+                ax.grid(True, alpha=0.3)
+            elif 'bar' in description.lower():
+                categories = ['Category A', 'Category B', 'Category C', 'Category D']
+                values = [45, 62, 38, 71]
+                ax.bar(categories, values, color='#2E74B5', alpha=0.8, edgecolor='black')
+                ax.set_ylabel('Value', fontsize=11, fontweight='bold')
+                plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
+            elif 'pie' in description.lower():
+                labels = ['Group A', 'Group B', 'Group C', 'Group D']
+                sizes = [30, 25, 25, 20]
+                colors = ['#2E74B5', '#4F90C3', '#A9C8E1', '#D9E5F0']
+                ax.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
+                ax.set_title('Distribution', fontweight='bold', fontsize=12)
+            else:
+                # Default: simple bar chart
+                categories = ['Item 1', 'Item 2', 'Item 3']
+                values = [55, 68, 42]
+                ax.bar(categories, values, color='#2E74B5', alpha=0.8, edgecolor='black')
+                ax.set_ylabel('Value', fontsize=11, fontweight='bold')
+
+            ax.set_title(description, fontweight='bold', fontsize=13, pad=15)
+            plt.tight_layout()
+
+            # Save to temporary file
+            with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
+                fig.savefig(tmp.name, dpi=100, bbox_inches='tight')
+                plt.close(fig)
+                return tmp.name
+        except Exception as e:
+            plt.close('all')
+            pass  # Fall through to PIL fallback
+
+    # ─── FALLBACK: PIL/PILLOW ───────────────────────────────────
     try:
-        fig, ax = plt.subplots(figsize=(8, 5), dpi=100)
+        from PIL import Image, ImageDraw, ImageFont
 
-        # Generate sample data based on description keywords
-        if 'line' in description.lower() or 'trend' in description.lower():
-            x = np.arange(1, 6)
-            y = np.array([20, 35, 48, 62, 78])
-            ax.plot(x, y, marker='o', linewidth=2, markersize=8, color='#2E74B5')
-            ax.set_xlabel('Period', fontsize=11, fontweight='bold')
-            ax.set_ylabel('Value', fontsize=11, fontweight='bold')
-            ax.grid(True, alpha=0.3)
-        elif 'bar' in description.lower():
-            categories = ['Category A', 'Category B', 'Category C', 'Category D']
-            values = [45, 62, 38, 71]
-            ax.bar(categories, values, color='#2E74B5', alpha=0.8, edgecolor='black')
-            ax.set_ylabel('Value', fontsize=11, fontweight='bold')
-            plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
-        elif 'pie' in description.lower():
-            labels = ['Group A', 'Group B', 'Group C', 'Group D']
-            sizes = [30, 25, 25, 20]
+        # Create image
+        width, height = 800, 500
+        img = Image.new('RGB', (width, height), color='white')
+        draw = ImageDraw.Draw(img)
+
+        # Draw border
+        draw.rectangle([10, 10, width-10, height-10], outline='#2E74B5', width=3)
+
+        # Draw title
+        title_y = 30
+        draw.text((20, title_y), description, fill='#1F497D')
+
+        # Determine chart type and draw accordingly
+        desc_lower = description.lower()
+
+        if 'line' in desc_lower or 'trend' in desc_lower:
+            # Draw line chart
+            points = [(100, 350), (220, 280), (340, 200), (460, 150), (580, 100)]
+            draw.line(points, fill='#2E74B5', width=3)
+            for point in points:
+                draw.ellipse([point[0]-5, point[1]-5, point[0]+5, point[1]+5], fill='#2E74B5')
+        elif 'pie' in desc_lower:
+            # Draw pie chart representation
+            center_x, center_y = width // 2, height // 2 - 30
+            radius = 80
+            draw.ellipse([center_x-radius, center_y-radius, center_x+radius, center_y+radius],
+                        outline='#2E74B5', width=2)
+            # Draw pie segments
+            angles = [0, 108, 198, 288, 360]
             colors = ['#2E74B5', '#4F90C3', '#A9C8E1', '#D9E5F0']
-            ax.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
-            ax.set_title('Distribution', fontweight='bold', fontsize=12)
+            for i in range(len(colors)):
+                draw.pieslice([center_x-radius, center_y-radius, center_x+radius, center_y+radius],
+                            angles[i], angles[i+1], fill=colors[i], outline='#1F497D')
         else:
-            # Default: simple bar chart
-            categories = ['Item 1', 'Item 2', 'Item 3']
-            values = [55, 68, 42]
-            ax.bar(categories, values, color='#2E74B5', alpha=0.8, edgecolor='black')
-            ax.set_ylabel('Value', fontsize=11, fontweight='bold')
+            # Draw bar chart (default)
+            bar_width = 60
+            bars_x = [120, 240, 360, 480]
+            bars_height = [280, 380, 220, 340]
+            for x, h in zip(bars_x, bars_height):
+                draw.rectangle([x, h, x+bar_width, 400], fill='#2E74B5', outline='#1F497D')
 
-        ax.set_title(description, fontweight='bold', fontsize=13, pad=15)
-        plt.tight_layout()
-
-        # Save to temporary file
+        # Save image
         with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
-            fig.savefig(tmp.name, dpi=100, bbox_inches='tight')
-            plt.close(fig)
+            img.save(tmp.name, 'PNG')
             return tmp.name
     except Exception as e:
-        plt.close('all')
-        return None
+        pass  # Fall through to text placeholder
+
+    # ─── FALLBACK: TEXT-BASED PLACEHOLDER ───────────────────────
+    try:
+        from PIL import Image, ImageDraw
+
+        width, height = 800, 500
+        img = Image.new('RGB', (width, height), color='#F5F5F5')
+        draw = ImageDraw.Draw(img)
+
+        # Draw border
+        draw.rectangle([20, 20, width-20, height-20], outline='#CCCCCC', width=2)
+
+        # Draw placeholder text
+        text = f"[Chart: {description[:60]}...]"
+        draw.text((60, height//2 - 30), text, fill='#999999')
+        draw.text((60, height//2 + 20), "Chart generation requires matplotlib or PIL", fill='#CCCCCC')
+
+        with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
+            img.save(tmp.name, 'PNG')
+            return tmp.name
+    except Exception:
+        pass
+
+    # If all else fails, return None (but this is rare)
+    return None
 
 
 def parse_chapter_content(doc, content, fn_mgr=None):
