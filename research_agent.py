@@ -2249,7 +2249,16 @@ def build_document(topic: str, research_level: str,
     # Build List of Tables after all chapters (so we can count all tables)
     build_list_of_tables_page(doc)
 
-    safe     = re.sub(r"[^\w\s-]", "", topic).strip().replace(" ", "_")[:50]
+    # Sanitize topic for Windows-safe filename
+    # Remove or replace invalid Windows filename characters: < > : " / \ | ? *
+    safe = topic
+    for char in '<>:"/\\|?*':
+        safe = safe.replace(char, '_')
+    # Keep only alphanumeric, spaces, underscores, and hyphens
+    safe = re.sub(r'[^\w\s\-]', '', safe).strip().replace(" ", "_")
+    # Limit length and ensure non-empty
+    safe = safe[:50] if safe else "Document"
+
     filename = f"Research_{safe}.docx"
     path     = os.path.join(output_dir, filename)
     doc.save(path)
