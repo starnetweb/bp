@@ -1368,16 +1368,22 @@ def _add_inline_formatting(paragraph, text, fn_mgr=None):
 
 def _render_table(doc, table_lines):
     """
-    Render a list of markdown pipe-table lines as a Word Table.
+    Render a list of markdown pipe-table lines as a professional Word Table.
 
     Handles:
       | Col A | Col B |        ← header row
       |---|---|                ← separator row (skipped)
       | data  | data  |        ← body rows
 
-    The first non-separator row becomes the header (bold, shaded).
+    Features:
+      - Proper column width distribution (6.5 inches available)
+      - Professional borders and shading
+      - Text wrapping for long content
+      - Alternating row colors for readability
+      - Centered headers with bold formatting
+      - Proper cell padding and margins
     """
-    from docx.shared import Inches
+    from docx.shared import Inches, Pt, RGBColor
     from docx.enum.text import WD_ALIGN_PARAGRAPH
     from docx.oxml.ns import qn
     from docx.oxml import OxmlElement
@@ -1403,6 +1409,7 @@ def _render_table(doc, table_lines):
     col_count = max(len(r) for r in rows)
     rows = [r + [''] * (col_count - len(r)) for r in rows]
 
+    # Create table
     tbl = doc.add_table(rows=len(rows), cols=col_count)
     tbl.autofit = False
     try:
@@ -1410,42 +1417,86 @@ def _render_table(doc, table_lines):
     except Exception:
         pass
 
-    # Set column widths
+    # Calculate optimal column widths (6.5 inches available page width)
+    total_width = Inches(6.5)
+    col_width = Inches(6.5 / col_count) if col_count > 0 else Inches(1.0)
+
+    # Apply consistent column widths
     for col_idx in range(col_count):
-        width = Inches(1.2 * col_count / col_count)
         for row in tbl.rows:
-            row.cells[col_idx].width = width
+            row.cells[col_idx].width = col_width
+
+    # Header and body row styling
+    header_color = 'D3D3D3'      # Light grey for headers
+    alt_row_color = 'F5F5F5'     # Very light grey for alternating rows
 
     for r_idx, row_data in enumerate(rows):
         row = tbl.rows[r_idx]
-        if r_idx == 0:
-            row.height = Inches(0.3)
+        is_header = (r_idx == 0)
+
+        # Set row height
+        row.height = Inches(0.35) if is_header else Inches(0.45)
 
         for c_idx, cell_text in enumerate(row_data):
             cell = row.cells[c_idx]
-            cell.vertical_alignment = 1
 
-            # Clear default empty paragraph
+            # Set cell background color
+            shading_elm = OxmlElement('w:shd')
+            if is_header:
+                shading_elm.set(qn('w:fill'), header_color)
+            elif r_idx % 2 == 0:  # Alternate row colors
+                shading_elm.set(qn('w:fill'), alt_row_color)
+            else:
+                shading_elm.set(qn('w:fill'), 'FFFFFF')  # White for other rows
+            cell._element.get_or_add_tcPr().append(shading_elm)
+
+            # Set cell borders
+            tcPr = cell._element.get_or_add_tcPr()
+            tcBorders = OxmlElement('w:tcBorders')
+            for border_name in ['top', 'left', 'bottom', 'right', 'insideH', 'insideV']:
+                border = OxmlElement(f'w:{border_name}')
+                border.set(qn('w:val'), 'single')
+                border.set(qn('w:sz'), '12')  # Border width
+                border.set(qn('w:space'), '0')
+                border.set(qn('w:color'), 'CCCCCC')  # Light grey border
+                tcBorders.append(border)
+            tcPr.append(tcBorders)
+
+            # Set vertical alignment (top for better readability)
+            cell.vertical_alignment = 0  # 0 = top
+
+            # Configure paragraph and text
             for p in cell.paragraphs:
                 p.clear()
             p = cell.paragraphs[0] if cell.paragraphs else cell.add_paragraph()
-            p.alignment = WD_ALIGN_PARAGRAPH.CENTER if r_idx == 0 else WD_ALIGN_PARAGRAPH.LEFT
 
+            # Alignment: center for headers, left for body
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER if is_header else WD_ALIGN_PARAGRAPH.LEFT
+
+            # Text formatting
             run = p.add_run(cell_text)
-            if r_idx == 0:
+            if is_header:
                 run.bold = True
-                run.font.size = Pt(11)
-                shading_elm = OxmlElement('w:shd')
-                shading_elm.set(qn('w:fill'), 'D3D3D3')
-                cell._element.get_or_add_tcPr().append(shading_elm)
+                run.font.size = Pt(10)
+                run.font.color.rgb = RGBColor(0, 0, 0)  # Black text
+            else:
+                run.font.size = Pt(9)
+                run.font.color.rgb = RGBColor(32, 32, 32)  # Dark grey text
 
-            p.paragraph_format.space_after  = Pt(4)
-            p.paragraph_format.space_before = Pt(4)
-            p.paragraph_format.left_indent = Pt(6)
-            p.paragraph_format.right_indent = Pt(6)
+            # Paragraph formatting (padding and margins)
+            p.paragraph_format.space_after = Pt(3)
+            p.paragraph_format.space_before = Pt(3)
+            p.paragraph_format.left_indent = Pt(8)
+            p.paragraph_format.right_indent = Pt(8)
+            p.paragraph_format.line_spacing = 1.1
 
-    # Space after table
-    doc.add_paragraph().paragraph_format.space_after = Pt(6)
+            # Enable text wrapping
+            cell.width = col_width
+
+    # Add spacing after table
+    space_para = doc.add_paragraph()
+    space_para.paragraph_format.space_after = Pt(8)
+    space_para.paragraph_format.space_before = Pt(4)
 
 
 def _create_sample_chart(description: str):
