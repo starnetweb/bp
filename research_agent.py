@@ -754,18 +754,19 @@ VISUALIZATIONS ARE MANDATORY — include 6-8 figures/tables throughout this chap
 {_NO_AST}
 
 FIGURE AND TABLE STANDARDS FOR CHAPTER 3:
-- Figure 3.1: Research Design Framework (showing paradigm, design choice, and connection to RQs)
-- Figure 3.2: Analytical Process Flowchart (step-by-step data analysis workflow)
-- Table 3.1: Sampling Strategy Breakdown (Target Population → Sample with n values)
-- Table 3.2: Data Collection Timeline (Week | Activities | Responsible Party | Expected Outputs)
-- Table 3.3: Data Collection Instruments Matrix (Instrument | Purpose | Items/Sections | Sample Items)
-- Figure 3.3: Validity and Reliability Framework (paradigm-appropriate quality measures)
-- Table 3.4: Ethical Considerations Checklist (6 dimensions with how operationalised)
-- Figure 3.4: Methodology Integration Diagram (how all components connect)
+Use EXACTLY these formats:
+- [CHART: Research Design Framework showing paradigm, design choice, and connection to research questions]
+- [CHART: Analytical Process Flowchart depicting step-by-step data analysis workflow]
+- [TABLE: Sampling Strategy Breakdown with Target Population | Total N | Inclusion Criteria | Sample Size | Sampling Method | Justification]
+- [TABLE: Data Collection Timeline with Week | Activities | Responsible Party | Expected Outputs]
+- [TABLE: Data Collection Instruments Matrix with Instrument | Purpose | Items/Sections | Sample Items]
+- [CHART: Validity and Reliability Framework showing paradigm-appropriate quality measures]
+- [TABLE: Ethical Considerations Checklist with dimensions and operationalisation details]
+- [CHART: Methodology Integration Diagram showing how all components connect]
 
-Format all tables with clear headers and professional appearance. Format all figures with descriptive titles
-that clearly explain the methodology component. Number all figures/tables sequentially (Figure 3.1, Table 3.1, etc.)
-and include a 1-2 sentence caption below each figure/table explaining its purpose.
+After each [CHART:...] or [TABLE:...] marker, include a 1-2 sentence caption explaining the figure/table's purpose.
+Reference all figures/tables in text BEFORE they appear using formal citations (e.g., 'As shown in Figure 3.1...').
+Tables will use pipe-separated format (| column | column |). Charts will be auto-rendered as professional images.
 
 Write the following subsections in full.
 
