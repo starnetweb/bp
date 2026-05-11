@@ -588,12 +588,26 @@ the case across multiple paragraphs: explain the nature of the problem, who it a
 long it has persisted, and why existing responses have been insufficient. Name the specific
 gap, contradiction, or blind spot that this study addresses. The problem statement must feel
 urgent — the reader should finish this section convinced that the study was necessary.
+{"CRITICAL FOR PhD: Distinguish between two types of gaps — (1) the PRACTICAL PROBLEM (what is not working in the real world), and (2) the THEORETICAL GAP (what is not adequately explained or understood in the scholarship). Explain how existing theoretical models fail to account for or predict this practical problem. Name the specific theories or frameworks that are inadequate and explain precisely why." if is_pg else ""}
+
+### 1.2a Theoretical Gap and Contribution
+Write at least {w(140, 280)} words for this subsection (POSTGRADUATE REQUIREMENT).
+{"This is the intellectual heart of Chapter 1. Articulate EXPLICITLY what theoretical understanding is missing or inadequate. Ask and answer: 'What do existing theoretical frameworks NOT explain about this problem?' and 'What new theoretical insight will this study produce?'
+
+Develop this across multiple paragraphs:
+- PARAGRAPH 1: Name the dominant theoretical framework(s) in the field (e.g., Social Capital Theory, Institutional Theory, Ecological Systems Theory). Explain what insights each offers and what these theories can explain about your problem.
+- PARAGRAPH 2: Identify the specific theoretical limitation or blind spot. What does this framework miss? What assumption does it make that may not hold in your context? What variation or phenomenon does it fail to account for?
+- PARAGRAPH 3: Explain the theoretical consequence of this gap. What false conclusions might scholars or practitioners draw from applying existing theory uncritically? What does the field not yet understand?
+- PARAGRAPH 4: State what this study will theoretically contribute. Will it extend existing theory to a new context? Refine or challenge a core assumption? Integrate previously separate theoretical traditions? Propose a new framework? Be specific about the form of your theoretical contribution.
+
+This section must make clear that your study exists to advance KNOWLEDGE, not just to solve a practical problem." if is_pg else ""}
 
 ### 1.3 Purpose of the Study
 Write at least {w(75, 140)} words for this subsection.
 State the overarching aim in one or two precise sentences. Then elaborate: explain the
 theoretical and practical orientation of the study, what kind of knowledge it seeks to
 produce, and how the purpose connects directly to the problem articulated in 1.2.
+{"Explicitly connect the purpose to BOTH the practical problem (1.2) AND the theoretical gap (1.2a), showing how addressing one advances the other." if is_pg else ""}
 
 ### 1.4 Research Objectives
 Write at least {w(90, 175)} words for this subsection.
@@ -610,11 +624,30 @@ and the type of evidence that would constitute an answer.
 
 ### 1.6 Significance of the Study
 Write at least {w(125, 245)} words for this subsection.
-Develop this across multiple distinct paragraphs — at minimum one paragraph each for:
-theoretical significance (what this study adds to scholarly debates), practical significance
-(what changes in practice, policy, or service delivery), and beneficiary groups (academics,
-practitioners, policymakers, communities). Be concrete rather than generic — name the
-specific journals, policy areas, or organisations that would benefit.
+Develop this across FOUR distinct, detailed paragraphs — one for each dimension below. Be concrete, not generic.
+
+PARAGRAPH 1 — THEORETICAL SIGNIFICANCE (PRIMARY FOR PhD):
+Explain what this study will ADVANCE in scholarly understanding. Will it extend theory to a new context or population?
+Refine a core theoretical concept? Challenge or complicate an existing assumption? Integrate previously separate theories?
+Propose a new theoretical framework? Name the specific theory or theoretical tradition your work contributes to.
+Example: "This study advances Institutional Theory by demonstrating that institutional isomorphism (DiMaggio & Powell, 1983) operates differently in hybrid organisations than in traditional ones. The finding refines our understanding of how external pressures interact with internal legitimacy concerns."
+Not: "This study adds to the literature."
+
+PARAGRAPH 2 — EMPIRICAL/METHODOLOGICAL SIGNIFICANCE:
+What new empirical evidence will this study provide? Will it be the first to examine X in Y context?
+Will it use a novel methodological approach? Will it generate longitudinal data where only cross-sectional data exist?
+What gap in the empirical evidence base does it fill? Name specific previous studies and how your work extends them.
+Example: "While Chen (2019) and Okafor (2021) examined this phenomenon in Western contexts, no study has yet explored it in post-conflict African settings. This study generates the first empirical evidence on..."
+
+PARAGRAPH 3 — PRACTICAL/POLICY SIGNIFICANCE:
+What will practitioners, policymakers, or service providers DO differently based on these findings?
+Name specific organisations, policy areas, or professional communities. Be concrete about the practical changes warranted.
+Example: "These findings have direct implications for primary healthcare policy in East Africa. If the results confirm our hypothesis, the WHO will need to revise its guidelines for community health worker training, potentially affecting 450,000 workers across the region."
+
+PARAGRAPH 4 — BENEFICIARY GROUPS:
+Who specifically benefits and how? Name academics (which subdisciplines), practitioners (which professions),
+policymakers (which agencies), communities (which populations). Make clear the pathway from evidence to impact.
+Example: "The primary beneficiaries are (1) development researchers studying adaptive capacity in agriculture, (2) extension agents in smallholder farming who need evidence on which interventions work, (3) agricultural policymakers designing rural development programmes, and (4) smallholder farmers themselves, who..."
 
 ### 1.7 Scope and Delimitations
 Write at least {w(100, 196)} words for this subsection.
@@ -943,15 +976,60 @@ OR
 
 ### 4.7 Synthesis and Discussion of Major Findings
 Write at least {w(210, 420)} words.
-{"This is the intellectual heart of the chapter. Do not merely summarise the preceding sections. Instead, synthesise: identify overarching themes that cut across the four sets of findings, explore unexpected results and what they suggest, address contradictions between data sources, and situate the findings in relation to the theoretical framework and empirical literature from Chapter 2. Where findings confirm prior scholarship, say so with precision. Where they challenge or extend it, develop that argument fully." if is_pg else "Bring together the key patterns across all four sets of findings. Identify the most important themes that emerge when the findings are considered as a whole. Connect them to the literature reviewed in Chapter 2 — where do findings confirm, contradict, or extend existing knowledge?"}
-Include after the synthesis:
-[TABLE: Synthesis Matrix - Overarching Themes]
-Theme | Objective 1 | Objective 2 | Objective 3 | Objective 4 | Theoretical Significance
-[Show how themes connect across all objectives]
+THIS IS THE INTELLECTUAL HEART OF THE CHAPTER — your opportunity to demonstrate meta-analytical thinking across all four objectives.
 
-AND/OR:
-[FIGURE: Conceptual integration diagram or mind map]
-Showing how all major findings interconnect and relate to the theoretical framework.
+{"DO NOT MERELY SUMMARISE. Instead, execute this multi-stage synthesis:
+
+STAGE 1: CROSS-OBJECTIVE PATTERN IDENTIFICATION (1-2 PARAGRAPHS)
+Identify overarching themes, patterns, or mechanisms that cut ACROSS all four objectives. These are the big-picture insights that emerge when you step back and look at the findings as a whole system, not four separate silos. Ask yourself: 'What is really going on here?' What unifying principle, pattern, or process explains the findings across objectives?
+Examples:
+- All four objectives point to a common barrier (e.g., institutional resistance, inadequate resources, knowledge gaps)
+- The four findings trace a sequential process or causal chain (Objective 1 leads to Objective 2, which shapes Objective 3, which produces Objective 4)
+- The objectives reveal a paradox or tension (e.g., stakeholders want X but behaviour shows Y)
+- The findings demonstrate a moderating or conditional relationship (Objective 1 effect depends on conditions identified in Objective 3)
+
+STAGE 2: EXPECTED vs. UNEXPECTED FINDINGS (1-2 PARAGRAPHS)
+Which findings DID you anticipate based on the literature in Chapter 2? Why did they emerge as expected? Which findings SURPRISED you or contradicted prior research?
+For unexpected findings, ask: What accounts for the divergence? Was prior theory incomplete? Does this context operate differently? Does your methodology reveal something previous studies missed?
+Example: 'While Mensah (2019) found that X led to Y in urban settings, our data show the opposite in rural contexts. This suggests that the mechanism operates differently where institutional capacity is lower, implying that Mensah's theory requires a conditional statement about institutional context.'
+
+STAGE 3: CONTRADICTIONS AND TENSIONS (1 PARAGRAPH IF APPLICABLE)
+Do any of your four objectives produce findings that CONTRADICT each other or create tension? Do qualitative and quantitative findings diverge?
+Do not gloss over these contradictions — they are analytically important. Explain them. What explains the divergence? Is it methodological? Does one objective reveal a caveat or condition that limits the applicability of another finding?
+Example: 'Objective 2 (quantitative) showed a strong association between X and Y (r=0.68, p<.001), but Objective 3 (qualitative interviews) revealed that participants actively resist this expected relationship, for reasons of cultural norms. This suggests that the association is statistically real but socially resisted — a distinction with important practical implications.'
+
+STAGE 4: THEORETICAL ARTICULATION (2-3 PARAGRAPHS)
+Now situate your integrated findings in relation to the theoretical framework from Chapter 2 and the theoretical gap from Chapter 1.
+
+SUB-POINT 4a: Does your synthesis CONFIRM the theoretical framework?
+If so, say so precisely. Name the theory (or theorist), explain which propositions your data support, and discuss why this confirmation matters. Does it validate the theory in a new context? Does it settle a scholarly debate?
+Example: 'Our findings confirm Social Capital Theory's prediction that bonding ties within communities are protective against collective crises. Across all four objectives, we see evidence that communities with stronger within-group connections (Objective 2) develop faster institutional response capacity (Objective 1), though this protective effect weakens when cross-group (bridging) ties are absent (Objective 4).'
+
+SUB-POINT 4b: Does your synthesis CHALLENGE or COMPLICATE the theoretical framework?
+If your findings challenge, extend, or refine existing theory, develop this carefully. Name the theory, explain the specific way your findings deviate from theoretical predictions, and articulate the theoretical implication.
+Example: 'While Institutional Theory (DiMaggio & Powell, 1983) predicts institutional isomorphism under resource scarcity, our findings show differentiation even under identical resource constraints (Objectives 1-2). We attribute this divergence to what we term "institutional heterogeneity" — the persistence of distinctive institutional identities driven by founding missions. This suggests that isomorphism is less deterministic than classical theory implies, and that path dependency and founding values matter more than recent analyses acknowledge.'
+
+SUB-POINT 4c: Does your synthesis EXTEND theory to a new context or population?
+If your findings apply existing theory in a novel context (e.g., a new geographic region, population, or organisational type), explain what the theory predicts in this context and whether your findings confirm or complicate those predictions.
+
+STAGE 5: INTEGRATION WITH EMPIRICAL LITERATURE (1-2 PARAGRAPHS)
+Connect your synthesis back to specific empirical studies cited in Chapter 2. Are your findings consistent with (Chen, 2019; Okafor, 2021)? Do they diverge from (Ibrahim & Mensah, 2020)? Do they shed light on conflicting findings in prior studies?
+Example: 'The divergence between our findings and those of Ibrahim & Mensah (2020) now becomes explicable. Their study, conducted in high-capacity urban institutions, found X. Our findings, from low-capacity rural settings, show Y. This suggests that institutional capacity acts as a moderator — a variable that neither study examined directly, but which our Objective 3 data now illuminate.'
+
+STAGE 6: LIMITATIONS AND CAVEATS (0.5-1 PARAGRAPH)
+As you synthesise, acknowledge what your data DON'T explain. Are there objectives where findings are weaker or more uncertain? Are there boundary conditions on your synthesis — contexts where these patterns might NOT hold? Being explicit about these caveats signals intellectual maturity and preempts critic objections.
+
+Include after the synthesis:
+[TABLE: Synthesis Matrix - Cross-Objective Themes and Theoretical Connections]
+Overarching Theme | Objective 1 Evidence | Objective 2 Evidence | Objective 3 Evidence | Objective 4 Evidence | How It Challenges/Extends/Confirms Theory from Chapter 2
+
+AND:
+[FIGURE: Conceptual Integration Diagram]
+A visual representation (mind map, flowchart, or concept model) showing:
+- How findings from all four objectives interconnect
+- The overarching mechanisms or patterns that explain the synthesis
+- How the synthesis relates back to the theoretical framework from Chapter 2
+- Any causal chains, conditional relationships, or system-level patterns that emerge" if is_pg else "Bring together the key patterns across all four sets of findings. Identify the most important themes that emerge when the findings are considered as a whole. Connect them to the literature reviewed in Chapter 2 — where do findings confirm, contradict, or extend existing knowledge?"}
 
 ### 4.8 Implications of the Findings
 Write at least {w(140, 280)} words.
