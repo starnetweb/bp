@@ -754,19 +754,22 @@ VISUALIZATIONS ARE MANDATORY — include 6-8 figures/tables throughout this chap
 {_NO_AST}
 
 FIGURE AND TABLE STANDARDS FOR CHAPTER 3:
-Use EXACTLY these formats:
-- [CHART: Research Design Framework showing paradigm, design choice, and connection to research questions]
-- [CHART: Analytical Process Flowchart depicting step-by-step data analysis workflow]
-- [TABLE: Sampling Strategy Breakdown with Target Population | Total N | Inclusion Criteria | Sample Size | Sampling Method | Justification]
-- [TABLE: Data Collection Timeline with Week | Activities | Responsible Party | Expected Outputs]
-- [TABLE: Data Collection Instruments Matrix with Instrument | Purpose | Items/Sections | Sample Items]
-- [CHART: Validity and Reliability Framework showing paradigm-appropriate quality measures]
-- [TABLE: Ethical Considerations Checklist with dimensions and operationalisation details]
-- [CHART: Methodology Integration Diagram showing how all components connect]
+Use EXACTLY these formats — ALL visualizations must be tables or charts:
 
-After each [CHART:...] or [TABLE:...] marker, include a 1-2 sentence caption explaining the figure/table's purpose.
-Reference all figures/tables in text BEFORE they appear using formal citations (e.g., 'As shown in Figure 3.1...').
-Tables will use pipe-separated format (| column | column |). Charts will be auto-rendered as professional images.
+REQUIRED VISUALIZATIONS (use [TABLE:...] or [CHART:...]):
+1. [TABLE: Research Design Framework - shows Paradigm | Design Type | Connection to RQs | Methodological Justification]
+2. [TABLE: Analytical Process Flowchart - shows Stage | Activity | Input Data | Output | Next Stage]
+3. [TABLE: Sampling Strategy Breakdown with Target Population | Total N | Inclusion Criteria | Sample Size (n) | Sampling Method | Justification]
+4. [TABLE: Data Collection Timeline with Week/Phase | Activities | Responsible Party | Expected Outputs | Duration]
+5. [TABLE: Data Collection Instruments Matrix with Instrument Name | Type | Purpose | Number of Items | Reliability Method | Sample Items]
+6. [TABLE: Validity and Reliability Framework - shows Quality Measure | Definition | How Achieved | Evidence]
+7. [TABLE: Ethical Considerations Checklist with Ethical Dimension | Consideration | How Operationalised | Approval Status]
+8. [CHART: Methodology Integration Diagram - visual showing Research Question → Design → Sample → Instruments → Analysis]
+
+Format: All tables use pipe-separated columns (| header | header |). Provide actual data rows, not just headers.
+Captions: After each [TABLE:...] or [CHART:...] marker, include a 1-2 sentence caption explaining purpose and key insight.
+References: Cite all tables/figures in text BEFORE they appear (e.g., 'As presented in Table 3.1, the sampling strategy...')
+All visualizations will be converted to professional Word tables with borders, headers, and alternating row colors.
 
 Write the following subsections in full.
 
