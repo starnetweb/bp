@@ -527,17 +527,32 @@ def _chapter_prompts(level_key: str) -> dict:
 
     # Visualization instruction
     _VIZ_NOTE = (
-        "\nVISUALIZATION INSTRUCTION: Where appropriate, include tables, charts, and figures "
-        "to support your analysis. When a table would clarify data or relationships, format it like this:\n"
-        "  [TABLE: Descriptive title]\n"
-        "  HeaderCol1 | HeaderCol2 | HeaderCol3\n"
-        "  DataValue1 | DataValue2 | DataValue3\n"
-        "  DataValue1 | DataValue2 | DataValue3\n\n"
-        "Use ' | ' (space-pipe-space) to separate columns. Put each logical row on one line.\n"
-        "For charts, indicate where they should appear:\n"
-        "  [CHART: Bar chart showing X vs Y]\n"
-        "  [CHART: Line graph of trend over time]\n"
-        "Tables and charts will be converted to professional visualizations in the final document.\n"
+        "\nVISUALIZATION INSTRUCTION — PhD STANDARDS:\n"
+        "Visualizations are MANDATORY in research chapters. Follow these standards:\n\n"
+        "TABLE FORMAT:\n"
+        "  [TABLE: Descriptive title that explains the table's purpose]\n"
+        "  HeaderCol1 | HeaderCol2 | HeaderCol3 | HeaderCol4\n"
+        "  DataValue1 | DataValue2 | DataValue3 | DataValue4\n"
+        "  DataValue1 | DataValue2 | DataValue3 | DataValue4\n"
+        "  Use ' | ' (space-pipe-space) to separate columns. Put each row on one line.\n"
+        "  Tables will be numbered automatically (Table 3.1, Table 3.2, etc.)\n\n"
+        "CHART/FIGURE FORMAT:\n"
+        "  [CHART: Descriptive title explaining what the chart shows]\n"
+        "  For example: 'Bar chart comparing satisfaction levels across three treatment groups'\n"
+        "  Figures will be numbered automatically (Figure 3.1, Figure 4.1, etc.)\n\n"
+        "CAPTION STANDARDS:\n"
+        "- Every figure/table must have a clear, descriptive caption\n"
+        "- Captions should be 1-2 sentences explaining the visual's purpose and key finding\n"
+        "- Format: 'Figure 3.1: [Descriptive title]. [Brief explanation of what it shows].'\n"
+        "- Reference all tables/figures in text before they appear using formal citations\n\n"
+        "TYPES OF VISUALIZATIONS:\n"
+        "- Quantitative data: bar charts, line graphs, scatter plots, distribution histograms\n"
+        "- Qualitative data: thematic matrices, concept maps, comparison tables, flow diagrams\n"
+        "- Mixed methods: integrated visualizations showing convergence/divergence\n"
+        "- Process/structure: flowcharts, frameworks, process diagrams\n\n"
+        "All tables and charts will be converted to professional visualizations in the final Word document.\n"
+        "Tables will have proper formatting, borders, and header styling.\n"
+        "Charts will be rendered as high-quality images with professional styling.\n"
     )
 
     return {
@@ -705,13 +720,27 @@ Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[3]} words of substantive prose. You MUST reach this minimum.
 The methodology chapter must be precise, justified, and replicable. Write with rigour.
+VISUALIZATIONS ARE MANDATORY — include 6-8 figures/tables throughout this chapter.
 {_NO_REF}
 {tone}
 
 {HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
 {_NO_AST}
-{_VIZ_NOTE}
+
+FIGURE AND TABLE STANDARDS FOR CHAPTER 3:
+- Figure 3.1: Research Design Framework (showing paradigm, design choice, and connection to RQs)
+- Figure 3.2: Analytical Process Flowchart (step-by-step data analysis workflow)
+- Table 3.1: Sampling Strategy Breakdown (Target Population → Sample with n values)
+- Table 3.2: Data Collection Timeline (Week | Activities | Responsible Party | Expected Outputs)
+- Table 3.3: Data Collection Instruments Matrix (Instrument | Purpose | Items/Sections | Sample Items)
+- Figure 3.3: Validity and Reliability Framework (paradigm-appropriate quality measures)
+- Table 3.4: Ethical Considerations Checklist (6 dimensions with how operationalised)
+- Figure 3.4: Methodology Integration Diagram (how all components connect)
+
+Format all tables with clear headers and professional appearance. Format all figures with descriptive titles
+that clearly explain the methodology component. Number all figures/tables sequentially (Figure 3.1, Table 3.1, etc.)
+and include a 1-2 sentence caption below each figure/table explaining its purpose.
 
 Write the following subsections in full.
 
@@ -719,6 +748,8 @@ Write the following subsections in full.
 Write at least {w(90, 175)} words.
 Orient the reader to the chapter's purpose and structure. Explain the epistemological logic
 that connects the research questions to the design choices made. {"State the researcher's ontological and epistemological position upfront and explain how it shapes the chapter's approach to the treatment of evidence and knowledge claims." if is_pg else "Explain how the methodology flows from the research questions and problem."}
+After this section, include:
+[FIGURE: Research Design Framework showing the paradigm → design → connection to research questions]
 
 ### 3.2 Research Design
 Write at least {w(160, 315)} words.
@@ -735,6 +766,8 @@ Write at least {w(160, 350)} words.
 ### 3.4 Research Approach
 Write at least {w(100, 196)} words.
 {"Specify whether the study uses inductive, deductive, or abductive reasoning. Justify this choice by reference to the research questions and the nature of the evidence being collected. Explain how the approach shapes the analytical process in Chapter 4." if is_pg else "Specify the reasoning approach (inductive or deductive) and explain how it guides data analysis. Connect this to the research design."}
+After this section, include:
+[FIGURE: Analytical Process Flowchart showing data collection → initial coding → analytical refinement → interpretation steps]
 
 ### 3.5 Study Area and Setting
 Write at least {w(115, 224)} words.
@@ -753,7 +786,12 @@ to the research questions. Address any challenges in defining or accessing the p
 Write at least {w(135, 266)} words.
 Specify the sample size and justify it — cite at least two sources on sample size adequacy
 for the chosen design. Describe the sampling technique in precise operational terms: exactly
-how participants were identified, approached, screened, and recruited. {"Discuss how the technique addresses issues of representativeness (quantitative) or theoretical saturation and transferability (qualitative)." if is_pg else "Explain how the sample is representative of the population."} Address any non-response and how it was handled.
+how participants were identified, approached, screened, and recruited. {"Discuss how the technique addresses issues of representativeness (quantitative) or theoretical saturation and transferability (qualitative)." if is_pg else "Explain how the sample is representative of the population."}
+Address any non-response and how it was handled.
+After this section, include:
+[TABLE: Sampling Strategy Breakdown]
+Target Population | Total N | Inclusion Criteria | Sample Size (n) | Sampling Method | Justification
+[Provide specific numbers and explanation for how sample was derived from target population]
 
 ### 3.8 Data Collection Instruments
 Write at least {w(140, 280)} words.
@@ -762,10 +800,16 @@ protocol, document analysis schedule). For each instrument: explain the rational
 design, describe its structure (sections, item types, scale formats), explain the piloting
 process and any revisions made, and justify its appropriateness for collecting the data
 required by each research objective.
+After this section, include:
+[TABLE: Data Collection Instruments Matrix]
+Instrument Name | Purpose (Which RQ?) | Structure (Sections/Items) | Response Format | Justification
 
 ### 3.9 Validity and Reliability
 Write at least {w(135, 266)} words.
 {"Address validity and reliability using the criteria appropriate to the paradigm. For quantitative work: construct validity, criterion validity, internal consistency (Cronbach's alpha), and test-retest reliability. For qualitative work: credibility (member-checking, triangulation), transferability (thick description), dependability (audit trail), and confirmability (reflexivity) — drawing on Lincoln and Guba (1985). Explain specifically how each criterion was operationalised in this study." if is_pg else "Explain what steps were taken to ensure the instruments measure what they intend to measure and produce consistent results. Discuss any piloting and revision process. Address both internal validity and reliability."}
+After this section, include:
+[FIGURE: Validity and Reliability Framework]
+Showing paradigm-appropriate quality measures and how each was operationalised in this study.
 
 ### 3.10 Data Collection Procedure
 Write at least {w(125, 245)} words.
@@ -774,6 +818,9 @@ clearance, participant recruitment, informed consent, instrument administration,
 recording, and quality checks. Include time frames and quantities (how many interviews
 conducted over how many weeks, response rate for questionnaires). Be specific enough
 that a researcher could replicate this procedure.
+After this section, include:
+[TABLE: Data Collection Timeline - 7-week schedule]
+Week | Primary Activities | Responsible Party | Expected Outputs
 
 ### 3.11 Data Analysis Methods
 Write at least {w(140, 280)} words.
@@ -787,12 +834,18 @@ protected), right to withdraw (how this was communicated and facilitated), data 
 and security (how data are stored and for how long), institutional ethics approval
 (institution and reference number if applicable), and researcher positionality
 (how the researcher's background may have influenced data collection and interpretation).
+After this section, include:
+[TABLE: Ethical Considerations Operationalisation]
+Ethical Dimension | Description | How Operationalised in This Study | Evidence
 
 ### 3.13 Chapter Summary
 Write at least {w(100, 196)} words.
 Synthesise the methodological choices made in this chapter as a coherent whole. Explain
 how design, philosophy, sampling, instruments, and analysis hang together as a unified
 approach to answering the research questions. {"Address how the methodology addresses the research gap identified in Chapter 2 and positions the study within its paradigmatic tradition." if is_pg else "Show how the methodology directly serves the research objectives stated in Chapter 1."}
+After this section, include:
+[FIGURE: Methodology Integration Diagram]
+Showing how research design, philosophy, sampling strategy, data collection instruments, and analytical approach connect as a coherent system.
 
 Do NOT write a chapter title heading at the very top — begin directly with section ### 3.1.""",
 
@@ -801,13 +854,32 @@ Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[4]} words of substantive prose. You MUST reach this minimum.
 Present rich, specific, interpreted findings. This chapter must demonstrate analytical depth.
+VISUALIZATIONS ARE CRITICAL — include 8-12 figures/tables throughout this chapter to present data professionally.
 {_NO_REF}
 {tone}
 
 {HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
 {_NO_AST}
-{_VIZ_NOTE}
+
+FIGURE AND TABLE STANDARDS FOR CHAPTER 4:
+This chapter requires extensive data visualization to meet PhD standards:
+- Table 4.1: Sample Demographics (Age | Gender | Education | Experience | Location with frequencies/%)
+- Table 4.2: Response Rate and Non-Response Analysis (if quantitative)
+- Figures 4.1-4.3: Data visualizations for Objective 1 (charts, graphs, or qualitative matrices)
+- Figures 4.4-4.6: Data visualizations for Objectives 2-3 (charts, graphs, comparative tables)
+- Figure 4.7: Synthesis diagram or matrix showing relationships across all objectives
+- Table 4.3: Finding Summary Matrix (Objective | Key Finding | Supporting Evidence | Theoretical Connection)
+- Figures 4.8-4.10: Additional visualizations for complex patterns, comparisons, or theoretical connections
+- Figure 4.11: Implications framework (theoretical, practical, policy dimensions)
+
+VISUALIZATION REQUIREMENTS:
+- For quantitative findings: use bar charts, line graphs, distribution plots for each major result
+- For qualitative findings: use thematic matrices, concept maps, or comparison tables
+- For mixed-methods: use integrated visualizations showing convergence/divergence
+- All figures must have numbered captions (Figure 4.1, Figure 4.2, etc.) with descriptive titles
+- All tables must be professionally formatted with clear headers and logical grouping
+- Every table/figure MUST be referenced in the text before it appears ("As shown in Table 4.1...")
 
 Write the following subsections in full.
 
@@ -821,6 +893,14 @@ Write at least {w(110, 210)} words.
 Present the demographic and descriptive profile of the sample across multiple characteristics
 (age, gender, education, experience, geographic distribution — as relevant). Discuss the
 response rate if applicable and explain patterns in non-response. {"Compare the achieved sample to the target population and discuss implications for transferability." if is_pg else "Comment on how representative the sample appears to be."}
+Include immediately after this section:
+[TABLE: Sample Demographics Breakdown]
+Demographic Variable | Categories | Frequency (n) | Percentage (%)
+[Include all relevant characteristics with actual numbers]
+
+For quantitative studies, also include:
+[CHART: Sample demographics visualization]
+Showing age distribution, gender distribution, or other key characteristics visually.
 
 ### 4.3 Findings Related to Objective 1
 Write at least {w(180, 350)} words.
@@ -829,31 +909,58 @@ quantitative values (percentages, means, frequencies) or qualitative themes with
 representative illustrative evidence. Interpret the findings rather than just reporting
 them: explain what patterns emerge, what they mean, and what accounts for them.
 {"Connect findings explicitly to the theoretical framework from Chapter 2. Where results confirm prior theory, explain why. Where they challenge it, explore the implications." if is_pg else "Relate findings directly to relevant literature reviewed in Chapter 2."}
+Include professional data visualization immediately after:
+[CHART: Bar chart/line graph/distribution showing Objective 1 findings with specific values]
+OR
+[TABLE: Objective 1 Thematic Analysis Matrix | Theme | Frequency | Representative Quote/Evidence | Theoretical Connection]
 
 ### 4.4 Findings Related to Objective 2
 Write at least {w(180, 350)} words.
 Apply the same approach as 4.3 to the second research objective. Ensure this section has
 its own narrative arc — do not simply replicate the structure of 4.3. Introduce any
 unexpected or contradictory findings and engage with them analytically.
+Include data visualization:
+[CHART: Bar chart/line graph showing Objective 2 findings]
+OR
+[TABLE: Objective 2 Findings Summary | Finding | Evidence | Significance]
 
 ### 4.5 Findings Related to Objective 3
 Write at least {w(180, 350)} words.
 Apply the same approach to the third objective. {"At this stage, begin drawing connections between findings across objectives — note where patterns reinforce each other or where tensions emerge." if is_pg else "Discuss how these findings relate to those in 4.3 and 4.4."}
+Include data visualization:
+[CHART: Chart showing Objective 3 findings]
+OR
+[TABLE: Objective 3 Findings Detailed Breakdown]
 
 ### 4.6 Findings Related to Objective 4
 Write at least {w(160, 315)} words.
 Present findings for the fourth objective with the same analytical rigour. By the end of
 this section, all major findings should be on the table, setting up the synthesis in 4.7.
+Include data visualization:
+[CHART: Chart comparing Objective 4 findings]
+OR
+[TABLE: Objective 4 Key Findings with Evidence]
 
 ### 4.7 Synthesis and Discussion of Major Findings
 Write at least {w(210, 420)} words.
 {"This is the intellectual heart of the chapter. Do not merely summarise the preceding sections. Instead, synthesise: identify overarching themes that cut across the four sets of findings, explore unexpected results and what they suggest, address contradictions between data sources, and situate the findings in relation to the theoretical framework and empirical literature from Chapter 2. Where findings confirm prior scholarship, say so with precision. Where they challenge or extend it, develop that argument fully." if is_pg else "Bring together the key patterns across all four sets of findings. Identify the most important themes that emerge when the findings are considered as a whole. Connect them to the literature reviewed in Chapter 2 — where do findings confirm, contradict, or extend existing knowledge?"}
+Include after the synthesis:
+[TABLE: Synthesis Matrix - Overarching Themes]
+Theme | Objective 1 | Objective 2 | Objective 3 | Objective 4 | Theoretical Significance
+[Show how themes connect across all objectives]
+
+AND/OR:
+[FIGURE: Conceptual integration diagram or mind map]
+Showing how all major findings interconnect and relate to the theoretical framework.
 
 ### 4.8 Implications of the Findings
 Write at least {w(140, 280)} words.
 Discuss implications for theory, practice, and policy separately across dedicated paragraphs.
 Name specific stakeholders and explain precisely what each set of findings means for them.
 {"For theory: what does this study add to, refine, or challenge in the existing theoretical models? For practice: what specific changes in professional practice are warranted? For policy: what specific policy recommendations emerge, addressed to named agencies or decision-makers?" if is_pg else "Be concrete: name institutions, policy areas, and professional communities that should act on these findings."}
+Include immediately after:
+[TABLE: Implications Framework]
+Implication Domain | Specific Implication | Target Stakeholder | Actionable Consequence
 
 ### 4.9 Chapter Summary
 Write at least {w(100, 196)} words.
