@@ -555,6 +555,17 @@ def _chapter_prompts(level_key: str) -> dict:
         "Charts will be rendered as high-quality images with professional styling.\n"
     )
 
+    # Define conditional content OUTSIDE f-string to avoid escape sequence issues
+    phd_gap_note = "CRITICAL FOR PhD: Distinguish between two types of gaps — (1) the PRACTICAL PROBLEM (what is not working in the real world), and (2) the THEORETICAL GAP (what is not adequately explained or understood in the scholarship). Explain how existing theoretical models fail to account for or predict this practical problem. Name the specific theories or frameworks that are inadequate and explain precisely why."
+
+    phd_theory_guidance = "This is the intellectual heart of Chapter 1. Articulate EXPLICITLY what theoretical understanding is missing or inadequate. Ask and answer: What do existing theoretical frameworks NOT explain about this problem? What new theoretical insight will this study produce?\n\nDevelop this across multiple paragraphs:\n- PARAGRAPH 1: Name the dominant theoretical framework(s) in the field. Explain what insights each offers and what these theories can explain about your problem.\n- PARAGRAPH 2: Identify the specific theoretical limitation or blind spot. What does this framework miss? What assumption does it make that may not hold in your context? What variation or phenomenon does it fail to account for?\n- PARAGRAPH 3: Explain the theoretical consequence of this gap. What false conclusions might scholars or practitioners draw from applying existing theory uncritically? What does the field not yet understand?\n- PARAGRAPH 4: State what this study will theoretically contribute. Will it extend existing theory to a new context? Refine or challenge a core assumption? Integrate previously separate theoretical traditions? Propose a new framework? Be specific about the form of your theoretical contribution.\n\nThis section must make clear that your study exists to advance KNOWLEDGE, not just to solve a practical problem."
+
+    phd_purpose_note = "Explicitly connect the purpose to BOTH the practical problem (1.2) AND the theoretical gap (1.2a), showing how addressing one advances the other."
+
+    gap_note = phd_gap_note if is_pg else ""
+    theory_guidance = phd_theory_guidance if is_pg else ""
+    purpose_note = phd_purpose_note if is_pg else ""
+
     return {
         1: f"""You are writing CHAPTER ONE — INTRODUCTION for an academic research project.
 Topic: {{topic}}
@@ -588,18 +599,18 @@ the case across multiple paragraphs: explain the nature of the problem, who it a
 long it has persisted, and why existing responses have been insufficient. Name the specific
 gap, contradiction, or blind spot that this study addresses. The problem statement must feel
 urgent — the reader should finish this section convinced that the study was necessary.
-{"CRITICAL FOR PhD: Distinguish between two types of gaps — (1) the PRACTICAL PROBLEM (what is not working in the real world), and (2) the THEORETICAL GAP (what is not adequately explained or understood in the scholarship). Explain how existing theoretical models fail to account for or predict this practical problem. Name the specific theories or frameworks that are inadequate and explain precisely why." if is_pg else ""}
+{gap_note}
 
 ### 1.2a Theoretical Gap and Contribution
 Write at least {w(140, 280)} words for this subsection (POSTGRADUATE REQUIREMENT).
-{"This is the intellectual heart of Chapter 1. Articulate EXPLICITLY what theoretical understanding is missing or inadequate. Ask and answer: What do existing theoretical frameworks NOT explain about this problem? What new theoretical insight will this study produce?\n\nDevelop this across multiple paragraphs:\n- PARAGRAPH 1: Name the dominant theoretical framework(s) in the field. Explain what insights each offers and what these theories can explain about your problem.\n- PARAGRAPH 2: Identify the specific theoretical limitation or blind spot. What does this framework miss? What assumption does it make that may not hold in your context? What variation or phenomenon does it fail to account for?\n- PARAGRAPH 3: Explain the theoretical consequence of this gap. What false conclusions might scholars or practitioners draw from applying existing theory uncritically? What does the field not yet understand?\n- PARAGRAPH 4: State what this study will theoretically contribute. Will it extend existing theory to a new context? Refine or challenge a core assumption? Integrate previously separate theoretical traditions? Propose a new framework? Be specific about the form of your theoretical contribution.\n\nThis section must make clear that your study exists to advance KNOWLEDGE, not just to solve a practical problem." if is_pg else ""}
+{theory_guidance}
 
 ### 1.3 Purpose of the Study
 Write at least {w(75, 140)} words for this subsection.
 State the overarching aim in one or two precise sentences. Then elaborate: explain the
 theoretical and practical orientation of the study, what kind of knowledge it seeks to
 produce, and how the purpose connects directly to the problem articulated in 1.2.
-{"Explicitly connect the purpose to BOTH the practical problem (1.2) AND the theoretical gap (1.2a), showing how addressing one advances the other." if is_pg else ""}
+{purpose_note}
 
 ### 1.4 Research Objectives
 Write at least {w(90, 175)} words for this subsection.

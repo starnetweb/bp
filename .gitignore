@@ -20,7 +20,11 @@ build/
 venv/
 env/
 .venv/
+
+# ── Environment variables (never commit credentials) ───────────
 .env
+.env.local
+.env.*.local
 
 # ── OS files ──────────────────────────────────────────────
 .DS_Store
