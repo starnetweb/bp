@@ -566,6 +566,21 @@ def _chapter_prompts(level_key: str) -> dict:
     theory_guidance = phd_theory_guidance if is_pg else ""
     purpose_note = phd_purpose_note if is_pg else ""
 
+    # Define conditional content for Chapter 4 OUTSIDE f-string
+    ch4_intro_note = "State the analytical framework guiding interpretation and how it connects to the theoretical framework in Chapter 2."
+    ch4_sample_note = "Compare the achieved sample to the target population and discuss implications for transferability."
+    ch4_obj1_note = "Connect findings explicitly to the theoretical framework from Chapter 2. Where results confirm prior theory, explain why. Where they challenge it, explore the implications."
+    ch4_obj3_note = "At this stage, begin drawing connections between findings across objectives — note where patterns reinforce each other or where tensions emerge."
+    ch4_synthesis_note = "DO NOT MERELY SUMMARISE. Instead, execute this multi-stage synthesis:\n\nSTAGE 1: CROSS-OBJECTIVE PATTERN IDENTIFICATION (1-2 PARAGRAPHS)\nIdentify overarching themes, patterns, or mechanisms that cut across all four objectives. Ask yourself: What is really going on here? What unifying principle, pattern, or process explains the findings across objectives?\n\nSTAGE 2: EXPECTED vs. UNEXPECTED FINDINGS (1-2 PARAGRAPHS)\nWhich findings DID you anticipate based on the literature? Which findings SURPRISED you or contradicted prior research? Explain divergences between expectations and results.\n\nSTAGE 3: CONTRADICTIONS AND TENSIONS (1 PARAGRAPH IF APPLICABLE)\nDo any objectives produce findings that contradict each other? Do qualitative and quantitative findings diverge? Explain tensions analytically—do not gloss over contradictions.\n\nSTAGE 4: THEORETICAL ARTICULATION (2-3 PARAGRAPHS)\nNow situate your integrated findings in relation to the theoretical framework from Chapter 2 and the theoretical gap from Chapter 1.\n- Sub-point 4a: Does synthesis CONFIRM the theoretical framework? Say so precisely with named theory.\n- Sub-point 4b: Does synthesis CHALLENGE/COMPLICATE theory? Explain specific deviations and theoretical implications.\n- Sub-point 4c: Does synthesis EXTEND theory? Apply existing theory to new context and show what this reveals.\n\nSTAGE 5: INTEGRATION WITH EMPIRICAL LITERATURE (1-2 PARAGRAPHS)\nConnect back to specific studies from Chapter 2. Explain consistency or divergence with prior research. Show how findings resolve conflicting prior studies.\n\nSTAGE 6: LIMITATIONS AND CAVEATS (0.5-1 PARAGRAPH)\nAcknowledge what data do NOT explain. State boundary conditions where patterns might not hold. Signal intellectual maturity and preempt criticism.\n\nINCLUDE AFTER THE SYNTHESIS:\n[TABLE: Synthesis Matrix - Cross-Objective Themes and Theoretical Connections]\nOverarching Theme | Evidence from Obj1-4 | Theoretical Connection\n\nAND:\n[FIGURE: Conceptual Integration Diagram]\nVisual showing how findings interconnect, mechanisms, and theoretical relationships."
+    ch4_implications_note = "For theory: what does this study add to, refine, or challenge in the existing theoretical models? For practice: what specific changes in professional practice are warranted? For policy: what specific policy recommendations emerge, addressed to named agencies or decision-makers?"
+
+    intro_text = ch4_intro_note if is_pg else "Orient the reader to how findings are organised."
+    sample_text = ch4_sample_note if is_pg else "Comment on how representative the sample appears to be."
+    obj1_text = ch4_obj1_note if is_pg else "Relate findings directly to relevant literature reviewed in Chapter 2."
+    obj3_text = ch4_obj3_note if is_pg else "Discuss how these findings relate to those in 4.3 and 4.4."
+    synthesis_text = ch4_synthesis_note if is_pg else "Bring together the key patterns across all four sets of findings. Identify the most important themes that emerge when the findings are considered as a whole. Connect them to the literature reviewed in Chapter 2 — where do findings confirm, contradict, or extend existing knowledge?"
+    implications_text = ch4_implications_note if is_pg else "Be concrete: name institutions, policy areas, and professional communities that should act on these findings."
+
     return {
         1: f"""You are writing CHAPTER ONE — INTRODUCTION for an academic research project.
 Topic: {{topic}}
@@ -926,13 +941,13 @@ Write the following subsections in full.
 ### 4.1 Introduction to the Chapter
 Write at least {w(90, 175)} words.
 Explain how the chapter is structured and why. Briefly recap the research objectives so
-the reader knows what findings will address. {"State the analytical framework guiding interpretation and how it connects to the theoretical framework in Chapter 2." if is_pg else "Orient the reader to how findings are organised."}
+the reader knows what findings will address. {intro_text}
 
 ### 4.2 Sample / Response Rate Overview
 Write at least {w(110, 210)} words.
 Present the demographic and descriptive profile of the sample across multiple characteristics
 (age, gender, education, experience, geographic distribution — as relevant). Discuss the
-response rate if applicable and explain patterns in non-response. {"Compare the achieved sample to the target population and discuss implications for transferability." if is_pg else "Comment on how representative the sample appears to be."}
+response rate if applicable and explain patterns in non-response. {sample_text}
 Include immediately after this section:
 [TABLE: Sample Demographics Breakdown]
 Demographic Variable | Categories | Frequency (n) | Percentage (%)
@@ -948,7 +963,7 @@ Present specific, detailed findings for the first research objective. Use plausi
 quantitative values (percentages, means, frequencies) or qualitative themes with
 representative illustrative evidence. Interpret the findings rather than just reporting
 them: explain what patterns emerge, what they mean, and what accounts for them.
-{"Connect findings explicitly to the theoretical framework from Chapter 2. Where results confirm prior theory, explain why. Where they challenge it, explore the implications." if is_pg else "Relate findings directly to relevant literature reviewed in Chapter 2."}
+{obj1_text}
 Include professional data visualization immediately after:
 [CHART: Bar chart/line graph/distribution showing Objective 1 findings with specific values]
 OR
@@ -966,7 +981,7 @@ OR
 
 ### 4.5 Findings Related to Objective 3
 Write at least {w(180, 350)} words.
-Apply the same approach to the third objective. {"At this stage, begin drawing connections between findings across objectives — note where patterns reinforce each other or where tensions emerge." if is_pg else "Discuss how these findings relate to those in 4.3 and 4.4."}
+Apply the same approach to the third objective. {obj3_text}
 Include data visualization:
 [CHART: Chart showing Objective 3 findings]
 OR
@@ -985,13 +1000,13 @@ OR
 Write at least {w(210, 420)} words.
 THIS IS THE INTELLECTUAL HEART OF THE CHAPTER — your opportunity to demonstrate meta-analytical thinking across all four objectives.
 
-{"DO NOT MERELY SUMMARISE. Instead, execute this multi-stage synthesis:\n\nSTAGE 1: CROSS-OBJECTIVE PATTERN IDENTIFICATION (1-2 PARAGRAPHS)\nIdentify overarching themes, patterns, or mechanisms that cut across all four objectives. Ask yourself: What is really going on here? What unifying principle, pattern, or process explains the findings across objectives?\n\nSTAGE 2: EXPECTED vs. UNEXPECTED FINDINGS (1-2 PARAGRAPHS)\nWhich findings DID you anticipate based on the literature? Which findings SURPRISED you or contradicted prior research? Explain divergences between expectations and results.\n\nSTAGE 3: CONTRADICTIONS AND TENSIONS (1 PARAGRAPH IF APPLICABLE)\nDo any objectives produce findings that contradict each other? Do qualitative and quantitative findings diverge? Explain tensions analytically—do not gloss over contradictions.\n\nSTAGE 4: THEORETICAL ARTICULATION (2-3 PARAGRAPHS)\nNow situate your integrated findings in relation to the theoretical framework from Chapter 2 and the theoretical gap from Chapter 1.\n- Sub-point 4a: Does synthesis CONFIRM the theoretical framework? Say so precisely with named theory.\n- Sub-point 4b: Does synthesis CHALLENGE/COMPLICATE theory? Explain specific deviations and theoretical implications.\n- Sub-point 4c: Does synthesis EXTEND theory? Apply existing theory to new context and show what this reveals.\n\nSTAGE 5: INTEGRATION WITH EMPIRICAL LITERATURE (1-2 PARAGRAPHS)\nConnect back to specific studies from Chapter 2. Explain consistency or divergence with prior research. Show how findings resolve conflicting prior studies.\n\nSTAGE 6: LIMITATIONS AND CAVEATS (0.5-1 PARAGRAPH)\nAcknowledge what data do NOT explain. State boundary conditions where patterns might not hold. Signal intellectual maturity and preempt criticism.\n\nINCLUDE AFTER THE SYNTHESIS:\n[TABLE: Synthesis Matrix - Cross-Objective Themes and Theoretical Connections]\nOverarching Theme | Evidence from Obj1-4 | Theoretical Connection\n\nAND:\n[FIGURE: Conceptual Integration Diagram]\nVisual showing how findings interconnect, mechanisms, and theoretical relationships." if is_pg else "Bring together the key patterns across all four sets of findings. Identify the most important themes that emerge when the findings are considered as a whole. Connect them to the literature reviewed in Chapter 2 — where do findings confirm, contradict, or extend existing knowledge?"}
+{synthesis_text}
 
 ### 4.8 Implications of the Findings
 Write at least {w(140, 280)} words.
 Discuss implications for theory, practice, and policy separately across dedicated paragraphs.
 Name specific stakeholders and explain precisely what each set of findings means for them.
-{"For theory: what does this study add to, refine, or challenge in the existing theoretical models? For practice: what specific changes in professional practice are warranted? For policy: what specific policy recommendations emerge, addressed to named agencies or decision-makers?" if is_pg else "Be concrete: name institutions, policy areas, and professional communities that should act on these findings."}
+{implications_text}
 Include immediately after:
 [TABLE: Implications Framework]
 Implication Domain | Specific Implication | Target Stakeholder | Actionable Consequence
