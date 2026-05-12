@@ -2195,6 +2195,76 @@ def build_list_of_tables_page(doc):
         p.add_run("____").font.size = Pt(10)
 
 
+def build_list_of_figures_page(doc):
+    """Build a List of Figures page (includes charts and images)."""
+    add_page_break(doc)
+
+    hdr = doc.add_paragraph()
+    hdr.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    r = hdr.add_run("LIST OF FIGURES")
+    r.font.size  = Pt(14)
+    r.font.bold  = True
+    r.font.color.rgb = DARK_BLUE
+    hdr.paragraph_format.space_after = Pt(4)
+    add_horizontal_rule(doc, color="1F497D", thickness="8")
+    doc.add_paragraph().paragraph_format.space_after = Pt(4)
+
+    # Count drawing elements (charts/images/figures) in the document
+    figure_count = 0
+    for element in doc.element.body:
+        # Count paragraphs that contain drawing elements
+        if element.tag.endswith('}p'):
+            for child in element.iter():
+                if 'drawing' in child.tag.lower():
+                    figure_count += 1
+                    break
+
+    if figure_count == 0:
+        # No figures found
+        p = doc.add_paragraph("No figures in this document.")
+        p.paragraph_format.space_after = Pt(6)
+        return
+
+    # Generate list of figures
+    figure_idx = 0
+    for para in doc.paragraphs:
+        # Check if paragraph contains images/drawings
+        has_drawing = False
+        for run in para.runs:
+            if run._element.find('.//{http://schemas.openxmlformats.org/wordprocessingml/2006/main}drawing') is not None:
+                has_drawing = True
+                break
+
+        if has_drawing:
+            figure_idx += 1
+            # Try to get caption from next paragraph if it's italicized
+            caption = f"Figure {figure_idx}"
+
+            # Look for italicized caption in following paragraphs
+            try:
+                para_idx = doc.paragraphs.index(para)
+                if para_idx + 1 < len(doc.paragraphs):
+                    next_para = doc.paragraphs[para_idx + 1]
+                    if next_para.runs and next_para.runs[0].italic:
+                        caption = f"Figure {figure_idx}: {next_para.text[:50]}"
+            except:
+                pass
+
+            p = doc.add_paragraph()
+            p.paragraph_format.space_after = Pt(1)
+            p.paragraph_format.line_spacing = Pt(18)
+            p.paragraph_format.left_indent = Inches(0.3)
+
+            rn = p.add_run(caption)
+            rn.font.size = Pt(11)
+            rn.font.color.rgb = RGBColor(0x20, 0x20, 0x20)
+
+            # Add dots and page number placeholder
+            dots = max(2, 55 - len(caption))
+            p.add_run(" " + ("." * dots) + " ")
+            p.add_run("____").font.size = Pt(10)
+
+
 def build_abbreviations_page(doc):
     add_page_break(doc)
     hdr = doc.add_paragraph()
@@ -2249,6 +2319,9 @@ def build_document(topic: str, research_level: str,
     # Build all chapters (this creates the tables)
     for num in range(1, 6):
         build_chapter_page(doc, num, chapters[num])
+
+    # Build List of Figures after all chapters (so we can count all figures/charts)
+    build_list_of_figures_page(doc)
 
     # Build List of Tables after all chapters (so we can count all tables)
     build_list_of_tables_page(doc)

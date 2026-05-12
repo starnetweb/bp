@@ -941,6 +941,10 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         if references_text.strip():
             research_agent.build_references_page(doc, references_text)
 
+        # Build List of Figures and Tables (after all chapters so we can count them)
+        research_agent.build_list_of_figures_page(doc)
+        research_agent.build_list_of_tables_page(doc)
+
         doc.save(out_path)
 
         # Inject footnotes.xml into the zip AFTER saving (zip-injection approach
