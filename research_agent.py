@@ -2362,7 +2362,7 @@ def build_document(topic: str, research_level: str,
     # Limit length and ensure non-empty
     safe = safe[:50] if safe else "Document"
 
-    filename = f"Research_{safe}.docx"
+    filename = f"{safe}.docx"
     path     = os.path.join(output_dir, filename)
     doc.save(path)
     return path
