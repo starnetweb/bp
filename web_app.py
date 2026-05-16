@@ -910,7 +910,7 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         # Build document
         log("► Assembling Word document...", "accent")
         safe     = re.sub(r"[^\w\s-]", "", topic).strip().replace(" ", "_")[:50]
-        filename = f"Research_{safe}.docx"
+        filename = f"{safe}.docx"
         out_path = os.path.join(OUTPUT_DIR, f"{job_id}_{filename}")
         log(f"  Saving to: {out_path}", "info")
 

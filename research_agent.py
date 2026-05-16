@@ -141,8 +141,8 @@ LEVEL_PROFILES = {
             "Each main subsection should be at least 110-150 words of substantive prose."
         ),
         "depth":        "substantive but accessible",
-        "word_targets": {1: 768, 2: 1088, 3: 1216, 4: 832, 5: 768},   # -20% from base
-        "front_words":  192,
+        "word_targets": {1: 461, 2: 653, 3: 730, 4: 499, 5: 461},   # -40% from standard
+        "front_words":  115,
     },
     "postgraduate": {
         "label":        "Postgraduate",
@@ -158,8 +158,8 @@ LEVEL_PROFILES = {
             "Each main subsection should be at least 200-275 words of dense, substantive prose."
         ),
         "depth":        "critical, theoretically sophisticated, and reflexive",
-        "word_targets": {1: 1434, 2: 2061, 3: 2330, 4: 1702, 5: 1434},  # -20% from base
-        "front_words":  381,
+        "word_targets": {1: 860, 2: 1237, 3: 1398, 4: 1021, 5: 860},  # -40% from standard
+        "front_words":  229,
     },
 }
 
@@ -2376,13 +2376,12 @@ def _stream_content(client, system: str, prompt: str,
                     model: str, max_tokens: int) -> str:
     use_thinking = model in ("claude-opus-4-6", "claude-sonnet-4-6")
 
-    THINKING_BUDGET = 8000   # tokens reserved for Claude's internal reasoning
-    MIN_OUTPUT      = 12000  # minimum tokens guaranteed for actual text output
+    THINKING_BUDGET = 1500   # tokens reserved for thinking (keeps total cost ~$0.51)
 
     if use_thinking:
-        # max_tokens must cover thinking budget + output budget
-        # Never let adaptive thinking swallow the output capacity
-        actual_max = max(max_tokens, THINKING_BUDGET + MIN_OUTPUT)
+        # Ensure output always has room to generate content
+        # actual_max guarantees both thinking budget AND meaningful output space
+        actual_max = max(max_tokens, THINKING_BUDGET + 3000)
         kwargs = dict(
             model=model,
             max_tokens=actual_max,
@@ -2496,7 +2495,7 @@ def generate_front_matter(client, topic: str, research_level: str,
         )
 
     print("  [Front Matter] generating...", end=" ", flush=True)
-    text = _stream_content(client, system, prompt, model, 5000)
+    text = _stream_content(client, system, prompt, model, 3000)
     print(f"done ({len(text):,} chars)")
     return text
 
@@ -2527,8 +2526,8 @@ def generate_chapter(client, topic: str, chapter_num: int,
         )
 
     print(f"  [Ch {chapter_num}] {CHAPTER_SUBTITLES[chapter_num]}...", end=" ", flush=True)
-    # Allow generous token budget: ~1.4 tokens/word, plus headroom for instructions output
-    text = _stream_content(client, system, prompt, model, max(10000, int(target * 3.5)))
+    # Use max(6000) for cost-effective generation (~$0.50 total per document)
+    text = _stream_content(client, system, prompt, model, max(6000, int(target * 3.5)))
     print(f"done ({len(text):,} chars)")
     return text
 
