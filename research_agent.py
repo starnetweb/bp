@@ -500,8 +500,8 @@ def _chapter_prompts(level_key: str) -> dict:
     targets = profile["word_targets"]
     is_pg   = (level_key == "postgraduate")
 
-    # Subsection word-count helper — applies 50% reduction to all targets
-    def w(ug, pg): return str(round(pg * 0.5) if is_pg else round(ug * 0.5))
+    # Subsection word-count helper — applies 2.38x multiplier to reach 70-75 page target
+    def w(ug, pg): return str(round(pg * 2.38) if is_pg else round(ug * 2.38))
 
     # Footnote format note appended to every chapter
     _FN_NOTE = (
@@ -2528,7 +2528,7 @@ def generate_chapter(client, topic: str, chapter_num: int,
 
     print(f"  [Ch {chapter_num}] {CHAPTER_SUBTITLES[chapter_num]}...", end=" ", flush=True)
     # Allow token budget based on target word count with 800 token minimum buffer
-    text = _stream_content(client, system, prompt, model, max(1200, int(target)))
+    text = _stream_content(client, system, prompt, model, max(4000, int(target * 2)))
     print(f"done ({len(text):,} chars)")
     return text
 
