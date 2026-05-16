@@ -141,8 +141,8 @@ LEVEL_PROFILES = {
             "Each main subsection should be at least 110-150 words of substantive prose."
         ),
         "depth":        "substantive but accessible",
-        "word_targets": {1: 461, 2: 653, 3: 730, 4: 499, 5: 461},   # -40% from standard
-        "front_words":  115,
+        "word_targets": {1: 1200, 2: 1700, 3: 1900, 4: 1300, 5: 1200},   # Targets for 70-75 pages with 2.385x multiplier
+        "front_words":  300,
     },
     "postgraduate": {
         "label":        "Postgraduate",
