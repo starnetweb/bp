@@ -1107,7 +1107,12 @@ Format each exactly as:
 Provide a complete {"interview guide (14+ open and semi-structured questions across thematic sections)" if is_pg else "questionnaire (10+ items using Likert scales, multiple choice, and open-ended questions)"}, appropriate to the research design described in Chapter 3. Include an introduction/preamble and section headings.
 
 ### Appendix B: Data Collection Timeline
-A structured {"7" if is_pg else "4"}-week timeline table for the data collection phase, with activities, responsible parties, and expected outputs for each week.
+Provide a detailed {"7" if is_pg else "4"}-week data collection timeline table with the following structure:
+
+[TABLE: Data Collection Timeline - {"7" if is_pg else "4"}-week Schedule]
+Week | Primary Activities | Responsible Party | Expected Outputs
+
+Include one row for each week showing specific activities, who is responsible, and what deliverables/data are expected to be completed by the end of that week. Be specific with quantities, timelines, and outputs (e.g., number of interviews conducted, questionnaires completed, data entry status).
 
 ### Appendix C: Ethical Clearance Template
 A sample informed consent form that would be used with participants in this study,
