@@ -500,8 +500,8 @@ def _chapter_prompts(level_key: str) -> dict:
     targets = profile["word_targets"]
     is_pg   = (level_key == "postgraduate")
 
-    # Subsection word-count helper — applies additional 20% reduction to all targets
-    def w(ug, pg): return str(round(pg * 0.8) if is_pg else round(ug * 0.8))
+    # Subsection word-count helper — applies 50% reduction to all targets
+    def w(ug, pg): return str(round(pg * 0.5) if is_pg else round(ug * 0.5))
 
     # Footnote format note appended to every chapter
     _FN_NOTE = (
@@ -2374,14 +2374,15 @@ def build_document(topic: str, research_level: str,
 
 def _stream_content(client, system: str, prompt: str,
                     model: str, max_tokens: int) -> str:
-    use_thinking = model in ("claude-opus-4-6", "claude-sonnet-4-6")
+    use_thinking = False  # Disabled: conflicts with long prompts and constrained token budgets
 
-    THINKING_BUDGET = 1500   # tokens reserved for thinking (keeps total cost ~$0.51)
+    THINKING_BUDGET = 8000   # tokens reserved for Claude's internal reasoning
+    MIN_OUTPUT      = 12000  # minimum tokens guaranteed for actual text output
 
     if use_thinking:
-        # Ensure output always has room to generate content
-        # actual_max guarantees both thinking budget AND meaningful output space
-        actual_max = max(max_tokens, THINKING_BUDGET + 3000)
+        # max_tokens must cover thinking budget + output budget
+        # Never let adaptive thinking swallow the output capacity
+        actual_max = max(max_tokens, THINKING_BUDGET + MIN_OUTPUT)
         kwargs = dict(
             model=model,
             max_tokens=actual_max,
@@ -2495,7 +2496,7 @@ def generate_front_matter(client, topic: str, research_level: str,
         )
 
     print("  [Front Matter] generating...", end=" ", flush=True)
-    text = _stream_content(client, system, prompt, model, 3000)
+    text = _stream_content(client, system, prompt, model, 200)
     print(f"done ({len(text):,} chars)")
     return text
 
@@ -2526,8 +2527,8 @@ def generate_chapter(client, topic: str, chapter_num: int,
         )
 
     print(f"  [Ch {chapter_num}] {CHAPTER_SUBTITLES[chapter_num]}...", end=" ", flush=True)
-    # Use max(6000) for cost-effective generation (~$0.50 total per document)
-    text = _stream_content(client, system, prompt, model, max(6000, int(target * 3.5)))
+    # Allow token budget based on target word count with 800 token minimum buffer
+    text = _stream_content(client, system, prompt, model, max(1200, int(target)))
     print(f"done ({len(text):,} chars)")
     return text
 
