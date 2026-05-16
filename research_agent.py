@@ -141,7 +141,7 @@ LEVEL_PROFILES = {
             "Each main subsection should be at least 110-150 words of substantive prose."
         ),
         "depth":        "substantive but accessible",
-        "word_targets": {1: 1200, 2: 1700, 3: 1900, 4: 1300, 5: 1200},   # Targets for 70-75 pages with 2.385x multiplier
+        "word_targets": {1: 1200, 2: 1700, 3: 1900, 4: 1300, 5: 1200},   # Base targets; multiplied by 1.0x in w() helper
         "front_words":  300,
     },
     "postgraduate": {
@@ -500,8 +500,16 @@ def _chapter_prompts(level_key: str) -> dict:
     targets = profile["word_targets"]
     is_pg   = (level_key == "postgraduate")
 
-    # Subsection word-count helper — applies 2.38x multiplier to reach 70-75 page target
-    def w(ug, pg): return str(round(pg * 2.38) if is_pg else round(ug * 2.38))
+    # Subsection word-count helper — applies 1.0x multiplier to allow full subsection generation (1.1-1.10)
+    def w(ug, pg): return str(round(pg * 1.0) if is_pg else round(ug * 1.0))
+
+    # Range helpers — enforce min/max to prevent over-expansion (replaces "at least" language)
+    def w_range(ug, pg):
+        """Return 'min-max' format to constrain word generation to a reasonable range"""
+        val = round(pg * 1.0 if is_pg else round(ug * 1.0))
+        min_words = max(val - 15, 40)  # 15 words below target, minimum 40
+        max_words = val + 20             # 20 words above target for natural variation
+        return f"{min_words}-{max_words}"
 
     # Footnote format note appended to every chapter
     _FN_NOTE = (
@@ -599,7 +607,7 @@ Write the following subsections, each introduced with a ### heading.
 Every subsection must be written in full, developed paragraphs — no bullet summaries, no placeholders.
 
 ### 1.1 Background of the Study
-Write at least {w(175, 350)} words for this subsection.
+Write between {w_range(140, 280)} words for this subsection.
 Provide {depth} contextual grounding. Open with a striking observation or statistic that
 immediately establishes why this topic matters. Then trace the historical evolution of the
 problem across at least three distinct time periods, naming key turning points, policy shifts,
@@ -608,7 +616,7 @@ evidence — named scholars, years, places, and figures. Close by narrowing the 
 broad context toward the precise issue this study addresses.
 
 ### 1.2 Statement of the Problem
-Write at least {w(140, 280)} words for this subsection.
+Write between {w_range(112, 224)} words for this subsection.
 Open with a clear, declarative statement of what is wrong or poorly understood. Then build
 the case across multiple paragraphs: explain the nature of the problem, who it affects, how
 long it has persisted, and why existing responses have been insufficient. Name the specific
@@ -617,31 +625,31 @@ urgent — the reader should finish this section convinced that the study was ne
 {gap_note}
 
 ### 1.2a Theoretical Gap and Contribution
-Write at least {w(140, 280)} words for this subsection (POSTGRADUATE REQUIREMENT).
+Write between {w_range(112, 224)} words for this subsection (POSTGRADUATE REQUIREMENT).
 {theory_guidance}
 
 ### 1.3 Purpose of the Study
-Write at least {w(75, 140)} words for this subsection.
+Write between {w_range(60, 112)} words for this subsection.
 State the overarching aim in one or two precise sentences. Then elaborate: explain the
 theoretical and practical orientation of the study, what kind of knowledge it seeks to
 produce, and how the purpose connects directly to the problem articulated in 1.2.
 {purpose_note}
 
 ### 1.4 Research Objectives
-Write at least {w(90, 175)} words for this subsection.
+Write between {w_range(72, 140)} words for this subsection.
 State 4–5 specific, measurable objectives. Each should be action-oriented (examine, assess,
 determine, explore, compare, evaluate). After listing them, write a short paragraph explaining
 how they collectively address the research problem and how they will be operationalised
 through the methodology described in Chapter 3.
 
 ### 1.5 Research Questions
-Write at least {w(75, 140)} words for this subsection.
+Write between {w_range(60, 112)} words for this subsection.
 Formulate 3–5 focused, answerable questions derived from the objectives. After stating the
 questions, briefly explain the logic connecting each question to its corresponding objective
 and the type of evidence that would constitute an answer.
 
 ### 1.6 Significance of the Study
-Write at least {w(125, 245)} words for this subsection.
+Write between {w_range(100, 196)} words for this subsection.
 Develop this across FOUR distinct, detailed paragraphs — one for each dimension below. Be concrete, not generic.
 
 PARAGRAPH 1 — THEORETICAL SIGNIFICANCE (PRIMARY FOR PhD):
@@ -668,27 +676,27 @@ policymakers (which agencies), communities (which populations). Make clear the p
 Example: "The primary beneficiaries are (1) development researchers studying adaptive capacity in agriculture, (2) extension agents in smallholder farming who need evidence on which interventions work, (3) agricultural policymakers designing rural development programmes, and (4) smallholder farmers themselves, who..."
 
 ### 1.7 Scope and Delimitations
-Write at least {w(100, 196)} words for this subsection.
+Write between {w_range(80, 157)} words for this subsection.
 Define the geographic, temporal, and thematic boundaries with precision. For each
 boundary, explain not just what is excluded but why the exclusion is methodologically
 justified rather than a limitation of convenience. Acknowledge the trade-offs involved.
 
 ### 1.8 Limitations of the Study
-Write at least {w(100, 196)} words for this subsection.
+Write between {w_range(80, 157)} words for this subsection.
 Identify at least four genuine constraints — methodological, practical, or contextual.
 For each, explain what the limitation is, how it arose, and what steps were taken to
 minimise its impact on the validity and transferability of findings. Be candid: real
 researchers acknowledge imperfection.
 
 ### 1.9 Definition of Key Terms
-Write at least {w(110, 210)} words for this subsection.
+Write between {w_range(88, 168)} words for this subsection.
 Define 6–8 terms that carry specific technical or conceptual meanings in this study.
 For each term: provide a working definition grounded in at least one cited scholar,
 explain how this study's usage compares to or departs from common usage, and note any
 definitional controversies relevant to the research.
 
 ### 1.10 Organisation of the Study
-Write at least {w(65, 126)} words for this subsection.
+Write between {w_range(52, 101)} words for this subsection.
 Describe what each chapter covers in two to three sentences per chapter — not a list,
 but short, flowing paragraphs. Explain the logical progression from chapter to chapter.
 
@@ -710,14 +718,14 @@ The literature review is the longest and most intellectually demanding chapter. 
 Write the following subsections in full. Every subsection demands extended, analytical prose.
 
 ### 2.1 Introduction to the Chapter
-Write at least {w(100, 210)} words.
+Write between {w_range(100, 210)} words.
 Open by situating the literature review within the study's broader purpose. Explain how
 this chapter is organised and why that organisational logic was chosen. Describe the scope
 of literature reviewed — databases, date range, inclusion criteria — without being mechanical.
 End with a statement of what the review reveals and how it sets up the research gap.
 
 ### 2.2 Conceptual Review
-Write at least {w(210, 420)} words.
+Write between {w_range(210, 420)} words.
 Identify the 4–6 central concepts of this study. For each concept: trace its intellectual
 history (who coined or defined it, when, and in what context), map the range of definitions
 across the literature (noting where scholars converge and diverge), and state explicitly
@@ -726,7 +734,7 @@ not as a series of dictionary definitions.
 {"Engage with conceptual tensions and competing paradigms — do not smooth them over." if is_pg else ""}
 
 ### 2.3 Theoretical Framework
-Write at least {w(240, 490)} words.
+Write between {w_range(240, 490)} words.
 Identify 2–3 theories or models that directly inform this study. For each theory, develop
 a full sub-argument across multiple paragraphs: name the originator and intellectual
 tradition, describe the core propositions, trace how it has been applied and tested in
@@ -734,7 +742,7 @@ empirical research over the past decade, and make explicit how it will guide thi
 analytical framework. {"Critically evaluate each theory — identify its explanatory strengths, its known limitations, and how scholars have critiqued or refined it." if is_pg else "Explain how each theory applies to the specific context of this study."}
 
 ### 2.4 Empirical Review
-Write at least {w(325, 630)} words.
+Write between {w_range(325, 630)} words.
 Critically review at least {"10-12" if is_pg else "6-8"} prior studies. Organise the
 review thematically rather than chronologically. For each thematic cluster: identify the
 key studies, summarise their findings and methodological approaches, note where results
@@ -743,7 +751,7 @@ quality. {"Evaluate sample sizes, research designs, and contextual applicability
 This section must read as a genuine scholarly conversation, not a descriptive catalogue.
 
 ### 2.5 Review of Related Studies
-Write at least {w(210, 420)} words.
+Write between {w_range(210, 420)} words.
 Focus specifically on studies conducted in comparable contexts or addressing analogous
 sub-questions. For each study reviewed: explain what it investigated, summarise its
 principal findings, assess what it contributes to this study's conceptual or empirical
@@ -751,14 +759,14 @@ foundations, and — critically — identify precisely where it falls short rela
 present study's aims. This section should make the research gap feel inevitable.
 
 ### 2.6 Research Gap
-Write at least {w(140, 280)} words.
+Write between {w_range(140, 280)} words.
 Do not simply assert that a gap exists — argue for it. Draw together the evidence from the
 preceding sections to show exactly what has been studied, what remains unstudied, why the
 existing studies are insufficient for this particular problem, and why this gap matters.
 {"Distinguish between empirical gaps (what data are missing), theoretical gaps (what explanatory frameworks have not been tested here), and methodological gaps (how prior studies' designs could be improved)." if is_pg else "Make clear why filling this gap produces knowledge that is both novel and useful."}
 
 ### 2.7 Chapter Summary
-Write at least {w(125, 245)} words.
+Write between {w_range(125, 245)} words.
 Do not list what was covered. Instead, synthesise: identify the 2–3 most important
 intellectual threads that emerge from the review, explain how they relate to each other,
 and show explicitly how they set up the methodological choices and analytical framework
@@ -800,14 +808,14 @@ All visualizations will be converted to professional Word tables with borders, h
 Write the following subsections in full.
 
 ### 3.1 Introduction to the Chapter
-Write at least {w(90, 175)} words.
+Write between {w_range(90, 175)} words.
 Orient the reader to the chapter's purpose and structure. Explain the epistemological logic
 that connects the research questions to the design choices made. {"State the researcher's ontological and epistemological position upfront and explain how it shapes the chapter's approach to the treatment of evidence and knowledge claims." if is_pg else "Explain how the methodology flows from the research questions and problem."}
 After this section, include:
 [FIGURE: Research Design Framework showing the paradigm → design → connection to research questions]
 
 ### 3.2 Research Design
-Write at least {w(160, 315)} words.
+Write between {w_range(160, 315)} words.
 Describe the overall research strategy and justify the choice of qualitative, quantitative,
 or mixed-methods design by reference to the nature of the research questions. Cite at least
 three methodologists who support this design choice. Explain what this design can and cannot
@@ -815,30 +823,30 @@ do — including what it sacrifices — and defend the choice against obvious al
 {"Connect the design explicitly to the epistemological position stated in 3.1." if is_pg else ""}
 
 ### 3.3 Research Philosophy and Paradigm
-Write at least {w(160, 350)} words.
+Write between {w_range(160, 350)} words.
 {"Develop the philosophical grounding in detail. Discuss the ontological position (what the researcher believes about the nature of reality — is it singular and knowable, or multiple and constructed?), the epistemological position (what counts as valid knowledge, and how it can be acquired), and how these positions connect to the chosen methodology. Distinguish between positivism, interpretivism, constructivism, pragmatism, and critical realism with enough precision that the reader understands which stance is adopted here and why." if is_pg else "Identify the research paradigm (e.g., interpretivist, positivist, pragmatist) and explain in clear terms how it shapes the study's approach to data, evidence, and knowledge. Draw on at least two methodologists to justify the paradigmatic choice."}
 
 ### 3.4 Research Approach
-Write at least {w(100, 196)} words.
+Write between {w_range(100, 196)} words.
 {"Specify whether the study uses inductive, deductive, or abductive reasoning. Justify this choice by reference to the research questions and the nature of the evidence being collected. Explain how the approach shapes the analytical process in Chapter 4." if is_pg else "Specify the reasoning approach (inductive or deductive) and explain how it guides data analysis. Connect this to the research design."}
 After this section, include:
 [FIGURE: Analytical Process Flowchart showing data collection → initial coding → analytical refinement → interpretation steps]
 
 ### 3.5 Study Area and Setting
-Write at least {w(115, 224)} words.
+Write between {w_range(115, 224)} words.
 Describe the physical, institutional, or organisational setting with enough specificity that
 the reader can visualise it. Explain why this setting was chosen — what makes it appropriate
 for answering these research questions. Discuss access, gatekeeping, and any contextual
 factors (political, cultural, institutional) that shaped the fieldwork.
 
 ### 3.6 Target Population
-Write at least {w(100, 196)} words.
+Write between {w_range(100, 196)} words.
 Define the population with precision — who qualifies, why they qualify, and how large the
 total population is (with a source if applicable). Explain the relevance of this population
 to the research questions. Address any challenges in defining or accessing the population.
 
 ### 3.7 Sample Size and Sampling Technique
-Write at least {w(135, 266)} words.
+Write between {w_range(135, 266)} words.
 Specify the sample size and justify it — cite at least two sources on sample size adequacy
 for the chosen design. Describe the sampling technique in precise operational terms: exactly
 how participants were identified, approached, screened, and recruited. {"Discuss how the technique addresses issues of representativeness (quantitative) or theoretical saturation and transferability (qualitative)." if is_pg else "Explain how the sample is representative of the population."}
@@ -849,7 +857,7 @@ Target Population | Total N | Inclusion Criteria | Sample Size (n) | Sampling Me
 [Provide specific numbers and explanation for how sample was derived from target population]
 
 ### 3.8 Data Collection Instruments
-Write at least {w(140, 280)} words.
+Write between {w_range(140, 280)} words.
 Describe each instrument used (questionnaire, semi-structured interview guide, observation
 protocol, document analysis schedule). For each instrument: explain the rationale for its
 design, describe its structure (sections, item types, scale formats), explain the piloting
@@ -860,14 +868,14 @@ After this section, include:
 Instrument Name | Purpose (Which RQ?) | Structure (Sections/Items) | Response Format | Justification
 
 ### 3.9 Validity and Reliability
-Write at least {w(135, 266)} words.
+Write between {w_range(135, 266)} words.
 {"Address validity and reliability using the criteria appropriate to the paradigm. For quantitative work: construct validity, criterion validity, internal consistency (Cronbach's alpha), and test-retest reliability. For qualitative work: credibility (member-checking, triangulation), transferability (thick description), dependability (audit trail), and confirmability (reflexivity) — drawing on Lincoln and Guba (1985). Explain specifically how each criterion was operationalised in this study." if is_pg else "Explain what steps were taken to ensure the instruments measure what they intend to measure and produce consistent results. Discuss any piloting and revision process. Address both internal validity and reliability."}
 After this section, include:
 [FIGURE: Validity and Reliability Framework]
 Showing paradigm-appropriate quality measures and how each was operationalised in this study.
 
 ### 3.10 Data Collection Procedure
-Write at least {w(125, 245)} words.
+Write between {w_range(125, 245)} words.
 Describe the data collection process as a step-by-step chronological narrative: ethics
 clearance, participant recruitment, informed consent, instrument administration, data
 recording, and quality checks. Include time frames and quantities (how many interviews
@@ -878,11 +886,11 @@ After this section, include:
 Week | Primary Activities | Responsible Party | Expected Outputs
 
 ### 3.11 Data Analysis Methods
-Write at least {w(140, 280)} words.
+Write between {w_range(140, 280)} words.
 Explain the analytical approach in enough detail for replication. {"Name the specific software used (SPSS, NVivo, Atlas.ti, R, Python) and justify the choice. Describe the analytical procedures step by step: coding (open, axial, selective), thematic analysis phases, statistical tests applied and their assumptions, regression models and their specification. Connect each analytical step to the specific research questions it addresses." if is_pg else "Describe the analytical approach clearly: how data were organised, coded, and interpreted. Name any software used and explain how it was applied. Connect the analysis to the research questions."}
 
 ### 3.12 Ethical Considerations
-Write at least {w(110, 210)} words.
+Write between {w_range(110, 210)} words.
 Address at least six ethical dimensions: informed consent (what participants were told and
 how consent was obtained), anonymity and confidentiality (how data were anonymised and
 protected), right to withdraw (how this was communicated and facilitated), data storage
@@ -894,7 +902,7 @@ After this section, include:
 Ethical Dimension | Description | How Operationalised in This Study | Evidence
 
 ### 3.13 Chapter Summary
-Write at least {w(100, 196)} words.
+Write between {w_range(100, 196)} words.
 Synthesise the methodological choices made in this chapter as a coherent whole. Explain
 how design, philosophy, sampling, instruments, and analysis hang together as a unified
 approach to answering the research questions. {"Address how the methodology addresses the research gap identified in Chapter 2 and positions the study within its paradigmatic tradition." if is_pg else "Show how the methodology directly serves the research objectives stated in Chapter 1."}
@@ -939,12 +947,12 @@ VISUALIZATION REQUIREMENTS:
 Write the following subsections in full.
 
 ### 4.1 Introduction to the Chapter
-Write at least {w(90, 175)} words.
+Write between {w_range(90, 175)} words.
 Explain how the chapter is structured and why. Briefly recap the research objectives so
 the reader knows what findings will address. {intro_text}
 
 ### 4.2 Sample / Response Rate Overview
-Write at least {w(110, 210)} words.
+Write between {w_range(110, 210)} words.
 Present the demographic and descriptive profile of the sample across multiple characteristics
 (age, gender, education, experience, geographic distribution — as relevant). Discuss the
 response rate if applicable and explain patterns in non-response. {sample_text}
@@ -958,7 +966,7 @@ For quantitative studies, also include:
 Showing age distribution, gender distribution, or other key characteristics visually.
 
 ### 4.3 Findings Related to Objective 1
-Write at least {w(180, 350)} words.
+Write between {w_range(180, 350)} words.
 Present specific, detailed findings for the first research objective. Use plausible
 quantitative values (percentages, means, frequencies) or qualitative themes with
 representative illustrative evidence. Interpret the findings rather than just reporting
@@ -970,7 +978,7 @@ OR
 [TABLE: Objective 1 Thematic Analysis Matrix | Theme | Frequency | Representative Quote/Evidence | Theoretical Connection]
 
 ### 4.4 Findings Related to Objective 2
-Write at least {w(180, 350)} words.
+Write between {w_range(180, 350)} words.
 Apply the same approach as 4.3 to the second research objective. Ensure this section has
 its own narrative arc — do not simply replicate the structure of 4.3. Introduce any
 unexpected or contradictory findings and engage with them analytically.
@@ -980,7 +988,7 @@ OR
 [TABLE: Objective 2 Findings Summary | Finding | Evidence | Significance]
 
 ### 4.5 Findings Related to Objective 3
-Write at least {w(180, 350)} words.
+Write between {w_range(180, 350)} words.
 Apply the same approach to the third objective. {obj3_text}
 Include data visualization:
 [CHART: Chart showing Objective 3 findings]
@@ -988,7 +996,7 @@ OR
 [TABLE: Objective 3 Findings Detailed Breakdown]
 
 ### 4.6 Findings Related to Objective 4
-Write at least {w(160, 315)} words.
+Write between {w_range(160, 315)} words.
 Present findings for the fourth objective with the same analytical rigour. By the end of
 this section, all major findings should be on the table, setting up the synthesis in 4.7.
 Include data visualization:
@@ -997,13 +1005,13 @@ OR
 [TABLE: Objective 4 Key Findings with Evidence]
 
 ### 4.7 Synthesis and Discussion of Major Findings
-Write at least {w(210, 420)} words.
+Write between {w_range(210, 420)} words.
 THIS IS THE INTELLECTUAL HEART OF THE CHAPTER — your opportunity to demonstrate meta-analytical thinking across all four objectives.
 
 {synthesis_text}
 
 ### 4.8 Implications of the Findings
-Write at least {w(140, 280)} words.
+Write between {w_range(140, 280)} words.
 Discuss implications for theory, practice, and policy separately across dedicated paragraphs.
 Name specific stakeholders and explain precisely what each set of findings means for them.
 {implications_text}
@@ -1012,7 +1020,7 @@ Include immediately after:
 Implication Domain | Specific Implication | Target Stakeholder | Actionable Consequence
 
 ### 4.9 Chapter Summary
-Write at least {w(100, 196)} words.
+Write between {w_range(100, 196)} words.
 Distil the most important results and analytical insights in two to three substantive
 paragraphs. Do not list findings — synthesise. End with a transition that sets up the
 conclusions and recommendations in Chapter 5.
@@ -1035,13 +1043,13 @@ This chapter must deliver a satisfying intellectual conclusion — not a mechani
 Write the following subsections in full.
 
 ### 5.1 Introduction to the Chapter
-Write at least {w(75, 140)} words.
+Write between {w_range(75, 140)} words.
 Orient the reader to the chapter's purpose and structure. Briefly explain how this chapter
 brings the entire study to a close and what it aims to deliver beyond simply summarising
 earlier chapters.
 
 ### 5.2 Summary of the Study
-Write at least {w(160, 315)} words.
+Write between {w_range(160, 315)} words.
 Recount the entire research journey in a flowing, synthesised narrative across at least
 four substantive paragraphs: the problem and its context, the objectives and theoretical
 framework, the methodology and its justification, and the principal findings. Do not
@@ -1049,17 +1057,17 @@ quote verbatim from earlier chapters — reframe and integrate. A reader encount
 study for the first time through this section should understand its full arc.
 
 ### 5.3 Conclusions
-Write at least {w(180, 350)} words.
+Write between {w_range(180, 350)} words.
 Draw one specific, argued conclusion per research objective — each conclusion in its own
 paragraph. Each conclusion must: state what the study found, explain what this finding
 means in context, and connect it to the evidence from Chapter 4. {"Where conclusions are tentative or conditional, say so and explain the conditions under which the conclusion holds. Where they challenge prior theory, develop that challenge explicitly." if is_pg else "State conclusions with appropriate confidence — neither overclaiming nor underselling what the data support."}
 
 ### 5.4 Contribution to Knowledge
-Write at least {w(135, 266)} words.
+Write between {w_range(135, 266)} words.
 {"Articulate the study's contribution across at least three dimensions: theoretical (how it extends, refines, or challenges existing theoretical models), empirical (what new data or patterns it adds to the evidence base), and methodological (whether it demonstrates a novel application of method in this context). Be precise — 'this study contributes to the literature' is not a contribution; naming exactly what it adds is." if is_pg else "Explain in concrete terms what is new or valuable about what this study found. How does it advance understanding beyond what was known before? What practical problems does it help solve?"}
 
 ### 5.5 Recommendations
-Write at least {w(160, 315)} words.
+Write between {w_range(160, 315)} words.
 Provide 5–6 specific, actionable, evidence-grounded recommendations. Write each as a
 full paragraph rather than a bullet point: name the recommendation, identify the specific
 finding that supports it, name the stakeholder or institution it is directed at, and
@@ -1068,14 +1076,14 @@ directly from the findings — no recommendation should appear without a groundi
 Chapter 4.
 
 ### 5.6 Recommendations for Future Research
-Write at least {w(125, 245)} words.
+Write between {w_range(125, 245)} words.
 Propose 3–4 specific research directions that arise from this study's limitations or from
 questions it raised but could not answer. Each recommendation for future research should:
 identify the gap or question, explain why it matters, suggest an appropriate methodological
 approach, and state what such research would contribute. {"For postgraduate work, these should point toward theoretical refinement, comparative cross-context studies, or longitudinal designs." if is_pg else ""}
 
 ### 5.7 Chapter Summary
-Write at least {w(80, 154)} words.
+Write between {w_range(80, 154)} words.
 A dignified, forward-looking closing that does not merely repeat the conclusions. Reflect
 on what the study set out to do and what it achieved. End with a final paragraph that
 gestures toward the broader significance of the work — without overreaching.
@@ -2373,8 +2381,9 @@ def build_document(topic: str, research_level: str,
 # ─────────────────────────────────────────────────────────
 
 def _stream_content(client, system: str, prompt: str,
-                    model: str, max_tokens: int) -> str:
-    use_thinking = False  # Disabled: conflicts with long prompts and constrained token budgets
+                    model: str, max_tokens: int, level_key: str = "undergraduate") -> str:
+    # Enable adaptive thinking only for postgraduate level
+    use_thinking = (level_key == "postgraduate") and model in ("claude-opus-4-6", "claude-sonnet-4-6")
 
     THINKING_BUDGET = 8000   # tokens reserved for Claude's internal reasoning
     MIN_OUTPUT      = 12000  # minimum tokens guaranteed for actual text output
@@ -2496,7 +2505,7 @@ def generate_front_matter(client, topic: str, research_level: str,
         )
 
     print("  [Front Matter] generating...", end=" ", flush=True)
-    text = _stream_content(client, system, prompt, model, 200)
+    text = _stream_content(client, system, prompt, model, 500)
     print(f"done ({len(text):,} chars)")
     return text
 
@@ -2528,7 +2537,7 @@ def generate_chapter(client, topic: str, chapter_num: int,
 
     print(f"  [Ch {chapter_num}] {CHAPTER_SUBTITLES[chapter_num]}...", end=" ", flush=True)
     # Allow token budget based on target word count with 800 token minimum buffer
-    text = _stream_content(client, system, prompt, model, max(4000, int(target * 2)))
+    text = _stream_content(client, system, prompt, model, max(5000, int(target * 2)), research_level)
     print(f"done ({len(text):,} chars)")
     return text
 
