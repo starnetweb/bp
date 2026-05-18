@@ -3,7 +3,7 @@ Academic Research Writeup Agent — Web Interface
 Run:  python web_app.py
 Open: http://localhost:5000
 
-POST /generate  JSON: { "project_topic": "...", "research_level": "undergraduate"|"postgraduate" }
+POST /generate  JSON: { "project_topic": "...", "research_level": "undergraduate"|"postgraduate"|"phd" }
 """
 
 import os
@@ -178,7 +178,7 @@ input:focus{border-color:var(--accent)}
 .ci-hint{font-size:.72rem;color:var(--muted);margin-top:5px;line-height:1.5}
 
 /* Level selector */
-.level-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.level-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:4px}
 .level-card{
   background:#0F1923;border:2px solid var(--border);border-radius:10px;
   padding:16px 14px;cursor:pointer;transition:border .2s,background .2s;text-align:center
@@ -253,11 +253,15 @@ input:focus{border-color:var(--accent)}
         <div class="level-grid">
           <div class="level-card selected" data-level="undergraduate" onclick="selectLevel(this)">
             <div class="level-title">🎓 Undergraduate</div>
-            <div class="level-desc">Clear, well-structured analysis.<br>Accessible theory. Solid methodology.</div>
+            <div class="level-desc">Clear and accessible.<br>Solid analysis. Straightforward methodology.</div>
           </div>
           <div class="level-card" data-level="postgraduate" onclick="selectLevel(this)">
             <div class="level-title">🏛️ Postgraduate</div>
             <div class="level-desc">Critical engagement with theory.<br>Epistemological depth. Advanced methodology.</div>
+          </div>
+          <div class="level-card" data-level="phd" onclick="selectLevel(this)">
+            <div class="level-title">🔬 PhD</div>
+            <div class="level-desc">Sophisticated theoretical engagement.<br>Ontological positioning. Rigorous scholarship.</div>
           </div>
         </div>
       </div>

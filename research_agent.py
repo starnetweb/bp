@@ -131,34 +131,49 @@ LEVEL_PROFILES = {
     "undergraduate": {
         "label":        "Undergraduate",
         "tone":         (
-            "Write at an advanced undergraduate level. "
+            "Write at an introductory undergraduate level. "
+            "The writing should be clear, well-organised, and academically sound. "
+            "Theoretical frameworks should be explained in accessible terms. "
+            "Methodology should be straightforward and easy to follow. "
+            "Analysis should be sound and demonstrate understanding but does not need to engage with advanced meta-theoretical debates. "
+            "WORD COUNT IS CRITICAL: every subsection must be clearly developed. "
+            "Focus on clarity and coherence. Each main subsection should be 80-120 words of clear, substantive prose."
+        ),
+        "depth":        "clear and accessible",
+        "word_targets": {1: 900, 2: 1300, 3: 1450, 4: 950, 5: 900},   # 70-75% of postgraduate targets
+        "front_words":  220,
+    },
+    "postgraduate": {
+        "label":        "Postgraduate (Master's)",
+        "tone":         (
+            "Write at an advanced postgraduate (Master's) level. "
             "The writing should be clear, well-organised, and academically sound but accessible. "
             "Theoretical frameworks should be explained rather than assumed. "
-            "Methodology should be straightforward. "
-            "Analysis should be solid but does not need to engage deeply with meta-theoretical debates. "
+            "Methodology should be comprehensive with adequate justification. "
+            "Analysis should be solid and demonstrate critical engagement but does not need to engage deeply with advanced meta-theoretical debates. "
             "WORD COUNT IS CRITICAL: every subsection must be fully developed with multiple paragraphs. "
             "Do not summarise when you can explain. Do not list when you can discuss. "
             "Each main subsection should be at least 110-150 words of substantive prose."
         ),
         "depth":        "substantive but accessible",
-        "word_targets": {1: 1200, 2: 1700, 3: 1900, 4: 1300, 5: 1200},   # Base targets; multiplied by 1.0x in w() helper
+        "word_targets": {1: 1200, 2: 1700, 3: 1900, 4: 1300, 5: 1200},   # Current undergraduate targets
         "front_words":  300,
     },
-    "postgraduate": {
-        "label":        "Postgraduate",
+    "phd": {
+        "label":        "PhD",
         "tone":         (
-            "Write at a rigorous postgraduate (Master's/PhD) level. "
+            "Write at a rigorous doctoral (PhD) level. "
             "Engage critically with theoretical debates, epistemological positioning, and ontological assumptions. "
-            "Situate the research within current scholarly conversations. "
-            "The methodology chapter must address paradigmatic choices explicitly. "
-            "Analysis should be sophisticated, nuanced, and reflexive. "
+            "Situate the research within current scholarly conversations and emergent debates. "
+            "The methodology chapter must address paradigmatic choices explicitly and justify philosophical positioning. "
+            "Analysis should be sophisticated, nuanced, and reflexive with deep theoretical integration. "
             "Identify tensions, contradictions, and limitations in the literature and in your own approach. "
             "WORD COUNT IS CRITICAL: every subsection must be richly developed. "
             "Do not skim — excavate. Each argument deserves full development across multiple paragraphs. "
             "Each main subsection should be at least 200-275 words of dense, substantive prose."
         ),
         "depth":        "critical, theoretically sophisticated, and reflexive",
-        "word_targets": {1: 860, 2: 1237, 3: 1398, 4: 1021, 5: 860},  # -40% from standard
+        "word_targets": {1: 860, 2: 1237, 3: 1398, 4: 1021, 5: 860},  # Current postgraduate targets
         "front_words":  229,
     },
 }
@@ -501,12 +516,24 @@ def _chapter_prompts(level_key: str) -> dict:
     is_pg   = (level_key == "postgraduate")
 
     # Subsection word-count helper — applies 1.0x multiplier to allow full subsection generation (1.1-1.10)
-    def w(ug, pg): return str(round(pg * 1.0) if is_pg else round(ug * 1.0))
+    # Returns PhD/Postgrad word count if at that level, otherwise returns base undergraduate/postgraduate count
+    def w(ug, pg):
+        if level_key == "phd":
+            return str(round(pg * 1.0))  # Use higher targets for PhD
+        elif level_key == "postgraduate":
+            return str(round(pg * 1.0))  # Use postgraduate targets
+        else:  # undergraduate
+            return str(round(ug * 1.0))  # Use lower targets for undergraduate
 
     # Range helpers — enforce min/max to prevent over-expansion (replaces "at least" language)
     def w_range(ug, pg):
         """Return 'min-max' format to constrain word generation to a reasonable range"""
-        val = round(pg * 1.0 if is_pg else round(ug * 1.0))
+        if level_key == "phd":
+            val = round(pg * 1.0)  # PhD uses higher targets
+        elif level_key == "postgraduate":
+            val = round(pg * 1.0)  # Postgraduate uses mid targets
+        else:  # undergraduate
+            val = round(ug * 1.0)  # Undergraduate uses lower targets
         min_words = max(val - 15, 40)  # 15 words below target, minimum 40
         max_words = val + 20             # 20 words above target for natural variation
         return f"{min_words}-{max_words}"
@@ -570,17 +597,27 @@ def _chapter_prompts(level_key: str) -> dict:
 
     phd_purpose_note = "Explicitly connect the purpose to BOTH the practical problem (1.2) AND the theoretical gap (1.2a), showing how addressing one advances the other."
 
-    gap_note = phd_gap_note if is_pg else ""
-    theory_guidance = phd_theory_guidance if is_pg else ""
-    purpose_note = phd_purpose_note if is_pg else ""
+    # Apply PhD-specific guidance only for PhD level
+    gap_note = phd_gap_note if level_key == "phd" else ""
+    theory_guidance = phd_theory_guidance if level_key == "phd" else ""
+    purpose_note = phd_purpose_note if level_key == "phd" else ""
 
     # Define conditional content for Chapter 4 OUTSIDE f-string
-    ch4_intro_note = "State the analytical framework guiding interpretation and how it connects to the theoretical framework in Chapter 2."
-    ch4_sample_note = "Compare the achieved sample to the target population and discuss implications for transferability."
-    ch4_obj1_note = "Connect findings explicitly to the theoretical framework from Chapter 2. Where results confirm prior theory, explain why. Where they challenge it, explore the implications."
-    ch4_obj3_note = "At this stage, begin drawing connections between findings across objectives — note where patterns reinforce each other or where tensions emerge."
-    ch4_synthesis_note = "DO NOT MERELY SUMMARISE. Instead, execute this multi-stage synthesis:\n\nSTAGE 1: CROSS-OBJECTIVE PATTERN IDENTIFICATION (1-2 PARAGRAPHS)\nIdentify overarching themes, patterns, or mechanisms that cut across all four objectives. Ask yourself: What is really going on here? What unifying principle, pattern, or process explains the findings across objectives?\n\nSTAGE 2: EXPECTED vs. UNEXPECTED FINDINGS (1-2 PARAGRAPHS)\nWhich findings DID you anticipate based on the literature? Which findings SURPRISED you or contradicted prior research? Explain divergences between expectations and results.\n\nSTAGE 3: CONTRADICTIONS AND TENSIONS (1 PARAGRAPH IF APPLICABLE)\nDo any objectives produce findings that contradict each other? Do qualitative and quantitative findings diverge? Explain tensions analytically—do not gloss over contradictions.\n\nSTAGE 4: THEORETICAL ARTICULATION (2-3 PARAGRAPHS)\nNow situate your integrated findings in relation to the theoretical framework from Chapter 2 and the theoretical gap from Chapter 1.\n- Sub-point 4a: Does synthesis CONFIRM the theoretical framework? Say so precisely with named theory.\n- Sub-point 4b: Does synthesis CHALLENGE/COMPLICATE theory? Explain specific deviations and theoretical implications.\n- Sub-point 4c: Does synthesis EXTEND theory? Apply existing theory to new context and show what this reveals.\n\nSTAGE 5: INTEGRATION WITH EMPIRICAL LITERATURE (1-2 PARAGRAPHS)\nConnect back to specific studies from Chapter 2. Explain consistency or divergence with prior research. Show how findings resolve conflicting prior studies.\n\nSTAGE 6: LIMITATIONS AND CAVEATS (0.5-1 PARAGRAPH)\nAcknowledge what data do NOT explain. State boundary conditions where patterns might not hold. Signal intellectual maturity and preempt criticism.\n\nINCLUDE AFTER THE SYNTHESIS:\n[TABLE: Synthesis Matrix - Cross-Objective Themes and Theoretical Connections]\nOverarching Theme | Evidence from Obj1-4 | Theoretical Connection\n\nAND:\n[FIGURE: Conceptual Integration Diagram]\nVisual showing how findings interconnect, mechanisms, and theoretical relationships."
-    ch4_implications_note = "For theory: what does this study add to, refine, or challenge in the existing theoretical models? For practice: what specific changes in professional practice are warranted? For policy: what specific policy recommendations emerge, addressed to named agencies or decision-makers?"
+    # Simplified version for undergraduate, detailed version for postgraduate and PhD
+    if level_key == "undergraduate":
+        ch4_intro_note = "Introduce how you will discuss the findings and connect them to the research questions."
+        ch4_sample_note = "Comment on how well the sample represents the wider population."
+        ch4_obj1_note = "Explain what the findings mean in relation to your research questions."
+        ch4_obj3_note = "Begin noting where findings from different objectives relate to or support each other."
+        ch4_synthesis_note = "Bring together the findings from all four objectives. Discuss what they show when viewed as a whole. Explain the overall story the data tells."
+        ch4_implications_note = "Discuss what the findings mean: what they suggest about the issue being studied, what could change based on these findings, and who should know about them."
+    else:  # postgraduate and phd
+        ch4_intro_note = "State the analytical framework guiding interpretation and how it connects to the theoretical framework in Chapter 2."
+        ch4_sample_note = "Compare the achieved sample to the target population and discuss implications for transferability."
+        ch4_obj1_note = "Connect findings explicitly to the theoretical framework from Chapter 2. Where results confirm prior theory, explain why. Where they challenge it, explore the implications."
+        ch4_obj3_note = "At this stage, begin drawing connections between findings across objectives — note where patterns reinforce each other or where tensions emerge."
+        ch4_synthesis_note = "DO NOT MERELY SUMMARISE. Instead, execute this multi-stage synthesis:\n\nSTAGE 1: CROSS-OBJECTIVE PATTERN IDENTIFICATION (1-2 PARAGRAPHS)\nIdentify overarching themes, patterns, or mechanisms that cut across all four objectives. Ask yourself: What is really going on here? What unifying principle, pattern, or process explains the findings across objectives?\n\nSTAGE 2: EXPECTED vs. UNEXPECTED FINDINGS (1-2 PARAGRAPHS)\nWhich findings DID you anticipate based on the literature? Which findings SURPRISED you or contradicted prior research? Explain divergences between expectations and results.\n\nSTAGE 3: CONTRADICTIONS AND TENSIONS (1 PARAGRAPH IF APPLICABLE)\nDo any objectives produce findings that contradict each other? Do qualitative and quantitative findings diverge? Explain tensions analytically—do not gloss over contradictions.\n\nSTAGE 4: THEORETICAL ARTICULATION (2-3 PARAGRAPHS)\nNow situate your integrated findings in relation to the theoretical framework from Chapter 2 and the theoretical gap from Chapter 1.\n- Sub-point 4a: Does synthesis CONFIRM the theoretical framework? Say so precisely with named theory.\n- Sub-point 4b: Does synthesis CHALLENGE/COMPLICATE theory? Explain specific deviations and theoretical implications.\n- Sub-point 4c: Does synthesis EXTEND theory? Apply existing theory to new context and show what this reveals.\n\nSTAGE 5: INTEGRATION WITH EMPIRICAL LITERATURE (1-2 PARAGRAPHS)\nConnect back to specific studies from Chapter 2. Explain consistency or divergence with prior research. Show how findings resolve conflicting prior studies.\n\nSTAGE 6: LIMITATIONS AND CAVEATS (0.5-1 PARAGRAPH)\nAcknowledge what data do NOT explain. State boundary conditions where patterns might not hold. Signal intellectual maturity and preempt criticism.\n\nINCLUDE AFTER THE SYNTHESIS:\n[TABLE: Synthesis Matrix - Cross-Objective Themes and Theoretical Connections]\nOverarching Theme | Evidence from Obj1-4 | Theoretical Connection\n\nAND:\n[FIGURE: Conceptual Integration Diagram]\nVisual showing how findings interconnect, mechanisms, and theoretical relationships."
+        ch4_implications_note = "For theory: what does this study add to, refine, or challenge in the existing theoretical models? For practice: what specific changes in professional practice are warranted? For policy: what specific policy recommendations emerge, addressed to named agencies or decision-makers?"
 
     intro_text = ch4_intro_note if is_pg else "Orient the reader to how findings are organised."
     sample_text = ch4_sample_note if is_pg else "Comment on how representative the sample appears to be."
