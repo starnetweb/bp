@@ -2423,9 +2423,14 @@ def build_document(topic: str, research_level: str,
 # ─────────────────────────────────────────────────────────
 
 def _stream_content(client, system: str, prompt: str,
-                    model: str, max_tokens: int, level_key: str = "undergraduate") -> str:
-    # Enable adaptive thinking only for postgraduate level
-    use_thinking = (level_key == "postgraduate") and model in ("claude-opus-4-6", "claude-sonnet-4-6")
+                    model: str, max_tokens: int, level_key: str = "undergraduate",
+                    use_thinking_override: bool = None) -> str:
+    # Allow override via use_thinking_override parameter (from UI toggle)
+    # Otherwise, use level-based default: thinking for PhD level only
+    if use_thinking_override is not None:
+        use_thinking = use_thinking_override and model in ("claude-opus-4-6", "claude-sonnet-4-6")
+    else:
+        use_thinking = (level_key == "phd") and model in ("claude-opus-4-6", "claude-sonnet-4-6")
 
     THINKING_BUDGET = 8000   # tokens reserved for Claude's internal reasoning
     MIN_OUTPUT      = 12000  # minimum tokens guaranteed for actual text output
@@ -2456,7 +2461,8 @@ def _stream_content(client, system: str, prompt: str,
 def generate_front_matter(client, topic: str, research_level: str,
                            model: str = None,
                            front_matter_sections: list = None,
-                           custom_instructions: str = None) -> str:
+                           custom_instructions: str = None,
+                           use_thinking: bool = False) -> str:
     """
     Generate front matter pages.
 
@@ -2547,14 +2553,15 @@ def generate_front_matter(client, topic: str, research_level: str,
         )
 
     print("  [Front Matter] generating...", end=" ", flush=True)
-    text = _stream_content(client, system, prompt, model, 500)
+    text = _stream_content(client, system, prompt, model, 500, research_level, use_thinking_override=use_thinking)
     print(f"done ({len(text):,} chars)")
     return text
 
 
 def generate_chapter(client, topic: str, chapter_num: int,
                      research_level: str, model: str = None,
-                     custom_instructions: str = None) -> str:
+                     custom_instructions: str = None,
+                     use_thinking: bool = False) -> str:
     model    = model or config.MODEL
     prompts  = _chapter_prompts(research_level)
     prompt   = prompts[chapter_num].format(topic=topic)
@@ -2579,7 +2586,7 @@ def generate_chapter(client, topic: str, chapter_num: int,
 
     print(f"  [Ch {chapter_num}] {CHAPTER_SUBTITLES[chapter_num]}...", end=" ", flush=True)
     # Allow token budget based on target word count with 800 token minimum buffer
-    text = _stream_content(client, system, prompt, model, max(5000, int(target * 2)), research_level)
+    text = _stream_content(client, system, prompt, model, max(5000, int(target * 2)), research_level, use_thinking_override=use_thinking)
     print(f"done ({len(text):,} chars)")
     return text
 

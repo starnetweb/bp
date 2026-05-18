@@ -329,6 +329,15 @@ input:focus{border-color:var(--accent)}
         </div>
       </div>
 
+      <div class="form-group">
+        <label>Advanced Options</label>
+        <label class="toc-toggle">
+          <input type="checkbox" id="thinking-toggle" onchange="toggleThinking()"/>
+          <span>Enable AI extended thinking (slower, more thorough analysis)</span>
+        </label>
+        <div class="toc-hint">💡 When enabled, the AI will use extended thinking for deeper analysis. This may increase generation time but can improve content quality for complex topics.</div>
+      </div>
+
       <hr class="divider"/>
 
       <div class="row-2">
@@ -465,6 +474,10 @@ function toggleCi(){
   document.getElementById('ci-wrap').style.display=show?'block':'none';
 }
 
+function toggleThinking(){
+  // This function just handles UI state; the actual toggle is read in start()
+}
+
 function setStep(n){
   for(let i=1;i<=3;i++){
     const s=document.getElementById('step'+i);
@@ -500,7 +513,8 @@ async function start(){
   const customTocOn=document.getElementById('custom-toc-toggle').checked;
   const customToc=customTocOn?document.getElementById('custom-toc').value.trim():'';
   const fmSections=getFmSections();
-  const payload={project_topic:topic,research_level:selectedLevel,chapters:chaptersStr,front_matter_sections:fmSections};
+  const useThinking=document.getElementById('thinking-toggle').checked;
+  const payload={project_topic:topic,research_level:selectedLevel,chapters:chaptersStr,front_matter_sections:fmSections,use_thinking:useThinking};
   if(customToc) payload.custom_toc=customToc;
   if(email) payload.email=email;
   if(phone) payload.phone=phone;
@@ -648,7 +662,7 @@ def generate():
     Field             Type      Required  Description
     ─────────────────────────────────────────────────────────────────────
     project_topic     string    YES       The full research topic title
-    research_level    string    YES       "undergraduate" or "postgraduate"
+    research_level    string    YES       "undergraduate", "postgraduate", or "phd"
     chapters          string    no        Which chapters to write.
                                           Formats:  "3"        → chapter 3 only
                                                     "3-5"      → chapters 3,4,5
@@ -659,13 +673,15 @@ def generate():
                                           Omit or leave blank to use the auto-generated TOC.
     email             string    no        Client email — document is sent here on completion.
     phone             string    no        Client phone number (stored for reference).
+    use_thinking      bool      no        Enable AI extended thinking (default: false).
+                                          When true, enables deeper analysis (slower).
     ─────────────────────────────────────────────────────────────────────
     Returns: { "job_id": "uuid", "chapters": [1,2,3,4,5] }
 
     Example curl:
       curl -X POST http://localhost:5000/generate \\
            -H "Content-Type: application/json" \\
-           -d '{"project_topic":"Impact of AI on Healthcare","research_level":"undergraduate","chapters":"3-5","email":"client@example.com"}'
+           -d '{"project_topic":"Impact of AI on Healthcare","research_level":"undergraduate","chapters":"3-5","email":"client@example.com","use_thinking":false}'
     """
     data           = request.get_json(force=True, silent=True) or {}
     topic          = (data.get("project_topic") or data.get("topic") or "").strip()
@@ -675,6 +691,7 @@ def generate():
     extra_email           = (data.get("email") or "").strip() or None
     front_matter_sections = data.get("front_matter_sections")  # list or None → defaults to all
     custom_instructions   = (data.get("custom_instructions") or "").strip() or None
+    use_thinking          = data.get("use_thinking", False)  # Default to False if not provided
 
     if not topic:
         return jsonify({"error": "project_topic is required"}), 400
@@ -697,7 +714,7 @@ def generate():
         target=_run_agent,
         args=(job_id, topic, research_level, chapters_list,
               extra_email, custom_toc, front_matter_sections,
-              custom_instructions),
+              custom_instructions, use_thinking),
         daemon=True
     ).start()
 
@@ -840,7 +857,8 @@ def _run_agent(job_id: str, topic: str, research_level: str,
                extra_email: str = None,
                custom_toc: str = None,
                front_matter_sections: list = None,
-               custom_instructions: str = None):
+               custom_instructions: str = None,
+               use_thinking: bool = False):
     job = JOBS[job_id]
     q   = job["log_queue"]
 
@@ -874,6 +892,7 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         log(f"  FRONT    : {fm_label}", "header")
         log(f"  TOC      : {toc_src}", "header")
         log(f"  MODEL    : {config.MODEL}", "header")
+        log(f"  THINKING : {'ON (deeper analysis)' if use_thinking else 'OFF'}", "header")
         if custom_instructions:
             ci_preview = custom_instructions[:60] + ("…" if len(custom_instructions) > 60 else "")
             log(f"  CUSTOM   : {ci_preview}", "header")
@@ -886,7 +905,8 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         front = research_agent.generate_front_matter(
             client, topic, research_level, model=config.MODEL,
             front_matter_sections=fm_include,   # pass [] when all deselected, not None (None = include all)
-            custom_instructions=custom_instructions
+            custom_instructions=custom_instructions,
+            use_thinking=use_thinking
         )
         log(f"  ✓ Front matter — {len(front):,} chars", "success")
         log("")
@@ -898,7 +918,8 @@ def _run_agent(job_id: str, topic: str, research_level: str,
             log(f"► Chapter {num}: {name}...", "accent")
             chapters[num] = research_agent.generate_chapter(
                 client, topic, num, research_level, model=config.MODEL,
-                custom_instructions=custom_instructions
+                custom_instructions=custom_instructions,
+                use_thinking=use_thinking
             )
             log(f"  ✓ Chapter {num} complete — {len(chapters[num]):,} chars", "success")
             log("")
