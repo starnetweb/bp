@@ -5,7 +5,7 @@
 
 # ── Anthropic API ─────────────────────────────────────────────
 # Get your key at: https://console.anthropic.com/settings/keys
-ANTHROPIC_API_KEY = ""
+ANTHROPIC_API_KEY = "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"
 
 # ── Model selection ───────────────────────────────────────────
 # Options (best → cheapest):
