@@ -2462,7 +2462,8 @@ def generate_front_matter(client, topic: str, research_level: str,
                            model: str = None,
                            front_matter_sections: list = None,
                            custom_instructions: str = None,
-                           use_thinking: bool = False) -> str:
+                           use_thinking: bool = False,
+                           nalt_compliance: bool = False) -> str:
     """
     Generate front matter pages.
 
@@ -2470,6 +2471,9 @@ def generate_front_matter(client, topic: str, research_level: str,
         Allowed values: "declaration", "dedication", "acknowledgements"
         Abstract is ALWAYS included regardless of this list.
         Default (None) → all three optional sections included.
+    nalt_compliance : bool, default False
+        When True (for BSc legal research), enforce Nigerian Association of
+        Law Teachers (NALT) Uniform Format and Citation Guide standards.
     """
     model   = model or config.MODEL
     profile = LEVEL_PROFILES[research_level]
@@ -2489,6 +2493,52 @@ def generate_front_matter(client, topic: str, research_level: str,
         "examiners and set the tone for the entire document. "
         + HUMAN_WRITING_INSTRUCTION
     )
+
+    if nalt_compliance:
+        system += (
+            "\n\n"
+            "═════════════════════════════════════════════════════════════════════\n"
+            "  NALT COMPLIANCE MODE: Nigerian Legal Research Standards\n"
+            "═════════════════════════════════════════════════════════════════════\n"
+            "You are writing for the Nigerian legal academic context. Adhere strictly to the\n"
+            "Nigerian Association of Law Teachers (NALT) Uniform Format and Citation Guide.\n\n"
+            "KEY REQUIREMENTS FOR NALT COMPLIANCE:\n\n"
+            "1. CITATION FORMAT:\n"
+            "   - Use footnote citations exclusively (NOT parenthetical citations)\n"
+            "   - Nigerian case format: Reported [Year] volume Reporter page, e.g.,\n"
+            "     Reported [2020] 2 NWLR (Pt. 1268) 450\n"
+            "   - Unreported cases: (Unreported, Suit No. XXX of YYYY) Court (State/Federal)\n"
+            "   - Statutes: Include statutory instrument number and year\n"
+            "     Example: The Evidence Act, CAP E14, Laws of the Federation 2004\n\n"
+            "2. STRUCTURE & ORGANISATION:\n"
+            "   - Follow strictly the chapter structure: Introduction, Literature Review,\n"
+            "     Methodology, Results/Findings, and Conclusions\n"
+            "   - Use numbered subheadings consistently (1.1, 1.2, 2.1, 2.2, etc.)\n"
+            "   - Begin each chapter with a brief thematic introduction\n"
+            "   - End each chapter with a brief summary linking to the next\n\n"
+            "3. LEGAL AUTHORITIES:\n"
+            "   - Prioritise Nigerian case law and statutory authorities\n"
+            "   - Cite comparative law (UK, Commonwealth) only where relevant and necessary\n"
+            "   - Reference Nigerian legal scholarship prominently\n"
+            "   - Include Nigerian Constitution, 1999 (as amended) citations\n\n"
+            "4. RESEARCH APPROACH:\n"
+            "   - For doctrinal legal research: emphasise textual analysis of statutes,\n"
+            "     case law interpretation, and doctrinal principles\n"
+            "   - For non-doctrinal research: clearly articulate methodology, data sources,\n"
+            "     and analytical framework from the outset\n"
+            "   - Demonstrate awareness of Nigerian legal development and context\n\n"
+            "5. WRITING STYLE:\n"
+            "   - Maintain formal academic legal register\n"
+            "   - Use proper legal terminology consistently\n"
+            "   - Avoid colloquialisms; be precise in legal language\n"
+            "   - Structure complex legal arguments in clear prose paragraphs\n\n"
+            "6. REFERENCES:\n"
+            "   - Bibliography must follow NALT format\n"
+            "   - Arrange by: Books, Journal Articles, Cases, Statutes and Instruments\n"
+            "     (within each category: alphabetical by author surname)\n"
+            "   - Include year of publication and publisher details\n\n"
+            "═════════════════════════════════════════════════════════════════════"
+        )
 
     # Build the section list dynamically
     section_blocks = []
@@ -2561,7 +2611,8 @@ def generate_front_matter(client, topic: str, research_level: str,
 def generate_chapter(client, topic: str, chapter_num: int,
                      research_level: str, model: str = None,
                      custom_instructions: str = None,
-                     use_thinking: bool = False) -> str:
+                     use_thinking: bool = False,
+                     nalt_compliance: bool = False) -> str:
     model    = model or config.MODEL
     prompts  = _chapter_prompts(research_level)
     prompt   = prompts[chapter_num].format(topic=topic)
@@ -2576,6 +2627,52 @@ def generate_chapter(client, topic: str, chapter_num: int,
         "You never produce AI-sounding text. You write fully developed, substantive prose and never truncate, "
         "summarise, or leave placeholders. You meet every word count target without compromise."
     )
+
+    if nalt_compliance:
+        system += (
+            "\n\n"
+            "═════════════════════════════════════════════════════════════════════\n"
+            "  NALT COMPLIANCE MODE: Nigerian Legal Research Standards\n"
+            "═════════════════════════════════════════════════════════════════════\n"
+            "You are writing for the Nigerian legal academic context. Adhere strictly to the\n"
+            "Nigerian Association of Law Teachers (NALT) Uniform Format and Citation Guide.\n\n"
+            "KEY REQUIREMENTS FOR NALT COMPLIANCE:\n\n"
+            "1. CITATION FORMAT:\n"
+            "   - Use footnote citations exclusively (NOT parenthetical citations)\n"
+            "   - Nigerian case format: Reported [Year] volume Reporter page, e.g.,\n"
+            "     Reported [2020] 2 NWLR (Pt. 1268) 450\n"
+            "   - Unreported cases: (Unreported, Suit No. XXX of YYYY) Court (State/Federal)\n"
+            "   - Statutes: Include statutory instrument number and year\n"
+            "     Example: The Evidence Act, CAP E14, Laws of the Federation 2004\n\n"
+            "2. STRUCTURE & ORGANISATION:\n"
+            "   - Follow strictly the chapter structure: Introduction, Literature Review,\n"
+            "     Methodology, Results/Findings, and Conclusions\n"
+            "   - Use numbered subheadings consistently (1.1, 1.2, 2.1, 2.2, etc.)\n"
+            "   - Begin each chapter with a brief thematic introduction\n"
+            "   - End each chapter with a brief summary linking to the next\n\n"
+            "3. LEGAL AUTHORITIES:\n"
+            "   - Prioritise Nigerian case law and statutory authorities\n"
+            "   - Cite comparative law (UK, Commonwealth) only where relevant and necessary\n"
+            "   - Reference Nigerian legal scholarship prominently\n"
+            "   - Include Nigerian Constitution, 1999 (as amended) citations\n\n"
+            "4. RESEARCH APPROACH:\n"
+            "   - For doctrinal legal research: emphasise textual analysis of statutes,\n"
+            "     case law interpretation, and doctrinal principles\n"
+            "   - For non-doctrinal research: clearly articulate methodology, data sources,\n"
+            "     and analytical framework from the outset\n"
+            "   - Demonstrate awareness of Nigerian legal development and context\n\n"
+            "5. WRITING STYLE:\n"
+            "   - Maintain formal academic legal register\n"
+            "   - Use proper legal terminology consistently\n"
+            "   - Avoid colloquialisms; be precise in legal language\n"
+            "   - Structure complex legal arguments in clear prose paragraphs\n\n"
+            "6. REFERENCES:\n"
+            "   - Bibliography must follow NALT format\n"
+            "   - Arrange by: Books, Journal Articles, Cases, Statutes and Instruments\n"
+            "     (within each category: alphabetical by author surname)\n"
+            "   - Include year of publication and publisher details\n\n"
+            "═════════════════════════════════════════════════════════════════════"
+        )
 
     if custom_instructions and custom_instructions.strip():
         prompt += (

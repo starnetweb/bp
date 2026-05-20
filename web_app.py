@@ -338,6 +338,15 @@ input:focus{border-color:var(--accent)}
         <div class="toc-hint">💡 When enabled, the AI will use extended thinking for deeper analysis. This may increase generation time but can improve content quality for complex topics.</div>
       </div>
 
+      <div class="form-group">
+        <label>Legal Research Standards</label>
+        <label class="toc-toggle">
+          <input type="checkbox" id="nalt-compliance-toggle" onchange="toggleNALT()"/>
+          <span>⚖️ Enforce NALT Guidelines (for BSc Legal Research)</span>
+        </label>
+        <div class="toc-hint">📋 When enabled, research will strictly follow the Nigerian Association of Law Teachers (NALT) Uniform Format and Citation Guide for legal research writing in Nigeria. Ensures compliance with national legal academic standards.</div>
+      </div>
+
       <hr class="divider"/>
 
       <div class="row-2">
@@ -478,6 +487,10 @@ function toggleThinking(){
   // This function just handles UI state; the actual toggle is read in start()
 }
 
+function toggleNALT(){
+  // This function just handles UI state; the actual toggle is read in start()
+}
+
 function setStep(n){
   for(let i=1;i<=3;i++){
     const s=document.getElementById('step'+i);
@@ -514,7 +527,8 @@ async function start(){
   const customToc=customTocOn?document.getElementById('custom-toc').value.trim():'';
   const fmSections=getFmSections();
   const useThinking=document.getElementById('thinking-toggle').checked;
-  const payload={project_topic:topic,research_level:selectedLevel,chapters:chaptersStr,front_matter_sections:fmSections,use_thinking:useThinking};
+  const naltCompliance=document.getElementById('nalt-compliance-toggle').checked;
+  const payload={project_topic:topic,research_level:selectedLevel,chapters:chaptersStr,front_matter_sections:fmSections,use_thinking:useThinking,nalt_compliance:naltCompliance};
   if(customToc) payload.custom_toc=customToc;
   if(email) payload.email=email;
   if(phone) payload.phone=phone;
@@ -692,6 +706,7 @@ def generate():
     front_matter_sections = data.get("front_matter_sections")  # list or None → defaults to all
     custom_instructions   = (data.get("custom_instructions") or "").strip() or None
     use_thinking          = data.get("use_thinking", False)  # Default to False if not provided
+    nalt_compliance       = data.get("nalt_compliance", False)  # Default to False if not provided
 
     if not topic:
         return jsonify({"error": "project_topic is required"}), 400
@@ -714,7 +729,7 @@ def generate():
         target=_run_agent,
         args=(job_id, topic, research_level, chapters_list,
               extra_email, custom_toc, front_matter_sections,
-              custom_instructions, use_thinking),
+              custom_instructions, use_thinking, nalt_compliance),
         daemon=True
     ).start()
 
@@ -858,7 +873,8 @@ def _run_agent(job_id: str, topic: str, research_level: str,
                custom_toc: str = None,
                front_matter_sections: list = None,
                custom_instructions: str = None,
-               use_thinking: bool = False):
+               use_thinking: bool = False,
+               nalt_compliance: bool = False):
     job = JOBS[job_id]
     q   = job["log_queue"]
 
@@ -893,6 +909,7 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         log(f"  TOC      : {toc_src}", "header")
         log(f"  MODEL    : {config.MODEL}", "header")
         log(f"  THINKING : {'ON (deeper analysis)' if use_thinking else 'OFF'}", "header")
+        log(f"  NALT     : {'ON (Nigerian legal standards)' if nalt_compliance else 'OFF'}", "header")
         if custom_instructions:
             ci_preview = custom_instructions[:60] + ("…" if len(custom_instructions) > 60 else "")
             log(f"  CUSTOM   : {ci_preview}", "header")
@@ -906,7 +923,8 @@ def _run_agent(job_id: str, topic: str, research_level: str,
             client, topic, research_level, model=config.MODEL,
             front_matter_sections=fm_include,   # pass [] when all deselected, not None (None = include all)
             custom_instructions=custom_instructions,
-            use_thinking=use_thinking
+            use_thinking=use_thinking,
+            nalt_compliance=nalt_compliance
         )
         log(f"  ✓ Front matter — {len(front):,} chars", "success")
         log("")
@@ -919,7 +937,8 @@ def _run_agent(job_id: str, topic: str, research_level: str,
             chapters[num] = research_agent.generate_chapter(
                 client, topic, num, research_level, model=config.MODEL,
                 custom_instructions=custom_instructions,
-                use_thinking=use_thinking
+                use_thinking=use_thinking,
+                nalt_compliance=nalt_compliance
             )
             log(f"  ✓ Chapter {num} complete — {len(chapters[num]):,} chars", "success")
             log("")
