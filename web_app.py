@@ -24,7 +24,34 @@ from flask import (
 )
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-import config
+
+# ── Config: read from environment variables (Docker) or fall back to config.py ──
+try:
+    import config as _cfg
+    class config:
+        ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY") or _cfg.ANTHROPIC_API_KEY
+        MODEL             = os.environ.get("MODEL")             or getattr(_cfg, "MODEL", "claude-sonnet-4-5")
+        SMTP_HOST         = os.environ.get("SMTP_HOST")         or getattr(_cfg, "SMTP_HOST", "smtp.gmail.com")
+        SMTP_PORT         = int(os.environ.get("SMTP_PORT", 0)) or getattr(_cfg, "SMTP_PORT", 587)
+        SMTP_USER         = os.environ.get("SMTP_USER")         or getattr(_cfg, "SMTP_USER", "")
+        SMTP_PASSWORD     = os.environ.get("SMTP_PASSWORD")     or getattr(_cfg, "SMTP_PASSWORD", "")
+        RECIPIENT_EMAILS  = (
+            [e.strip() for e in os.environ["RECIPIENT_EMAILS"].split(",") if e.strip()]
+            if os.environ.get("RECIPIENT_EMAILS")
+            else getattr(_cfg, "RECIPIENT_EMAILS", [])
+        )
+except ImportError:
+    class config:
+        ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+        MODEL             = os.environ.get("MODEL", "claude-sonnet-4-5")
+        SMTP_HOST         = os.environ.get("SMTP_HOST", "smtp.gmail.com")
+        SMTP_PORT         = int(os.environ.get("SMTP_PORT", "587"))
+        SMTP_USER         = os.environ.get("SMTP_USER", "")
+        SMTP_PASSWORD     = os.environ.get("SMTP_PASSWORD", "")
+        RECIPIENT_EMAILS  = [
+            e.strip() for e in os.environ.get("RECIPIENT_EMAILS", "").split(",") if e.strip()
+        ]
+
 import research_agent
 
 app = Flask(__name__)

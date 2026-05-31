@@ -26,7 +26,16 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-import config
+# ── Config: read from environment variables (Docker) or fall back to config.py ──
+try:
+    import config as _cfg
+    class config:
+        ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY") or _cfg.ANTHROPIC_API_KEY
+        MODEL             = os.environ.get("MODEL") or getattr(_cfg, "MODEL", "claude-sonnet-4-5")
+except ImportError:
+    class config:
+        ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
+        MODEL             = os.environ.get("MODEL", "claude-sonnet-4-5")
 
 # ─────────────────────────────────────────────────────────
 #  CHAPTER SELECTION HELPERS
