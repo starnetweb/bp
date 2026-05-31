@@ -34,16 +34,16 @@ import config
 
 def parse_chapters(chapters_input) -> list:
     """
-    Convert any chapters input into a sorted list of chapter numbers (1–5).
+    Convert any chapters input into a sorted list of chapter numbers (1-5).
 
     Accepted formats:
-      int  5        → [1,2,3,4,5]   integer = "up to N" (backward-compat)
-      "all"         → [1,2,3,4,5]
-      "3"           → [3]            single chapter
-      "3-5"         → [3,4,5]        range
-      "1,3,5"       → [1,3,5]        comma list
-      "1,3-5"       → [1,3,4,5]      mixed
-      [3,4,5]       → [3,4,5]        already a list
+      int  5        -> [1,2,3,4,5]   integer = "up to N" (backward-compat)
+      "all"         -> [1,2,3,4,5]
+      "3"           -> [3]            single chapter
+      "3-5"         -> [3,4,5]        range
+      "1,3,5"       -> [1,3,5]        comma list
+      "1,3-5"       -> [1,3,4,5]      mixed
+      [3,4,5]       -> [3,4,5]        already a list
     """
     if chapters_input is None:
         return list(range(1, 6))
@@ -52,7 +52,7 @@ def parse_chapters(chapters_input) -> list:
         nums = sorted({int(x) for x in chapters_input if 1 <= int(x) <= 5})
         return nums or list(range(1, 6))
 
-    # Plain integer → backward-compat "up to N"
+    # Plain integer -> backward-compat "up to N"
     if isinstance(chapters_input, (int, float)):
         n = max(1, min(5, int(chapters_input)))
         return list(range(1, n + 1))
@@ -87,7 +87,7 @@ def parse_chapters(chapters_input) -> list:
 
 
 def fmt_chapters_label(chapters_list: list) -> str:
-    """Format [3,4,5] → '3-5', [1,3,5] → '1, 3, 5', [3] → '3'."""
+    """Format [3,4,5] -> '3-5', [1,3,5] -> '1, 3, 5', [3] -> '3'."""
     if not chapters_list:
         return "none"
     if len(chapters_list) == 1:
@@ -240,9 +240,9 @@ mechanical rhythm. Humans vary naturally: short sentences for emphasis or key cl
 longer sentences for complex ideas or evidence presentation.
 
 DO use:
-  SHORT (5–8 words for emphasis): "The finding surprised us."
-  MEDIUM (15–22 words): "This interpretation does not account for the temporal dimension."
-  LONG (35–50 words for complex ideas): "When the data from multiple waves are read alongside
+  SHORT (5-8 words for emphasis): "The finding surprised us."
+  MEDIUM (15-22 words): "This interpretation does not account for the temporal dimension."
+  LONG (35-50 words for complex ideas): "When the data from multiple waves are read alongside
                                          the theoretical framework, the relationship becomes clearer."
 
 DON'T use:
@@ -259,9 +259,9 @@ RULE 2: PARAGRAPH STRUCTURE VARIES NATURALLY
 Vary paragraph length to match content, not to defeat detection algorithms.
 
 DO use:
-  - 1–2 sentences: transition between major ideas or stark claims
-  - 3–4 sentences: standard analytical paragraph
-  - 5–7 sentences: detailed explanation or evidence presentation
+  - 1-2 sentences: transition between major ideas or stark claims
+  - 3-4 sentences: standard analytical paragraph
+  - 5-7 sentences: detailed explanation or evidence presentation
   - 8+ sentences: only when genuinely complex ideas require development
 
 DON'T use:
@@ -316,18 +316,18 @@ RULE 4: AVOID OVERUSED AI PHRASES
 These phrases appear frequently in AI-generated academic text. Minimize use:
 
 UNNECESSARY THROAT-CLEARING (just say what you mean):
-  Avoid: "It is worth noting that..."  →  Use: "The data show that..."
-  Avoid: "It is important to note that..."  →  Use: "Notably..." or just state it
-  Avoid: "It should be noted that..."  →  Use: Direct statement
+  Avoid: "It is worth noting that..."  ->  Use: "The data show that..."
+  Avoid: "It is important to note that..."  ->  Use: "Notably..." or just state it
+  Avoid: "It should be noted that..."  ->  Use: Direct statement
 
 VAGUE FRAMERS (be specific about what you mean):
-  Avoid: "In the modern era"  →  Use: specific timeframe ("since 2010")
-  Avoid: "In an ever-changing landscape"  →  Use: specific domain ("in policy implementation")
-  Avoid: "Delve into", "Dive into"  →  Use: "examine", "analyze", "investigate"
+  Avoid: "In the modern era"  ->  Use: specific timeframe ("since 2010")
+  Avoid: "In an ever-changing landscape"  ->  Use: specific domain ("in policy implementation")
+  Avoid: "Delve into", "Dive into"  ->  Use: "examine", "analyze", "investigate"
 
 OVERUSED TRANSITIONS (vary transitions naturally):
   Avoid: "Furthermore", "Moreover", "Additionally" (use once per chapter max)
-  Avoid: "As previously mentioned", "As discussed above"  →  Use: "(see section 2.3)" or natural reference
+  Avoid: "As previously mentioned", "As discussed above"  ->  Use: "(see section 2.3)" or natural reference
 
 AVOID EXCESSIVE EMPHASIS:
   Don't repeat: "crucial", "pivotal", "paradigm shift", "transformative"
@@ -474,7 +474,7 @@ real consequences for how organisations invest their development budgets, and th
 that it has gone largely unremarked in the literature is, frankly, telling."
 
 NOTICE what makes the GOOD paragraph human:
-  ✓ Sentence lengths: 5 words → 44 words → 4 words → 39 words → 7 words → 8 words → 46 words
+  ✓ Sentence lengths: 5 words -> 44 words -> 4 words -> 39 words -> 7 words -> 8 words -> 46 words
   ✓ Evidence-first structure (topic idea arrives late)
   ✓ Direct question mid-paragraph ("Why the discrepancy?")
   ✓ Specific non-round number (23.7%, not 25%)
@@ -624,7 +624,7 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
             return (
                 f"\n[================================================================================]\n"
                 f"| WARNING  CRITICAL - CUSTOM TABLE OF CONTENTS ENFORCEMENT FOR CHAPTER {chapter_num}             |\n"
-                f"[================================================================================╝\n\n"
+                f"[================================================================================]\n\n"
                 f"A CUSTOM TABLE OF CONTENTS HAS BEEN PROVIDED FOR THIS CHAPTER.\n\n"
                 f"YOUR INSTRUCTIONS ARE ABSOLUTE:\n"
                 f"- You MUST create ONLY the sections listed below - NO MORE, NO FEWER\n"
@@ -760,7 +760,7 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
         "[===================================================================]\n"
         "|  STANFORD PhD LEVEL (2026) - DOCTORAL EXPECTATIONS               |\n"
         "|  This is SCHOLARLY RESEARCH advancing knowledge in your field    |\n"
-        "[===================================================================╝\n\n"
+        "[===================================================================]\n\n"
         "THIS IS DOCTORAL-LEVEL WORK. IT IS NOT UNDERGRADUATE OR MASTER'S.\n\n"
         "EPISTEMOLOGICAL POSITIONING: State your epistemological stance explicitly. How do you understand "
         "knowledge production? What assumptions underpin your approach? Position yourself within traditions "
@@ -804,8 +804,8 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
         f"6. [TABLE: Data Collection Instruments & Validation Matrix with Instrument Name | Type | Purpose | Structure/Items | Validity Evidence | Reliability Coefficient | Piloting Results]\n"
         f"7. [TABLE: Paradigm-Appropriate Quality Criteria - shows Quality Criterion | Definition | How Operationalised | Evidence in This Study | Literature Grounding]\n"
         f"8. [TABLE: Ethical Considerations Implementation with Ethical Dimension | Consideration | How Operationalised | Approval Status | Ongoing Monitoring]\n"
-        f"9. [CHART: Methodology Integration System Diagram - showing interconnections between Paradigm → Epistemology → Design → Sample → Instruments → Analysis → Quality Assurance]\n"
-        f"10. [CHART: Data Flow Diagram - showing Raw Data → Processing/Coding → Analytical Stages → Final Interpretation → Knowledge Claims]\n\n"
+        f"9. [CHART: Methodology Integration System Diagram - showing interconnections between Paradigm -> Epistemology -> Design -> Sample -> Instruments -> Analysis -> Quality Assurance]\n"
+        f"10. [CHART: Data Flow Diagram - showing Raw Data -> Processing/Coding -> Analytical Stages -> Final Interpretation -> Knowledge Claims]\n\n"
         f"FORMAT STANDARDS:\n"
         f"- All tables use professional formatting: pipe-separated columns (| header | header |)\n"
         f"- Provide actual data rows with concrete values/descriptions, not just headers\n"
@@ -948,14 +948,14 @@ produce, and how the purpose connects directly to the problem articulated in 1.2
 
 ### 1.4 Research Objectives
 Write between {w_range(72, 140)} words for this subsection.
-State 4–5 specific, measurable objectives. Each should be action-oriented (examine, assess,
+State 4-5 specific, measurable objectives. Each should be action-oriented (examine, assess,
 determine, explore, compare, evaluate). After listing them, write a short paragraph explaining
 how they collectively address the research problem and how they will be operationalised
 through the methodology described in Chapter 3.
 
 ### 1.5 Research Questions
 Write between {w_range(60, 112)} words for this subsection.
-Formulate 3–5 focused, answerable questions derived from the objectives. After stating the
+Formulate 3-5 focused, answerable questions derived from the objectives. After stating the
 questions, briefly explain the logic connecting each question to its corresponding objective
 and the type of evidence that would constitute an answer.
 
@@ -1003,7 +1003,7 @@ researchers acknowledge imperfection.
 
 ### 1.9 Definition of Key Terms
 Write between {w_range(88, 168)} words for this subsection.
-Define 6–8 terms that carry specific technical or conceptual meanings in this study.
+Define 6-8 terms that carry specific technical or conceptual meanings in this study.
 For each term: provide a working definition grounded in at least one cited scholar,
 explain how this study's usage compares to or departs from common usage, and note any
 definitional controversies relevant to the research.
@@ -1044,7 +1044,7 @@ End with a statement of what the review reveals and how it sets up the research 
 
 ### 2.2 Conceptual Review
 Write between {w_range(210, 420)} words.
-Identify the 4–6 central concepts of this study. For each concept: trace its intellectual
+Identify the 4-6 central concepts of this study. For each concept: trace its intellectual
 history (who coined or defined it, when, and in what context), map the range of definitions
 across the literature (noting where scholars converge and diverge), and state explicitly
 which conceptualisation this study adopts and why. Write this as connected analytical prose,
@@ -1053,7 +1053,7 @@ not as a series of dictionary definitions.
 
 ### 2.3 Theoretical Framework
 Write between {w_range(240, 490)} words.
-Identify 2–3 theories or models that directly inform this study. For each theory, develop
+Identify 2-3 theories or models that directly inform this study. For each theory, develop
 a full sub-argument across multiple paragraphs: name the originator and intellectual
 tradition, describe the core propositions, trace how it has been applied and tested in
 empirical research over the past decade, and make explicit how it will guide this study's
@@ -1085,7 +1085,7 @@ existing studies are insufficient for this particular problem, and why this gap 
 
 ### 2.7 Chapter Summary
 Write between {w_range(125, 245)} words.
-Do not list what was covered. Instead, synthesise: identify the 2–3 most important
+Do not list what was covered. Instead, synthesise: identify the 2-3 most important
 intellectual threads that emerge from the review, explain how they relate to each other,
 and show explicitly how they set up the methodological choices and analytical framework
 of Chapter 3. End with a sentence or two that creates a bridge forward.
@@ -1118,7 +1118,7 @@ Write between {w_range(90, 175)} words.
 Orient the reader to the chapter's purpose and structure. Explain the epistemological logic
 that connects the research questions to the design choices made. {"State the researcher's ontological and epistemological position upfront and explain how it shapes the chapter's approach to the treatment of evidence and knowledge claims." if is_pg else "Explain how the methodology flows from the research questions and problem."}
 After this section, include:
-[FIGURE: Research Design Framework showing the paradigm → design → connection to research questions]
+[FIGURE: Research Design Framework showing the paradigm -> design -> connection to research questions]
 
 ### 3.2 Research Design
 Write between {w_range(160, 315)} words.
@@ -1136,7 +1136,7 @@ Write between {w_range(160, 350)} words.
 Write between {w_range(100, 196)} words.
 {"Specify whether the study uses inductive, deductive, or abductive reasoning. Justify this choice by reference to the research questions and the nature of the evidence being collected. Explain how the approach shapes the analytical process in Chapter 4." if is_pg else "Specify the reasoning approach (inductive or deductive) and explain how it guides data analysis. Connect this to the research design."}
 After this section, include:
-[FIGURE: Analytical Process Flowchart showing data collection → initial coding → analytical refinement → interpretation steps]
+[FIGURE: Analytical Process Flowchart showing data collection -> initial coding -> analytical refinement -> interpretation steps]
 
 ### 3.5 Study Area and Setting
 Write between {w_range(115, 224)} words.
@@ -1370,7 +1370,7 @@ Write between {w_range(135, 266)} words.
 
 ### 5.5 Recommendations
 Write between {w_range(160, 315)} words.
-Provide 5–6 specific, actionable, evidence-grounded recommendations. Write each as a
+Provide 5-6 specific, actionable, evidence-grounded recommendations. Write each as a
 full paragraph rather than a bullet point: name the recommendation, identify the specific
 finding that supports it, name the stakeholder or institution it is directed at, and
 describe what implementing it would look like in practice. Recommendations must flow
@@ -1379,7 +1379,7 @@ Chapter 4.
 
 ### 5.6 Recommendations for Future Research
 Write between {w_range(125, 245)} words.
-Propose 3–4 specific research directions that arise from this study's limitations or from
+Propose 3-4 specific research directions that arise from this study's limitations or from
 questions it raised but could not answer. Each recommendation for future research should:
 identify the gap or question, explain why it matters, suggest an appropriate methodological
 approach, and state what such research would contribute. {"For postgraduate work, these should point toward theoretical refinement, comparative cross-context studies, or longitudinal designs." if is_pg else ""}
@@ -1398,7 +1398,7 @@ After 5.7, write the following two sections:
 List at least {w(9, 18)} academic references in APA 7th edition format.
 References must be plausible, field-relevant, diverse, and correctly formatted.
 Include: journal articles (majority), books, book chapters, institutional/government
-reports, and conference papers. Span at least 2005–2023. Mix foundational texts with
+reports, and conference papers. Span at least 2005-2023. Mix foundational texts with
 recent scholarship (at least 6 references from 2018 onwards).
 Format each exactly as:
   Author, A. A., & Author, B. B. (Year). Title of article. Journal Name, Volume(Issue), pages. https://doi.org/xxxxx
@@ -1906,7 +1906,7 @@ def _create_sample_chart(description: str):
                     categories = x_categories[:4]
                     values = [18, 12, 22, 15] if len(x_categories) == 4 else [18, 12, 22]
                 else:
-                    categories = ['18–30', '31–40', '41–50', 'Above 50']
+                    categories = ['18-30', '31-40', '41-50', 'Above 50']
                     values = [18, 12, 22, 15]
 
                 # Create bar chart with data value labels on bars
@@ -2420,31 +2420,31 @@ def extract_chapter_titles_from_custom_toc(custom_toc: str) -> dict:
     for line in lines:
         line = line.strip()
         # Match patterns like: "CHAPTER ONE: INTRODUCTION", "CHAPTER 3: SYSTEM DESIGN"
-        match = re.search(r'CHAPTER\s+(?:ONE|1)[:\s–-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        match = re.search(r'CHAPTER\s+(?:ONE|1)[:\s--]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
         if match:
             title = match.group(1).strip()
             chapter_titles[1] = title.upper()
             continue
 
-        match = re.search(r'CHAPTER\s+(?:TWO|2)[:\s–-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        match = re.search(r'CHAPTER\s+(?:TWO|2)[:\s--]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
         if match:
             title = match.group(1).strip()
             chapter_titles[2] = title.upper()
             continue
 
-        match = re.search(r'CHAPTER\s+(?:THREE|3)[:\s–-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        match = re.search(r'CHAPTER\s+(?:THREE|3)[:\s--]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
         if match:
             title = match.group(1).strip()
             chapter_titles[3] = title.upper()
             continue
 
-        match = re.search(r'CHAPTER\s+(?:FOUR|4)[:\s–-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        match = re.search(r'CHAPTER\s+(?:FOUR|4)[:\s--]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
         if match:
             title = match.group(1).strip()
             chapter_titles[4] = title.upper()
             continue
 
-        match = re.search(r'CHAPTER\s+(?:FIVE|5)[:\s–-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        match = re.search(r'CHAPTER\s+(?:FIVE|5)[:\s--]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
         if match:
             title = match.group(1).strip()
             chapter_titles[5] = title.upper()
@@ -2464,7 +2464,7 @@ def build_toc_page(doc, research_level, chapters_list=None, custom_toc=None,
                             TOC text instead of the auto-generated one.
     front_matter_sections : list of optional sections included in the document,
                             e.g. ["abstract","declaration","acknowledgements"].
-                            None → only abstract included (default).
+                            None -> only abstract included (default).
     """
     chapters_list = chapters_list or list(range(1, 6))
     optional_all  = ["abstract", "declaration", "dedication", "acknowledgements"]
@@ -2873,7 +2873,7 @@ def generate_front_matter(client, topic: str, research_level: str,
 
     front_matter_sections : list of optional sections to include.
         Allowed values: "abstract", "declaration", "dedication", "acknowledgements"
-        Default (None) → abstract included, other sections excluded.
+        Default (None) -> abstract included, other sections excluded.
         Pass ["abstract"] to include only the abstract.
     nalt_compliance : bool, default False
         When True (for BSc legal research), enforce Nigerian Association of
@@ -2905,7 +2905,7 @@ def generate_front_matter(client, topic: str, research_level: str,
             "|  NALT COMPLIANCE MODE: Nigerian Legal Research Standards           |\n"
             "|  Nigerian Association of Law Teachers (NALT)                       |\n"
             "|  Uniform Format and Citation Guide for Legal Research Writing      |\n"
-            "[=====================================================================╝\n\n"
+            "[=====================================================================]\n\n"
             "STRICT REQUIREMENTS FOR NALT COMPLIANCE:\n\n"
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
             "1. FORMATTING (Physical & Technical)\n"
@@ -2980,7 +2980,7 @@ def generate_front_matter(client, topic: str, research_level: str,
             "   ABSTRACT:\n"
             "   • Word count: 200-350 words (BSc), 400-500 words (Masters)\n"
             "   • Single spacing, same font as body\n"
-            "   • Structure: Background → Problem → Methodology → Key Findings → Conclusion\n"
+            "   • Structure: Background -> Problem -> Methodology -> Key Findings -> Conclusion\n"
             "   • KEYWORDS: Maximum 5 keywords, alphabetically ordered, separated by semicolons\n"
             "   • Non-paragraphed (no indentation)\n\n"
             "   PRELIMINARIES (in order):\n"
@@ -3050,7 +3050,7 @@ def generate_front_matter(client, topic: str, research_level: str,
             "   • Write in third person (avoid 'I', 'we', 'the author')\n"
             "   • Structure arguments in clear prose (not bullet points in body)\n"
             "   • Use transitions and logical connectors between sections\n\n"
-            "[=====================================================================╝\n\n"
+            "[=====================================================================]\n\n"
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
             "CRITICAL: HUMAN AUTHENTICITY WITHIN NALT CONSTRAINTS\n"
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
@@ -3075,7 +3075,7 @@ def generate_front_matter(client, topic: str, research_level: str,
             "  'The case law indicates that the courts have applied principle X as interpreted\n"
             "   by various scholars. This principle is important to section 14 of the Constitution.'\n\n"
             "Your expertise is showing the HUMAN MIND at work within NALT's formal structure.\n"
-            "[=====================================================================╝"
+            "[=====================================================================]"
         )
 
     # Build the section list dynamically
@@ -3084,7 +3084,7 @@ def generate_front_matter(client, topic: str, research_level: str,
     if "declaration" in include:
         section_blocks.append(
             "## DECLARATION\n"
-            "Write a formal, original academic declaration of authorship (120–160 words). "
+            "Write a formal, original academic declaration of authorship (120-160 words). "
             "Include: a statement that the work is the researcher's own, that all sources "
             "have been properly cited, that the work has not been submitted elsewhere for "
             "examination, and acknowledgement that plagiarism constitutes academic misconduct. "
@@ -3093,14 +3093,14 @@ def generate_front_matter(client, topic: str, research_level: str,
     if "dedication" in include:
         section_blocks.append(
             "## DEDICATION\n"
-            "Write a heartfelt, personal dedication (60–90 words). Dedicate to specific "
+            "Write a heartfelt, personal dedication (60-90 words). Dedicate to specific "
             "named people (family members, mentors, or a community). The dedication should "
             "feel genuine - avoid generic phrases. It should be warm, brief, and memorable."
         )
     if "acknowledgements" in include:
         section_blocks.append(
             "## ACKNOWLEDGEMENTS\n"
-            "Write genuine, specific acknowledgements (250–320 words). Thank in separate "
+            "Write genuine, specific acknowledgements (250-320 words). Thank in separate "
             "sentences or short paragraphs: the academic supervisor (by title and role), "
             "the institution and department, research participants (without naming them), "
             "colleagues or peers who provided feedback, family and close supporters. "
@@ -3118,7 +3118,7 @@ def generate_front_matter(client, topic: str, research_level: str,
         )
         section_blocks.append(
             f"## ABSTRACT\n"
-            f"Write a structured abstract of {abstract_word_min}–{abstract_word_max} words covering: "
+            f"Write a structured abstract of {abstract_word_min}-{abstract_word_max} words covering: "
             f"(1) background and problem statement, (2) research objectives, "
             f"(3) methodology and data collection approach, (4) principal findings, "
             f"(5) conclusions and recommendations. {pg_note}"
@@ -3207,7 +3207,7 @@ def generate_chapter(client, topic: str, chapter_num: int,
             "|  NALT COMPLIANCE MODE: Nigerian Legal Research Standards           |\n"
             "|  Nigerian Association of Law Teachers (NALT)                       |\n"
             "|  Uniform Format and Citation Guide for Legal Research Writing      |\n"
-            "[=====================================================================╝\n\n"
+            "[=====================================================================]\n\n"
             "STRICT REQUIREMENTS FOR NALT COMPLIANCE:\n\n"
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
             "1. FORMATTING (Physical & Technical)\n"
@@ -3282,7 +3282,7 @@ def generate_chapter(client, topic: str, chapter_num: int,
             "   ABSTRACT:\n"
             "   • Word count: 200-350 words (BSc), 400-500 words (Masters)\n"
             "   • Single spacing, same font as body\n"
-            "   • Structure: Background → Problem → Methodology → Key Findings → Conclusion\n"
+            "   • Structure: Background -> Problem -> Methodology -> Key Findings -> Conclusion\n"
             "   • KEYWORDS: Maximum 5 keywords, alphabetically ordered, separated by semicolons\n"
             "   • Non-paragraphed (no indentation)\n\n"
             "   PRELIMINARIES (in order):\n"
@@ -3352,7 +3352,7 @@ def generate_chapter(client, topic: str, chapter_num: int,
             "   • Write in third person (avoid 'I', 'we', 'the author')\n"
             "   • Structure arguments in clear prose (not bullet points in body)\n"
             "   • Use transitions and logical connectors between sections\n\n"
-            "[=====================================================================╝\n\n"
+            "[=====================================================================]\n\n"
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
             "CRITICAL: HUMAN AUTHENTICITY WITHIN NALT CONSTRAINTS\n"
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
@@ -3377,7 +3377,7 @@ def generate_chapter(client, topic: str, chapter_num: int,
             "  'The case law indicates that the courts have applied principle X as interpreted\n"
             "   by various scholars. This principle is important to section 14 of the Constitution.'\n\n"
             "Your expertise is showing the HUMAN MIND at work within NALT's formal structure.\n"
-            "[=====================================================================╝"
+            "[=====================================================================]"
         )
 
     if custom_instructions and custom_instructions.strip():
