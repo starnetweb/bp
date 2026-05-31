@@ -288,6 +288,10 @@ input:focus{border-color:var(--accent)}
       <div class="form-group">
         <label>Front Matter Sections</label>
         <div class="fm-checks">
+          <div class="fm-check active" data-fm="abstract" onclick="toggleFm(this)">
+            <span class="fm-check-icon">📋</span>
+            <span class="fm-check-label">Abstract</span>
+          </div>
           <div class="fm-check" data-fm="declaration" onclick="toggleFm(this)">
             <span class="fm-check-icon">📜</span>
             <span class="fm-check-label">Declaration</span>
@@ -301,50 +305,25 @@ input:focus{border-color:var(--accent)}
             <span class="fm-check-label">Acknowledgements</span>
           </div>
         </div>
-        <div class="fm-note">ℹ️ Abstract is always included. Toggle any section above to include or exclude it.</div>
       </div>
 
       <div class="form-group">
-        <label>Table of Contents</label>
-        <label class="toc-toggle">
-          <input type="checkbox" id="custom-toc-toggle" onchange="toggleCustomToc()"/>
-          <span>Provide my own custom table of contents</span>
+        <label style="display:flex;align-items:center;gap:20px;font-weight:normal">
+          TOC <input type="checkbox" id="custom-toc-toggle" onchange="toggleCustomToc()" style="width:18px;height:18px;cursor:pointer"/>
+          <span style="margin-left:10px">-</span>
+          CI <input type="checkbox" id="ci-toggle-cb" onchange="toggleCi()" style="width:18px;height:18px;cursor:pointer;margin-left:10px"/>
+          <span style="margin-left:10px">-</span>
+          AT <input type="checkbox" id="thinking-toggle" onchange="toggleThinking()" style="width:18px;height:18px;cursor:pointer;margin-left:10px"/>
+          <span style="margin-left:10px">-</span>
+          NALT <input type="checkbox" id="nalt-compliance-toggle" onchange="toggleNALT()" style="width:18px;height:18px;cursor:pointer;margin-left:10px"/>
         </label>
         <div id="custom-toc-wrap">
           <textarea id="custom-toc" placeholder="Enter your TOC, one item per line. Example:&#10;CHAPTER ONE: INTRODUCTION&#10;  1.1  Background of the Study&#10;  1.2  Statement of the Problem&#10;  1.3  Research Objectives&#10;&#10;CHAPTER TWO: LITERATURE REVIEW&#10;  2.1  Conceptual Framework&#10;  ..."></textarea>
-          <div class="toc-hint">💡 Each line becomes one TOC entry. Leave blank lines between chapters for spacing.</div>
         </div>
-      </div>
-
-      <div class="form-group">
-        <label>Custom Instructions</label>
-        <label class="ci-toggle">
-          <input type="checkbox" id="ci-toggle-cb" onchange="toggleCi()"/>
-          <span>Add custom instructions for document generation</span>
-        </label>
         <div id="ci-wrap">
           <textarea id="custom-instructions"
             placeholder="Enter any specific instructions the AI should follow when writing your document.&#10;&#10;Examples:&#10;• Use Nigeria as the primary case study&#10;• Cite specific scholars or theoretical frameworks&#10;• Focus on quantitative methods only&#10;• Follow a particular institution's formatting guidelines"></textarea>
-          <div class="ci-hint">💡 These instructions are applied to every chapter and front matter section generated.</div>
         </div>
-      </div>
-
-      <div class="form-group">
-        <label>Advanced Options</label>
-        <label class="toc-toggle">
-          <input type="checkbox" id="thinking-toggle" onchange="toggleThinking()"/>
-          <span>Enable AI extended thinking (slower, more thorough analysis)</span>
-        </label>
-        <div class="toc-hint">💡 When enabled, the AI will use extended thinking for deeper analysis. This may increase generation time but can improve content quality for complex topics.</div>
-      </div>
-
-      <div class="form-group">
-        <label>Legal Research Standards</label>
-        <label class="toc-toggle">
-          <input type="checkbox" id="nalt-compliance-toggle" onchange="toggleNALT()"/>
-          <span>⚖️ Enforce NALT Guidelines (for BSc Legal Research)</span>
-        </label>
-        <div class="toc-hint">📋 When enabled, research will strictly follow the Nigerian Association of Law Teachers (NALT) Uniform Format and Citation Guide for legal research writing in Nigeria. Ensures compliance with national legal academic standards.</div>
       </div>
 
       <hr class="divider"/>
@@ -893,13 +872,13 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         toc_src      = "custom" if custom_toc else "auto-generated"
 
         # Resolve which optional front matter sections to include
-        _fm_all = ["declaration", "dedication", "acknowledgements"]
+        _fm_all = ["abstract", "declaration", "dedication", "acknowledgements"]
         if front_matter_sections is None:
-            fm_include = _fm_all
+            fm_include = ["abstract"]  # Default: only abstract
         else:
             fm_include = [s.lower().strip() for s in front_matter_sections
                           if s.lower().strip() in _fm_all]
-        fm_label = ", ".join(s.title() for s in fm_include) + ", Abstract" if fm_include else "Abstract only"
+        fm_label = ", ".join(s.title() for s in fm_include) if fm_include else "None"
 
         log("=" * 52, "header")
         log(f"  TOPIC    : {topic}", "header")
@@ -915,6 +894,21 @@ def _run_agent(job_id: str, topic: str, research_level: str,
             log(f"  CUSTOM   : {ci_preview}", "header")
         log("=" * 52, "header")
         log("")
+
+        # THINKING ENFORCEMENT: Validate that model supports thinking if requested
+        if use_thinking:
+            THINKING_MODELS = ("claude-opus-4-6", "claude-sonnet-4-6")
+            if config.MODEL not in THINKING_MODELS:
+                error_msg = (
+                    f"Extended thinking is enabled, but model '{config.MODEL}' does not support it. "
+                    f"Supported models: {', '.join(THINKING_MODELS)}. "
+                    f"Please switch to a supporting model or disable the thinking toggle."
+                )
+                log(error_msg, "error")
+                q.put({"type": "error", "msg": f"❌ Error: {error_msg}"})
+                return
+            log(f"✓ Extended thinking validated for {config.MODEL}", "success")
+            log("")
 
         # Front matter
         fm_parts = fm_label
@@ -938,7 +932,8 @@ def _run_agent(job_id: str, topic: str, research_level: str,
                 client, topic, num, research_level, model=config.MODEL,
                 custom_instructions=custom_instructions,
                 use_thinking=use_thinking,
-                nalt_compliance=nalt_compliance
+                nalt_compliance=nalt_compliance,
+                custom_toc=custom_toc
             )
             log(f"  ✓ Chapter {num} complete — {len(chapters[num]):,} chars", "success")
             log("")

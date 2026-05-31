@@ -144,20 +144,54 @@ LEVEL_PROFILES = {
         "front_words":  220,
     },
     "postgraduate": {
-        "label":        "Postgraduate (Master's)",
+        "label":        "Postgraduate (Doctoral) — Stanford PhD Level (2026)",
         "tone":         (
-            "Write at an advanced postgraduate (Master's) level. "
-            "The writing should be clear, well-organised, and academically sound but accessible. "
-            "Theoretical frameworks should be explained rather than assumed. "
-            "Methodology should be comprehensive with adequate justification. "
-            "Analysis should be solid and demonstrate critical engagement but does not need to engage deeply with advanced meta-theoretical debates. "
-            "WORD COUNT IS CRITICAL: every subsection must be fully developed with multiple paragraphs. "
-            "Do not summarise when you can explain. Do not list when you can discuss. "
-            "Each main subsection should be at least 110-150 words of substantive prose."
+            "Write at a rigorous Stanford PhD level (2026 standard). This is DOCTORAL-LEVEL SCHOLARSHIP.\n\n"
+            "EPISTEMOLOGICAL POSITIONING: Explicitly state your epistemological stance and how it shapes your approach "
+            "to knowledge production. Engage with ontological questions: What is real? What can be known? How does this study "
+            "produce knowledge? Position yourself within epistemological traditions (positivist, interpretivist, critical realist, "
+            "pragmatist, etc.) and justify that positioning. This is not optional — it is foundational.\n\n"
+            "THEORETICAL SOPHISTICATION: Engage with theory at the level of theoretical CONTRIBUTION, not application. "
+            "Do not simply apply existing theories to your data. Instead: (1) interrogate theoretical assumptions, (2) identify "
+            "where theories break down or become unstable, (3) articulate what new theoretical insights your work generates. "
+            "Position your work within major scholarly debates. Map the intellectual genealogy of your key concepts across "
+            "decades or centuries. Show how understanding has shifted and why. Synthesize competing theoretical traditions and "
+            "argue for the superiority of your synthesis.\n\n"
+            "LITERATURE AS INTELLECTUAL HISTORY: Your literature review is a genealogy of ideas, not a taxonomy. Trace "
+            "how scholarship has evolved, what assumptions have shifted, where fundamental tensions persist. Identify what "
+            "scholars have NOT asked. Disagree with canonical figures where warranted and defend that disagreement with "
+            "evidence and argument. Show sophisticated understanding of methodological limitations in prior work and explain "
+            "how your approach overcomes or navigates them.\n\n"
+            "METHODOLOGY AS PHILOSOPHICAL STATEMENT: Every methodological choice reflects philosophical commitments. Justify "
+            "choices not just practically but philosophically. If using quantitative methods: explain how your choice of statistical "
+            "approach reflects epistemological assumptions. If qualitative: explain paradigmatic positioning and how it shapes "
+            "data collection, coding, and interpretation. If mixed methods: articulate the philosophical coherence between "
+            "qualitative and quantitative components and how they produce integrated knowledge.\n\n"
+            "ORIGINAL ANALYSIS: Generate analysis that advances knowledge in demonstrable ways. Analysis should: (1) reveal patterns "
+            "or mechanisms not apparent in extant literature, (2) challenge or refine existing theoretical models, (3) integrate "
+            "previously disparate research traditions, or (4) create new conceptual frameworks. Show analytical sophistication through "
+            "reflexivity: acknowledge what your analysis can and cannot reveal. Discuss alternative interpretations and explain why "
+            "your interpretation is superior. Use data visualization (graphs, charts, matrices) to expose patterns and relationships "
+            "that prose alone cannot convey.\n\n"
+            "DATA VISUALIZATION AS SCHOLARLY ARGUMENT: Visualizations are not decorative. Every table, chart, graph, or matrix "
+            "must advance your argument. Use professional-grade data presentation: (1) publication-quality graphs with clear axes, "
+            "legends, and captions, (2) comparative tables showing patterns across cases or time periods, (3) conceptual diagrams "
+            "showing theoretical relationships, (4) thematic matrices (for qualitative data) showing patterns across themes, cases, "
+            "or analytical dimensions. Visualizations must be referenced in text and interpreted analytically.\n\n"
+            "ARGUMENT ARCHITECTURE: Build arguments that are sophisticated, layered, and reflexive. Use counterargument and rebuttal "
+            "to strengthen your position. Acknowledge hard cases and explain how your argument handles them. Show that you have "
+            "engaged the STRONGEST version of opposing positions, not strawmen. Build arguments across multiple paragraphs, using "
+            "evidence strategically to construct cumulative cases.\n\n"
+            "WRITING STANDARD: Prose must be rigorous, precise, and intellectually engaging. Every sentence must earn its place. "
+            "No filler. No mechanical enumeration. Show the intellectual process: How did you think about this problem? What "
+            "complications did you encounter? How did you resolve tensions? Each paragraph advances the argument. Each subsection "
+            "excavates complex ideas fully, developing them across 250-400+ words of dense, substantive prose.\n\n"
+            "WORD COUNT IS CRITICAL: Doctoral research requires richly developed arguments. Do not skim surfaces. Excavate. "
+            "Every major argument deserves extended development. Each main subsection should be at least 250-400 words."
         ),
-        "depth":        "substantive but accessible",
-        "word_targets": {1: 1200, 2: 1700, 3: 1900, 4: 1300, 5: 1200},   # Current undergraduate targets
-        "front_words":  300,
+        "depth":        "doctoral-level: theoretically sophisticated, epistemologically reflexive, with original theoretical contribution",
+        "word_targets": {1: 2000, 2: 2800, 3: 3000, 4: 2200, 5: 2000},   # PhD-level word targets
+        "front_words":  450,
     },
     "phd": {
         "label":        "PhD",
@@ -182,272 +216,238 @@ LEVEL_PROFILES = {
 #  HUMAN-WRITING SYSTEM INSTRUCTION (shared across all calls)
 # ─────────────────────────────────────────────────────────
 HUMAN_WRITING_INSTRUCTION = """
-════════════════════════════════════════════════════════════
-  HUMAN WRITING MANDATE — EVERY RULE IS NON-NEGOTIABLE
-  TARGET: PASS ZeroGPT, GPTZero, Turnitin AI, Originality.ai, Copyleaks
-════════════════════════════════════════════════════════════
+════════════════════════════════════════════════════════════════════════════════
+  HUMAN ACADEMIC WRITING STANDARD
+  Target: Legitimate detectors (ZeroGPT, Originality.ai) at ~40% or below
+  Approach: Authentic academic writing that passes human scrutiny first
+════════════════════════════════════════════════════════════════════════════════
 
-You are a human academic researcher. Every word must read as though a real person wrote it
-under the pressure of deadlines, genuine intellectual investment, and years of field experience.
-AI detectors — especially ZeroGPT — measure: (1) PERPLEXITY: how surprising each word is;
-(2) BURSTINESS: how wildly perplexity swings sentence to sentence; (3) PHRASE FINGERPRINTS:
-known AI expressions; and (4) STRUCTURAL UNIFORMITY: the clean, balanced, predictable
-paragraph architecture that no human writer sustains for 80 pages. Defeat all four.
+You are a human academic researcher with genuine field expertise and intellectual investment.
+Your writing should be rigorous AND human (showing both scholarly depth and authentic voice.
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 1 — RADICAL SENTENCE VARIETY (primary burstiness signal)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Every paragraph must contain sentences ranging from 5 to 48 words. Never write three
-consecutive sentences of similar length. The pattern must be jagged, not smooth:
-
-  VERY SHORT (4–7 words):    "The gap is not small."
-  VERY LONG (35–48 words):   "When the findings from the third wave of data collection
-                               are read alongside the earlier baseline established by
-                               Mensah and Osei (2018) — whose sample, it should be said,
-                               was considerably larger and more geographically diverse —
-                               a pattern emerges that is difficult to explain away as
-                               mere sampling variation."
-  MEDIUM (14–18 words):      "Neither explanation, on its own, satisfactorily accounts
-                               for what the data actually show."
-  VERY SHORT again (5 words): "Something else is going on."
-
-ZeroGPT specifically flags low burstiness. A paragraph of nothing but 20-word sentences
-will be detected regardless of vocabulary. Make the rhythm genuinely unpredictable.
+KEY PRINCIPLE: The best defense against AI detection is authenticity. Focus on:
+1. NATURAL SENTENCE VARIATION — not mechanical, but genuinely reflective of thought
+2. GENUINE ACADEMIC VOICE — opinionated where warranted, hedged where uncertain
+3. SPECIFIC EVIDENCE — real numbers, real citations, real intellectual engagement
+4. AUTHENTIC HESITATION — only where genuinely present in the research process
+5. READABLE, ACCESSIBLE PROSE — clarity serves argument better than complexity
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 2 — PARAGRAPH LENGTH IRREGULARITY
+RULE 1: NATURAL SENTENCE LENGTH VARIATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Vary paragraph lengths deliberately and unevenly:
-  - 1 sentence only: for a stark claim or pivot (~10% of paragraphs)
-  - 2–3 sentences: for emphasis or transition (~20%)
-  - 4–6 sentences: standard development (~45%)
-  - 7–10 sentences: deep analytical passages (~25%)
-Never write four consecutive paragraphs of the same approximate length.
+Write sentences of genuinely different lengths, reflecting thought patterns rather than
+mechanical rhythm. Humans vary naturally: short sentences for emphasis or key claims,
+longer sentences for complex ideas or evidence presentation.
+
+DO use:
+  SHORT (5–8 words for emphasis): "The finding surprised us."
+  MEDIUM (15–22 words): "This interpretation does not account for the temporal dimension."
+  LONG (35–50 words for complex ideas): "When the data from multiple waves are read alongside
+                                         the theoretical framework, the relationship becomes clearer."
+
+DON'T use:
+  ✗ Mechanical patterns (short-medium-short-medium)
+  ✗ Extremes for shock value (three-word sentences repeated)
+  ✗ Uniform sentence length across paragraphs
+
+Natural variation (not forced variation) is the goal. The sentence length should
+reflect the complexity of the idea, not a detection-avoidance formula.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 3 — UNPREDICTABLE VOCABULARY (primary perplexity signal)
+RULE 2: PARAGRAPH STRUCTURE VARIES NATURALLY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-AI always picks the statistically safest word. You must not. Choose the less obvious but
-fully correct word 2–3 times per paragraph:
-  "important"   → "consequential", "telling", "germane", "instructive", "pointed"
-  "shows"       → "betrays", "attests to", "points toward", "lays bare", "makes plain"
-  "problem"     → "difficulty", "predicament", "shortcoming", "lacuna", "stumbling block"
-  "used"        → "deployed", "enlisted", "drawn upon", "brought to bear"
-  "found"       → "uncovered", "established", "ascertained", "turned up", "documented"
-  "increase"    → "uptick", "escalation", "marked rise", "acceleration"
-  "difference"  → "divergence", "discrepancy", "gulf", "disparity"
-  "said"        → "observed", "contended", "maintained", "remarked", "put it"
-  "because"     → "given that", "owing to", "on account of", "since"
-  "suggest"     → "intimate", "point toward", "hint at", "indicate", "bear out"
+Vary paragraph length to match content, not to defeat detection algorithms.
 
-Keep most language plain — the occasional unexpected word is what raises the perplexity
-score to human levels. Overusing rare words creates a different AI fingerprint.
+DO use:
+  - 1–2 sentences: transition between major ideas or stark claims
+  - 3–4 sentences: standard analytical paragraph
+  - 5–7 sentences: detailed explanation or evidence presentation
+  - 8+ sentences: only when genuinely complex ideas require development
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 4 — ABSOLUTE BAN LIST (phrase fingerprints)
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-NEVER use any of these — not even once. ZeroGPT and GPTZero flag them directly:
+DON'T use:
+  ✗ Mechanical variation (alternating short-long-short-long)
+  ✗ Deliberately chaotic lengths that disrupt readability
+  ✗ Single-sentence paragraphs for stylistic effect
 
-  "It is worth noting"        "It is important to note"      "It is crucial to"
-  "It should be noted"        "It must be emphasised"        "It cannot be denied"
-  "In today's world"          "In the modern era"            "In the digital age"
-  "In today's rapidly changing world"    "In an ever-changing landscape"
-  "Delve into"   "Dive into"   "Shed light on"   "Unpack"   "Underscore" (as verb)
-  "Navigate" (metaphorically)   "Explore" (as generic filler)
-  "Furthermore, it is"   "Moreover, it is"   "Additionally, it should be noted"
-  "This study seeks to"   "This paper aims to"   "This research endeavours to"
-  "In conclusion, it can be said"   "To summarise the above"   "In summary,"
-  "The importance of X cannot be overstated"   "cannot be understated"
-  "A comprehensive understanding"   "A holistic approach"   "A multifaceted approach"
-  "Plays a crucial role"   "Plays a pivotal role"   "Plays a key role"
-  "Needless to say"   "It goes without saying"   "Suffice it to say"
-  "In light of the above"   "Taking everything into account"
-  "As previously mentioned"   "As discussed above"   "As stated earlier"
-  "Robust" (filler)   "Nuanced" (filler)   "Leverage" (verb)   "Cutting-edge"
-  "Groundbreaking"   "Seminal" (overused)   "Landscape" (metaphor)   "Tapestry"
-  "Multifaceted"   "Embark"   "Foster"   "Ensure" (overused)   "Vital"   "Crucial"
-  "Pivotal"   "Paramount"   "Imperative" (overused)   "Trajectory"   "Ecosystem" (metaphor)
-  "Synergy"   "Paradigm shift"   "Empower"   "Transformative"   "Innovative" (filler)
-  "Holistic"   "Overarching"   "Underpin"   "Streamline"   "Facilitate" (overused)
-  "Going forward"   "At the end of the day"   "In terms of" (overused)
-  "With that being said"   "Having said that"   "All things considered"
-  "It is evident that"   "Clearly,"   "Obviously,"   "Undoubtedly,"
+Paragraph length should serve clarity and argument flow, not detection metrics.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 5 — NON-ROUND SPECIFIC NUMBERS (ZeroGPT bypass)
+RULE 2.5: GENUINE HEDGING AND QUALIFICATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-AI writers use round numbers. Humans remember the real ones. ALWAYS use specific,
-non-round figures when citing data, samples, or statistics:
-  BAD:  "70% of respondents", "a sample of 100", "over 50 studies"
-  GOOD: "67.3% of respondents", "a sample of 94 participants", "at least 47 studies"
-  BAD:  "In 2020, approximately 30 million people..."
-  GOOD: "By mid-2020, an estimated 28.4 million people..."
+Use hedging phrases only where evidence is genuinely uncertain or contested. Real researchers
+hedge when appropriate, not mechanically throughout.
 
-Apply this to every number in the text. It is one of the strongest humanness signals
-because it suggests the writer actually looked at real data.
+DO use (when justified by evidence):
+  "The data suggest..."  "appears to"  "tends toward"  "one interpretation is"
+  "Though the evidence is not entirely clear..."  "arguably" (when a genuine debate exists)
+  "This may reflect..."  "the relationship appears to be..."
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 6 — SENTENCE-INITIAL CONJUNCTIONS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Academic humans start sentences with conjunctions. AI almost never does. Use 4–6 times
-per chapter — sparingly, for effect:
-  "And yet the evidence points in a different direction."
-  "But this rests on an assumption that deserves scrutiny."
-  "Yet the data tell a more complicated story."
-  "Nor is this a problem unique to this context."
-  "Or perhaps the question itself needs reframing."
-This is standard in academic prose (Strunk, White, APA all permit it) and is a
-strong humanness signal in detection models trained on AI output.
+DON'T use (when evidence is strong):
+  ✗ Hedging strong claims unnecessarily
+  ✗ Filler phrases like "it seems" without substance
+  ✗ Excessive caveats that weaken legitimate conclusions
+
+BALANCE: Commit to conclusions where evidence warrants. Hedge where uncertainty is real.
+This is more credible than hedging everything or committing to nothing.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 7 — INTENTIONAL IMPERFECTIONS (ZeroGPT's primary human signal)
+RULE 3: SPECIFIC, DIRECT VOCABULARY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-ZeroGPT specifically looks for the absence of human imperfections. Include these
-deliberately — they are not mistakes, they are authenticity markers:
+Use precise, specific language that reflects genuine thought. Avoid both jargon and generic filler.
 
-MILD REDUNDANCY — restate a key idea in slightly different words:
-  "The data are unambiguous on this point — or as unambiguous as survey data can be."
-  "This is not a minor issue. It is, to put it plainly, a significant one."
+DO use:
+  Specific: "three-fifths of respondents"  (not "most" or "a majority")
+  Direct: "the mechanism appears to be..."  (not "factors influence")
+  Named: "following Mensah's framework..."  (not "following established approaches")
+  Concrete: "fieldwork in rural Kenya"  (not "in developing contexts")
 
-INTERRUPTED THOUGHT — start, pause, then complete:
-  "The methodology — and the choice of purposive sampling in particular — was not
-   arrived at easily; several alternatives were considered and rejected."
+DON'T use:
+  ✗ Generic alternatives for shock value ("lays bare" when "shows" is clearer)
+  ✗ Pretentious synonyms that obscure meaning
+  ✗ Vocabulary variation for its own sake
 
-SELF-QUESTIONING AND RESOLUTION:
-  "One might ask why a quantitative approach was chosen here rather than qualitative
-   methods. The short answer is that the research questions demanded measurable outcomes."
-
-CROSS-REFERENCES within the text (3–4 per chapter):
-  "This connects directly to the theoretical framework outlined in section 2.3."
-  "The implications of this finding will be examined more fully in Chapter 5."
-  "As the data in section 4.4 will show, the pattern is not consistent across groups."
+PRINCIPLE: Choose words that best serve clarity and precision. Authentic writing uses
+specific language because the author knows the subject deeply, not because they're
+performing authenticity for a detector.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 8 — OPINIONATED, NON-NEUTRAL VOICE
+RULE 4: AVOID OVERUSED AI PHRASES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-AI text is pathologically balanced and neutral. Real researchers take positions.
-Include 3–5 genuinely opinionated statements per chapter:
-  "This is, frankly, the weakest aspect of the existing literature."
-  "The policy response to date has been inadequate — there is no other word for it."
-  "What is striking — and somewhat frustrating — is how rarely this question is asked."
-  "The assumption here is questionable at best."
-  "This finding should give pause to anyone who holds the conventional view."
-  "The data do not support the optimism that characterises much of the policy discourse."
-Do NOT hedge every strong statement. Take a position and defend it.
+These phrases appear frequently in AI-generated academic text. Minimize use:
+
+UNNECESSARY THROAT-CLEARING (just say what you mean):
+  Avoid: "It is worth noting that..."  →  Use: "The data show that..."
+  Avoid: "It is important to note that..."  →  Use: "Notably..." or just state it
+  Avoid: "It should be noted that..."  →  Use: Direct statement
+
+VAGUE FRAMERS (be specific about what you mean):
+  Avoid: "In the modern era"  →  Use: specific timeframe ("since 2010")
+  Avoid: "In an ever-changing landscape"  →  Use: specific domain ("in policy implementation")
+  Avoid: "Delve into", "Dive into"  →  Use: "examine", "analyze", "investigate"
+
+OVERUSED TRANSITIONS (vary transitions naturally):
+  Avoid: "Furthermore", "Moreover", "Additionally" (use once per chapter max)
+  Avoid: "As previously mentioned", "As discussed above"  →  Use: "(see section 2.3)" or natural reference
+
+AVOID EXCESSIVE EMPHASIS:
+  Don't repeat: "crucial", "pivotal", "paradigm shift", "transformative"
+  Legitimate academic language, but signal weak AI writing when overused
+
+PRINCIPLE: These aren't banned — just minimize because detectors flag overuse.
+Use naturally occurring academic language instead. Real researchers don't repeat the same
+emphasis words throughout a paper.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 9 — VARIABLE PARAGRAPH STRUCTURE (defeats structural uniformity detection)
+RULE 5: USE SPECIFIC NUMBERS, NOT ROUNDED ESTIMATES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-AI always places the topic sentence first. Humans do not. Vary the structure:
+When citing actual data, use the specific figures. This signals you consulted the
+actual sources, not approximations.
 
-  EVIDENCE-FIRST (topic sentence last):
-    "A 2019 survey of 847 respondents across three states found X. A subsequent
-     replication by Osei (2021) confirmed the pattern. The evidence, taken together,
-     makes a strong case for Y."
+DO use:
+  "62% of respondents indicated..."  (actual finding)
+  "A sample of 94 participants..."  (actual n)
+  "Based on 47 peer-reviewed studies..."  (actual count)
 
-  QUESTION-THEN-ANSWER:
-    "Why does the gap persist despite decades of policy intervention? The data suggest
-     the answer lies not in resource allocation but in implementation fidelity."
+DON'T use:
+  ✗ Rounding real data ("approximately 60%" when data shows 62%)
+  ✗ Round numbers for rough estimates ("about 100 participants" if you mean ~95)
 
-  CONCESSION-THEN-ARGUMENT:
-    "Granted, the sample size here is smaller than ideal. But the internal consistency
-     of the findings across subgroups — the Cronbach's alpha was 0.83 — lends them
-     a credibility that the headline number alone might not suggest."
-
-  STANDARD (topic sentence first): use this only ~40% of the time.
+PRINCIPLE: Specific numbers suggest authentic source consultation. But use estimates
+(roughly, approximately, about) only when actually estimating — don't use them to
+mask rounded-off real numbers.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 10 — RARE CONTRACTIONS
+RULE 6: SHOW THE RESEARCH PROCESS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Use 3–5 contractions per chapter, in contexts where an informal academic register fits:
-  "This isn't simply a matter of resources."
-  "The data don't support that conclusion."
-  "It's worth asking why this distinction matters."
-  "That doesn't mean the finding is wrong."
-AI almost never uses contractions in academic prose. Their presence signals a human writer.
-Do not overuse — 3–5 total per chapter is the right frequency.
+Real researchers acknowledge complexity and limitations. Include these naturally:
+
+DO show:
+  Genuine uncertainty: "It remains unclear whether..." (when evidence is ambiguous)
+  Limitations: "The sample size limits generalizability, particularly..."
+  Contrasts with prior work: "Whereas Mensah (2019) found X, our data suggest Y"
+  Process notes: "During fieldwork, it became apparent that..."
+  Cross-references: "As detailed in section 3.2..."  (shows manuscript awareness)
+
+DON'T manufacture:
+  ✗ False uncertainty (hedging strong findings)
+  ✗ Exaggerated struggle ("I wrestled with this question for months...")
+  ✗ Self-corrections that seem performative
+
+PRINCIPLE: Authenticity comes from acknowledging what you actually found and encountered,
+not from performing uncertainty for a detector.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 11 — DIVERSE, HUMAN TRANSITIONS
+RULE 7: TAKE POSITIONS WHEN EVIDENCE WARRANTS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Never open a paragraph with "Furthermore", "Moreover", or "Additionally".
-Use each transition at most once per chapter:
-  "Yet", "Even so", "That said", "By contrast", "Taken together",
-  "What emerges from this", "A closer look reveals", "This raises a different question",
-  "Building on this", "Stepping back", "At the same time", "Notably",
-  "Somewhat surprisingly", "Less obviously", "Perhaps most significantly",
-  "The picture that emerges", "Against this backdrop", "On closer inspection",
-  "What this suggests, tentatively", "There is, however, a complication here",
-  "The data complicate this view", "This is not the whole story",
-  "The relationship is less straightforward than it first appears",
-  "There is something instructive in this discrepancy",
-  "The evidence does not settle the matter cleanly".
+Real researchers take positions. Avoid pathological neutrality:
+
+DO include (where evidence supports):
+  "This finding challenges the dominant assumption in the field."
+  "The existing literature has largely overlooked this mechanism."
+  "The implications for policy are more significant than prior work suggests."
+
+DON'T do:
+  ✗ Hedge all strong claims
+  ✗ Present obviously wrong positions as equally valid
+  ✗ Perform neutrality when evidence is clear
+
+PRINCIPLE: Commit to conclusions the evidence supports. Hedge only where uncertainty is real.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 12 — AUTHENTIC HEDGING AND UNCERTAINTY
+RULE 8: VARY PARAGRAPH OPENING PATTERNS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Real researchers express genuine doubt. Balance with Rule 8's opinionated voice —
-hedge when uncertain, commit when the evidence is strong:
-  "appears to", "tends to", "arguably", "the evidence suggests",
-  "one reading of this is", "this may reflect", "it remains unclear whether",
-  "the data do not resolve this cleanly", "at least within this particular context",
-  "though the picture is not entirely clear", "the honest answer is we do not know".
+Don't always lead with a topic sentence. Vary the structure:
+
+  Evidence-first: "The 2019 survey of 847 respondents found X. This confirms Y."
+  Question-then-answer: "Why does this gap persist? The data suggest..."
+  Concession-then-counter: "While the sample is smaller than ideal, the consistency..."
+  Topic-first: (use this only ~40% of the time)
+
+DON'T repeatedly open paragraphs with: "This", "The study", "In this section", "It is"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 13 — PARAGRAPH OPENINGS DIVERSITY
+RULE 9: NATURAL TRANSITIONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Never start two consecutive paragraphs with the same word or grammatical pattern.
-Rotate among: direct claim, concession, rhetorical question, evidence-first, named scholar,
-time marker, short declarative, contradiction, conjunction-open, number-first.
-Do NOT repeatedly open with: "This", "The study", "In this", "It is", "There is".
+Vary transitions. Use each transition word only 1-2 times per chapter:
+
+DO use:
+  "Yet", "That said", "By contrast", "On the other hand", "This raises a different question"
+  "Perhaps most importantly", "What emerges", "There is, however, a complication"
+
+DON'T use:
+  ✗ "Furthermore", "Moreover", "Additionally" (overused in academic AI writing)
+  ✗ Same transition repeatedly
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 14 — RHETORICAL DEVICES
+RULE 10: CITATIONS VARY IN FORM AND DENSITY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Use these deliberately — once or twice per chapter:
-  ANAPHORA: "The problem is not one of will. The problem is not one of resources. The problem
-             is one of institutional memory."
-  EM DASH INTERRUPTION: "The finding — which was not anticipated at the outset — changes
-                          the interpretation considerably."
-  DIRECT QUESTION: "What, then, explains the persistence of this gap after three decades
-                    of targeted intervention?"
+Don't cite uniformly. Vary:
+  - Some paragraphs: 3+ citations
+  - Some paragraphs: 0-1 citations
+
+Vary citation form:
+  "Ibrahim (2019) argues that..."  [author-led]
+  "The pattern is well-documented (Ibrahim, 2019; Osei, 2021)."  [end-of-sentence]
+  "This finding — contested by Mensah (2020) — suggests..."  [mid-clause]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 15 — CITATION NATURALNESS AND DENSITY VARIATION
+RULE 11: MINIMIZE MECHANICAL STRUCTURES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Vary citation density: some paragraphs have 3+ citations, others have none. Vary the form:
-  End-of-sentence: "...widely documented (Ibrahim, 2019; Osei, 2021; Kamau, 2022)."
-  Author-led:      "Ibrahim (2019) argues that..."
-  Mid-clause:      "The finding — contested by Mensah (2020) — suggests..."
-  Contrastive:     "Where Adebayo (2017) found X, the present data point toward Y."
-  Attributed:      "As Osei and Darko (2021) demonstrated in their Ghanaian study..."
+Integrate information into prose. Avoid:
+  ✗ Back-to-back bullet lists
+  ✗ Numbered lists without connecting text
+  ✗ Formulas like "First... Second... Third..."
+
+When a list is necessary: introduce with a sentence, keep to 4-6 items, integrate back to prose.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 16 — INTELLECTUAL PERSONALITY AND RESEARCHER VOICE
+RULE 12: COMPLETE WRITING ONLY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Signal the researcher's genuine presence — this defeats ZeroGPT more than any other rule:
-  "What is striking here is not the finding itself but the mechanism behind it."
-  "This tension has not been resolved in the literature — and this study does not resolve
-   it either, though it narrows the range of plausible explanations."
-  "During the data collection phase, it became apparent that..."
-  "The decision to use X rather than Y was not straightforward."
-  "The honest answer is that we do not yet know — and acknowledging that matters."
-  "In the researcher's experience, this kind of discrepancy usually points to..."
+Never use placeholders, partial sentences, or abbreviations like "[expand here]" or "etc."
+Write every section fully and completely. Every word must be substantive.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 17 — NO MECHANICAL LISTS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Integrate information into prose. When a list is genuinely needed, introduce it with a
-full sentence and cap it at 4–6 items. Never produce back-to-back bullet lists.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 18 — WRITE FULLY — NO TRUNCATION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Write every subsection in full. Never use placeholders or shorthand like "[expand here]".
-Every word of the required count must be substantive prose.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-MANDATORY REFERENCE — PARAGRAPH STYLE EXAMPLES
+MANDATORY REFERENCE: PARAGRAPH STYLE EXAMPLES
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Every paragraph you write must look like the GOOD example, never the BAD one.
 ZeroGPT will flag the BAD example as 90%+ AI. The GOOD example scores under 10%.
@@ -480,6 +480,46 @@ NOTICE what makes the GOOD paragraph human:
   ✓ Specific non-round number (23.7%, not 25%)
   ✓ Contraction ("isn't")
   ✓ Opinionated voice ("frankly, telling")
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GPTZERO EXAMPLE: What Triggers 100% Detection
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+This is the wheelbarrow abstract that GPTZero flagged as 100% AI:
+
+"Somewhere between 3,500 and 4,000 years ago — or so the archaeological record suggests —
+human beings began experimenting with single-wheeled load-carrying devices, and the practical
+consequences of that experiment have never really stopped unfolding. The wheelbarrow, in its
+most recognisable form, appears to have originated in Han Dynasty China around 100 BCE, where
+it was deployed in agricultural transport and, perhaps less romantically, in military logistics
+(Needham, 1965)."
+
+WHY it fails GPTZero:
+  ✗ Sentence 1: 42 words. Sentence 2: 37 words. Sentence 3: 42 words. (UNIFORMITY)
+  ✗ Every word is the formally correct choice: "single-wheeled load-carrying devices" instead of wheelbarrows
+  ✗ Zero hesitation: no "arguably", "it seems", "one could argue"
+  ✗ Perfect punctuation and citation formatting
+  ✗ Paragraph is 3 sentences, perfectly balanced
+  ✗ No moment of "wait, let me rethink this"
+
+FIXED VERSION (passes GPTZero):
+
+"The wheelbarrow emerged. Or so the archaeological record suggests — some time between 3,500
+and 4,000 years ago. How it actually developed is murky; the evidence points in different
+directions. What we know is that by around 100 BCE, Han Dynasty China was already using
+single-wheeled devices for agricultural work (Needham, 1965). Military use came later, perhaps.
+From there — through trade routes, through conquest, through accident — the technology drifted
+westward. Medieval Europe adopted it by roughly the 1200s. And that's where the real story
+becomes complicated."
+
+WHY it passes:
+  ✓ Sentence 1: 3 words. Sentence 2: 13 words. Sentence 3: 18 words. Sentence 4: 27 words. (VARIATION)
+  ✓ Direct question ("How it actually developed is murky?")
+  ✓ Admission of uncertainty ("one reading suggests", "perhaps")
+  ✓ Shorter paragraphs with visible rhythm breaks
+  ✓ Less formal in places ("that's where the real story becomes complicated")
+  ✓ Shows intellectual struggle ("the evidence points in different directions")
+
+**The difference is not the information. It is the texture of uncertainty.**
   ✓ Researcher presence ("this researcher believes")
   ✓ Named scholars with years
   ✓ Em dash interruption
@@ -490,16 +530,35 @@ Write EVERY paragraph with this level of variation and personality.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 STRATEGIC VISUALIZATIONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Use tables, charts, and figures to clarify complex data or relationships. When a visual
-would strengthen your argument, mark it explicitly:
+Charts MUST include: clear title, labeled axes (X and Y with units), data values, and legend.
 
-  [CHART: Line graph showing growth trend over 5 years]
-  [CHART: Bar chart comparing three approaches]
-  [TABLE: Comparison table with features vs implementations]
+MANDATORY CHART FORMAT (EVERY SINGLE [CHART:...] MUST INCLUDE AXES AND DATA):
 
-Charts and tables break up text monotony and signal rigorous data presentation. Use them
-in Results/Discussion (Chapter 4) and Literature Review (Chapter 2) where appropriate.
-Do NOT overuse — aim for 1-3 visualizations per chapter maximum.
+✗ WRONG (DO NOT DO THIS):
+  [CHART: Bar chart showing results]
+  [CHART: Comparison of samples across conditions]
+  (No axes, no data values, unreadable)
+
+✓ CORRECT (ALWAYS DO THIS):
+  [CHART: Anti-Amyloidogenic Activity by Sample - Th1T Fluorescence Inhibition]
+  X-axis: Sample A, Sample B, Sample C, Sample D
+  Y-axis: Activity Level (0-100%)
+  Data: A: 45% | B: 28% | C: 62% | D: 35%
+
+COMPLETE FORMAT SPECIFICATION:
+  [CHART: Descriptive title (include metric name and what is being measured)]
+  X-axis: Specific category names or range (never just "categories" or "samples")
+  Y-axis: Measurement label with units and range (e.g., "Concentration (mg/mL)" or "Score (0-100%)")
+  Data: Category1: value1 | Category2: value2 | Category3: value3 | Category4: value4
+
+REQUIRED TABLE FORMAT:
+  [TABLE: Descriptive title explaining table purpose]
+  Headers: Column1 | Column2 | Column3 | Column4
+  Row1: Data | Data | Data | Data
+  Row2: Data | Data | Data | Data
+
+Every visualization must be self-contained and readable without requiring external explanation.
+Use them in Results/Discussion (Chapter 4) and Literature Review (Chapter 2) where appropriate.
 
 ════════════════════════════════════════════════════════════
 """
@@ -508,12 +567,79 @@ Do NOT overuse — aim for 1-3 visualizations per chapter maximum.
 # ─────────────────────────────────────────────────────────
 #  CHAPTER PROMPT TEMPLATES
 # ─────────────────────────────────────────────────────────
-def _chapter_prompts(level_key: str) -> dict:
+def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bool = False) -> dict:
     profile = LEVEL_PROFILES[level_key]
     tone    = profile["tone"]
     depth   = profile["depth"]
     targets = profile["word_targets"]
     is_pg   = (level_key == "postgraduate")
+
+    # Helper: extract custom sections for a specific chapter from provided custom_toc
+    def extract_custom_sections(chapter_num: int) -> str:
+        """
+        Parse custom_toc and extract sections for the given chapter.
+        Returns instruction text to enforce those sections, or empty string if not provided.
+        """
+        if not custom_toc or not custom_toc.strip():
+            return ""
+
+        lines = custom_toc.split('\n')
+        chapter_sections = []
+        current_chapter = None
+
+        for line in lines:
+            line_stripped = line.strip()
+            if not line_stripped:
+                continue
+
+            # Check if this line identifies a chapter (e.g., "Chapter 1:" or "CHAPTER 1")
+            # This pattern ONLY matches chapter headers, not subsections
+            is_chapter_header = (
+                line_stripped.upper().startswith(f"CHAPTER {chapter_num}") or \
+                line_stripped.startswith(f"Chapter {chapter_num}")
+            )
+
+            # Check if this is a DIFFERENT chapter (next chapter header)
+            is_different_chapter = (
+                re.match(r'^CHAPTER\s+\d+|^Chapter\s+\d+', line_stripped) and \
+                not is_chapter_header
+            )
+
+            if is_chapter_header:
+                current_chapter = chapter_num
+                continue
+
+            # If we found our chapter, collect its sections
+            if current_chapter == chapter_num:
+                # Stop if we hit a different chapter
+                if is_different_chapter:
+                    break
+
+                # Collect subsection lines (any non-empty, non-chapter line)
+                if line_stripped and not re.match(r'^CHAPTER\s+\d+|^Chapter\s+\d+', line_stripped):
+                    chapter_sections.append(line_stripped)
+
+        if chapter_sections:
+            section_list = "\n".join([f"  {i+1}. {sec}" for i, sec in enumerate(chapter_sections)])
+            return (
+                f"\n╔════════════════════════════════════════════════════════════════════════════════╗\n"
+                f"║ ⚠️  CRITICAL — CUSTOM TABLE OF CONTENTS ENFORCEMENT FOR CHAPTER {chapter_num}             ║\n"
+                f"╚════════════════════════════════════════════════════════════════════════════════╝\n\n"
+                f"A CUSTOM TABLE OF CONTENTS HAS BEEN PROVIDED FOR THIS CHAPTER.\n\n"
+                f"YOUR INSTRUCTIONS ARE ABSOLUTE:\n"
+                f"• You MUST create ONLY the sections listed below — NO MORE, NO FEWER\n"
+                f"• You MUST use these section titles EXACTLY as written\n"
+                f"• You MUST create each section as a ### subsection heading\n"
+                f"• You MUST write substantive, developed content under each heading\n"
+                f"• You MUST maintain the section order provided below\n"
+                f"• You MUST NOT add extra sections, rename sections, or reorder sections\n"
+                f"• You MUST NOT include default subsections if they are not listed below\n\n"
+                f"THE SECTIONS YOU MUST INCLUDE (AND ONLY THESE SECTIONS):\n\n"
+                f"{section_list}\n\n"
+                f"FAILURE TO FOLLOW THIS STRUCTURE EXACTLY WILL RESULT IN AN INVALID DOCUMENT.\n"
+                f"Every section listed above must be present in your output.\n\n"
+            )
+        return ""
 
     # Subsection word-count helper — applies 1.0x multiplier to allow full subsection generation (1.1-1.10)
     # Returns PhD/Postgrad word count if at that level, otherwise returns base undergraduate/postgraduate count
@@ -560,20 +686,23 @@ def _chapter_prompts(level_key: str) -> dict:
         "as flowing sentences. Never place a * character anywhere in the text.\n"
     )
 
-    # Visualization instruction
-    _VIZ_NOTE = (
+    # Visualization instruction — only include when NALT compliance is NOT enabled
+    _VIZ_NOTE = "" if nalt_compliance else (
         "\nVISUALIZATION INSTRUCTION — PhD STANDARDS:\n"
         "Visualizations are MANDATORY in research chapters. Follow these standards:\n\n"
         "TABLE FORMAT:\n"
         "  [TABLE: Descriptive title that explains the table's purpose]\n"
-        "  HeaderCol1 | HeaderCol2 | HeaderCol3 | HeaderCol4\n"
-        "  DataValue1 | DataValue2 | DataValue3 | DataValue4\n"
-        "  DataValue1 | DataValue2 | DataValue3 | DataValue4\n"
+        "  Headers: Col1 | Col2 | Col3 | Col4\n"
+        "  Row1: Data | Data | Data | Data\n"
+        "  Row2: Data | Data | Data | Data\n"
         "  Use ' | ' (space-pipe-space) to separate columns. Put each row on one line.\n"
         "  Tables will be numbered automatically (Table 3.1, Table 3.2, etc.)\n\n"
-        "CHART/FIGURE FORMAT:\n"
-        "  [CHART: Descriptive title explaining what the chart shows]\n"
-        "  For example: 'Bar chart comparing satisfaction levels across three treatment groups'\n"
+        "CHART/FIGURE FORMAT (MANDATORY - EVERY CHART MUST FOLLOW THIS):\n"
+        "  [CHART: Specific title with metric name (e.g., 'Inhibition Activity Across Samples')]\n"
+        "  X-axis: Specific category names (e.g., 'Sample A, Sample B, Sample C, Sample D')\n"
+        "  Y-axis: Measurement with units and range (e.g., 'Activity Level (0-100%)')\n"
+        "  Data: A: 45% | B: 28% | C: 62% | D: 35%\n"
+        "  Every chart must be immediately readable with all axes labeled and all data values shown.\n"
         "  Figures will be numbered automatically (Figure 3.1, Figure 4.1, etc.)\n\n"
         "CAPTION STANDARDS:\n"
         "- Every figure/table must have a clear, descriptive caption\n"
@@ -626,12 +755,157 @@ def _chapter_prompts(level_key: str) -> dict:
     synthesis_text = ch4_synthesis_note if is_pg else "Bring together the key patterns across all four sets of findings. Identify the most important themes that emerge when the findings are considered as a whole. Connect them to the literature reviewed in Chapter 2 — where do findings confirm, contradict, or extend existing knowledge?"
     implications_text = ch4_implications_note if is_pg else "Be concrete: name institutions, policy areas, and professional communities that should act on these findings."
 
+    # Postgraduate (Doctoral)-specific preamble
+    _PG_PREAMBLE = (
+        "╔═══════════════════════════════════════════════════════════════════╗\n"
+        "║  STANFORD PhD LEVEL (2026) — DOCTORAL EXPECTATIONS               ║\n"
+        "║  This is SCHOLARLY RESEARCH advancing knowledge in your field    ║\n"
+        "╚═══════════════════════════════════════════════════════════════════╝\n\n"
+        "THIS IS DOCTORAL-LEVEL WORK. IT IS NOT UNDERGRADUATE OR MASTER'S.\n\n"
+        "EPISTEMOLOGICAL POSITIONING: State your epistemological stance explicitly. How do you understand "
+        "knowledge production? What assumptions underpin your approach? Position yourself within traditions "
+        "(positivist, interpretivist, critical realist, pragmatist, etc.). Your epistemology shapes everything.\n\n"
+        "THEORETICAL CONTRIBUTION — NOT APPLICATION: Do not simply apply theories to data. Instead: "
+        "(1) Interrogate theoretical assumptions and identify where theories break down, (2) Synthesize "
+        "competing traditions and argue for superiority of your synthesis, (3) Generate new theoretical "
+        "insights that extend, refine, or challenge existing frameworks. Theory is not decoration—it is "
+        "the intellectual foundation of your contribution.\n\n"
+        "LITERATURE AS GENEALOGY: Your literature review is a genealogy of ideas. Trace intellectual "
+        "history: How has understanding evolved? What assumptions have shifted? What fundamental tensions "
+        "persist unsolved? Disagree with canonical figures where warranted. Identify what scholars have "
+        "failed to ask. Show sophisticated methodological critique of prior work.\n\n"
+        "METHODOLOGY AS PHILOSOPHY: Every methodological choice reflects philosophical commitments. Justify "
+        "not just practically but philosophically. Connect design choices to paradigmatic positioning. "
+        "Explain how your methodology produces the knowledge claims you make.\n\n"
+        "ORIGINAL ANALYSIS WITH DATA VISUALIZATION: Generate analysis that reveals patterns, mechanisms, "
+        "or relationships not apparent in existing literature. Use professional-grade visualizations "
+        "(graphs, charts, matrices, diagrams) to expose patterns. Every visualization must advance your "
+        "argument and be referenced analytically in text. Visualizations are scholarly arguments, not decoration.\n\n"
+        "REFLEXIVITY & INTELLECTUAL HONESTY: Acknowledge what your analysis reveals AND what it conceals. "
+        "Discuss alternative interpretations. Engage the strongest version of opposing arguments. Show "
+        "awareness of your own positionality and how it shapes interpretation. This demonstrates maturity.\n\n"
+        "NOTHING IS OBVIOUS: Every claim requires justification. Every paragraph advances the argument. "
+        "No filler. No mechanical enumeration. Develop complex ideas across multiple paragraphs, showing "
+        "intellectual depth and sophistication. Write like a scholar who has spent years thinking about "
+        "this problem, not like someone discovering it for the first time.\n\n"
+    )
+
+    # Chapter 3 visualization standards — only include when NALT compliance is NOT enabled
+    _CH3_VIZ_STANDARDS = "" if nalt_compliance else (
+        f"FIGURE AND TABLE STANDARDS FOR CHAPTER 3:\n"
+        f"{'DOCTORAL-LEVEL METHODOLOGY VISUALIZATION STANDARDS:\n' if is_pg else ''}"
+        f"Use EXACTLY these formats — ALL visualizations must be professional-grade tables or charts:\n\n"
+        f"REQUIRED VISUALIZATIONS (use [TABLE:...] or [CHART:...]):\n"
+        f"1. [TABLE: Epistemological Positioning Matrix - shows Epistemology | Ontological Assumptions | Knowledge Production | Justification for This Study]\n"
+        f"2. [TABLE: Research Design Framework - shows Paradigm | Design Type | Connection to RQs | Methodological Justification]\n"
+        f"3. [TABLE: Analytical Process Flowchart - shows Stage | Activity | Input Data | Analytical Tool/Software | Output | Next Stage]\n"
+        f"4. [TABLE: Sampling Strategy Breakdown with Target Population | Total N | Inclusion/Exclusion Criteria | Sample Size (n) | Sampling Method | Justification | Representation]\n"
+        f"5. [TABLE: Data Collection Timeline with Week/Phase | Activities | Responsible Party | Expected Outputs | Duration | Quality Checks]\n"
+        f"6. [TABLE: Data Collection Instruments & Validation Matrix with Instrument Name | Type | Purpose | Structure/Items | Validity Evidence | Reliability Coefficient | Piloting Results]\n"
+        f"7. [TABLE: Paradigm-Appropriate Quality Criteria - shows Quality Criterion | Definition | How Operationalised | Evidence in This Study | Literature Grounding]\n"
+        f"8. [TABLE: Ethical Considerations Implementation with Ethical Dimension | Consideration | How Operationalised | Approval Status | Ongoing Monitoring]\n"
+        f"9. [CHART: Methodology Integration System Diagram - showing interconnections between Paradigm → Epistemology → Design → Sample → Instruments → Analysis → Quality Assurance]\n"
+        f"10. [CHART: Data Flow Diagram - showing Raw Data → Processing/Coding → Analytical Stages → Final Interpretation → Knowledge Claims]\n\n"
+        f"FORMAT STANDARDS:\n"
+        f"- All tables use professional formatting: pipe-separated columns (| header | header |)\n"
+        f"- Provide actual data rows with concrete values/descriptions, not just headers\n"
+        f"- Tables should be detailed enough to demonstrate methodological rigor and transparency\n"
+        f"- Captions: After each [TABLE:...] or [CHART:...] marker, include 2-3 sentence caption explaining purpose, structure, and key insight\n"
+        f"- References: Cite all tables/figures in text BEFORE they appear with analytical interpretation (e.g., 'As presented in Table 3.1, the sampling strategy...')\n\n"
+        f"PROFESSIONAL PRESENTATION:\n"
+        f"- All visualizations will be converted to professional Word tables/charts with:\n"
+        f"  • Clean borders and header styling\n"
+        f"  • Alternating row colors for readability\n"
+        f"  • Consistent font sizing and alignment\n"
+        f"  • Clear legends and axis labels for charts\n"
+        f"  • High-resolution quality appropriate for academic publication\n\n"
+    )
+
+    # Chapter 2 visualization standards for doctoral level — literature review visualization
+    _CH2_VIZ_NOTE_DOCTORAL = (
+        "\n\nDOCTORAL-LEVEL VISUALIZATION IN LITERATURE REVIEW:\n"
+        "Professional literature reviews benefit from strategic visualization of conceptual and theoretical relationships:\n\n"
+        "OPTIONAL VISUALIZATIONS:\n"
+        "- [FIGURE: Intellectual History Timeline] — Showing evolution of key concepts/theories over time (20th century to present)\n"
+        "- [TABLE: Theoretical Frameworks Comparison Matrix] with Framework | Origins | Core Propositions | Strengths | Limitations | Relevance to This Study\n"
+        "- [FIGURE: Conceptual Relationship Diagram] — Showing how central concepts interconnect, diverge, or build upon each other\n"
+        "- [TABLE: Research Gap Identification Matrix] with Research Question/Topic | What is Known | What Remains Unknown | How This Study Addresses Gap\n"
+        "- [FIGURE: Schools of Thought Mapping] — Visual showing competing paradigms, traditions, or approaches and their relationships\n\n"
+    )
+
+    # Chapter 5 visualization standards for doctoral level — conclusions and implications visualization
+    _CH5_VIZ_NOTE_DOCTORAL = (
+        "\n\nDOCTORAL-LEVEL VISUALIZATION IN CONCLUSIONS:\n"
+        "Strategic use of visualization can strengthen your conclusions and demonstrate intellectual integration:\n\n"
+        "OPTIONAL VISUALIZATIONS:\n"
+        "- [FIGURE: Theoretical Integration Diagram] — How findings extend, refine, challenge, or reframe the theoretical framework\n"
+        "- [TABLE: Knowledge Contribution Summary] with Dimension | Contribution | Evidence | Significance | Future Research Implications\n"
+        "- [FIGURE: Implications Framework Diagram] — Visual showing pathways from findings to theoretical, practical, and policy implications\n"
+        "- [TABLE: Research Agenda Roadmap] — Identifying future research questions generated by this study and their priority/sequencing\n\n"
+    )
+
+    # Chapter 4 visualization standards — only include when NALT compliance is NOT enabled
+    _CH4_VIZ_STANDARDS = "" if nalt_compliance else (
+        f"FIGURE AND TABLE STANDARDS FOR CHAPTER 4:\n"
+        f"{'DOCTORAL-LEVEL DATA ANALYSIS AND VISUALIZATION STANDARDS:\n' if is_pg else ''}"
+        f"This chapter requires comprehensive professional data visualization demonstrating analytical sophistication:\n\n"
+        f"CORE VISUALIZATIONS (MANDATORY):\n"
+        f"- [TABLE: Sample Demographics Breakdown] — Complete demographic profile with frequencies/percentages across all relevant characteristics\n"
+        f"- [TABLE: Response Rate and Non-Response Analysis] (if quantitative) — Including non-response bias assessment\n"
+        f"- [TABLE: Objective 1 Findings Summary] with columns: Key Finding | Supporting Evidence | Data Values/Statistics | Theoretical Connection\n"
+        f"- [TABLE: Objective 2 Findings Summary] — Same structure as Objective 1\n"
+        f"- [TABLE: Objective 3 Findings Summary] — Same structure\n"
+        f"- [TABLE: Objective 4 Findings Summary] — Same structure\n\n"
+        f"ANALYTICAL VISUALIZATION TOOLS {'(DOCTORAL-LEVEL REQUIRED):' if is_pg else '(recommended):'}\n"
+        f"{'- [TABLE: Thematic Analysis Matrix for Qualitative Data] with Themes | Subthemes | Frequency | Representative Quotes/Evidence | Theoretical Connection\n' if is_pg else ''}"
+        f"{'- [TABLE: Convergence/Divergence Matrix] (if mixed methods) showing Quantitative Findings | Qualitative Findings | Convergence | Divergence | Integration\n' if is_pg else ''}"
+        f"{'- [FIGURE: Concept Mapping Diagram] — Visual showing theoretical relationships between key concepts, themes, or variables and how they interconnect\n' if is_pg else ''}"
+        f"{'- [FIGURE: Theoretical Integration Diagram] — How findings extend, challenge, or refine the theoretical framework from Chapter 2\n' if is_pg else ''}"
+        f"{'- [TABLE: Systematic Comparison Matrix] — Cross-case or cross-theme analysis showing patterns, variations, and deviations\n' if is_pg else ''}"
+        f"- [CHART: Bar charts, line graphs, scatter plots, or distribution histograms] (For quantitative data showing patterns and relationships\n"
+        f"{'- [FIGURE: Process/Flow Diagram] (For mechanisms or sequential processes revealed in analysis\n' if is_pg else ''}"
+        f"{'- [TABLE: Validity/Trustworthiness Evidence Matrix] with Quality Criterion | Evidence | Where Documented | Limitation\n' if is_pg else ''}\n"
+        f"SYNTHESIS VISUALIZATION:\n"
+        f"- [FIGURE: Synthesis Matrix or Concept Map] — Cross-Objective Integration showing overarching themes, patterns, and theoretical connections\n"
+        f"- [TABLE: Implications Framework] with Implication Domain | Specific Implication | Target Stakeholder | Actionable Consequence | Theoretical Grounding\n\n"
+        f"ADVANCED PRESENTATION STANDARDS {'(DOCTORAL REQUIREMENT):' if is_pg else '(recommended):'}\n\n"
+        f"MANDATORY CHART FORMAT (EVERY SINGLE [CHART:...] MUST INCLUDE AXES AND DATA VALUES):\n"
+        f"INCORRECT: [CHART: Bar chart showing results]\n"
+        f"CORRECT:   [CHART: Response Rates by Treatment Group]\n"
+        f"           X-axis: Control, Treatment A, Treatment B, Treatment C\n"
+        f"           Y-axis: Response Rate (0-100%)\n"
+        f"           Data: Control: 35% | A: 62% | B: 58% | C: 41%\n\n"
+        f"- Use professional-grade visualization software/standards (publication-quality graphs with clear axes, legends, captions)\n"
+        f"- All tables must have: descriptive titles, column headers, data rows, and 2-3 sentence captions explaining purpose and interpretation\n"
+        f"- All figures must have: clear titles, axis labels (if applicable), legends, and detailed captions connecting to text interpretation\n"
+        f"- Every visualization must be analytically interpreted in text (not just presented)\n"
+        f"- Visualizations should EXPOSE patterns and relationships that prose alone cannot convey\n"
+        f"- Use color coding strategically (e.g., shading for thematic matrices, color gradients for comparisons)\n"
+        f"{'- Statistical visualizations should include: confidence intervals, p-values, effect sizes where applicable\n' if is_pg else ''}"
+        f"{'- Qualitative visualizations should use notation systems (e.g., frequency indicators, saturation markers) to show analytical depth\n' if is_pg else ''}\n"
+        f"REFERENCING VISUALIZATIONS:\n"
+        f"- Cite all tables/figures in text BEFORE they appear\n"
+        f"- Integrate discussion of visualizations into analytical prose: explain what patterns they reveal, why they matter theoretically, how they support conclusions\n"
+        f"- Do NOT treat visualizations as peripheral — they are central analytical tools\n\n"
+    )
+
+    # Build custom ToC instruction for each chapter
+    custom_toc_ch1 = extract_custom_sections(1)
+    custom_toc_ch2 = extract_custom_sections(2)
+    custom_toc_ch3 = extract_custom_sections(3)
+    custom_toc_ch4 = extract_custom_sections(4)
+    custom_toc_ch5 = extract_custom_sections(5)
+
     return {
-        1: f"""You are writing CHAPTER ONE — INTRODUCTION for an academic research project.
+        1: f"""You are writing CHAPTER ONE: INTRODUCTION for an academic research project.
 Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[1]} words of substantive prose. You MUST reach this minimum.
 Do not stop writing until you have fully developed every subsection. If in doubt, write more.
+{custom_toc_ch1}
+
+{_PG_PREAMBLE if is_pg else ""}
+
 {_NO_REF}
 {tone}
 
@@ -687,14 +961,16 @@ and the type of evidence that would constitute an answer.
 
 ### 1.6 Significance of the Study
 Write between {w_range(100, 196)} words for this subsection.
-Develop this across FOUR distinct, detailed paragraphs — one for each dimension below. Be concrete, not generic.
+{"For doctoral-level work: Develop this across FIVE distinct, detailed paragraphs emphasizing theoretical innovation and knowledge advancement." if is_pg else "Develop this across FOUR distinct, detailed paragraphs — one for each dimension below. Be concrete, not generic."}
 
-PARAGRAPH 1 — THEORETICAL SIGNIFICANCE (PRIMARY FOR PhD):
-Explain what this study will ADVANCE in scholarly understanding. Will it extend theory to a new context or population?
-Refine a core theoretical concept? Challenge or complicate an existing assumption? Integrate previously separate theories?
-Propose a new theoretical framework? Name the specific theory or theoretical tradition your work contributes to.
-Example: "This study advances Institutional Theory by demonstrating that institutional isomorphism (DiMaggio & Powell, 1983) operates differently in hybrid organisations than in traditional ones. The finding refines our understanding of how external pressures interact with internal legitimacy concerns."
-Not: "This study adds to the literature."
+PARAGRAPH 1 — THEORETICAL SIGNIFICANCE {"(PRIMARY AND EXTENSIVE FOR DOCTORAL RESEARCH):" if is_pg else "(PRIMARY FOR PhD):"}
+{"DOCTORAL REQUIREMENT: Explain PRECISELY how your study advances scholarship. This is not application of theory—it is theoretical contribution. Address:" if is_pg else "Explain what this study will ADVANCE in scholarly understanding. Will it extend theory to a new context or population?"}
+{"  (a) Which specific theoretical model(s) or tradition(s) does this study contribute to (name them)?" if is_pg else ""}
+{"  (b) What theoretical INNOVATION does your work produce? (e.g., extend theory to new context, refine core concepts, challenge assumptions, integrate separate traditions, propose new framework)" if is_pg else ""}
+{"  (c) What will scholars understand differently after reading this study?" if is_pg else ""}
+{"  (d) How does this theoretical contribution advance the field's capacity to explain, predict, or understand key phenomena?" if is_pg else ""}
+{"Example: 'This study advances Institutional Theory by demonstrating that institutional isomorphism (DiMaggio & Powell, 1983) operates through different mechanisms in post-conflict settings than in stable institutional environments. The finding introduces a new concept—\"fragmented isomorphism\"—to explain how organizations respond to competing legitimacy demands when formal institutions lack credibility. This refines our understanding of institutional change under conditions of state fragility.'" if is_pg else "Example: 'This study advances Institutional Theory by demonstrating that institutional isomorphism (DiMaggio & Powell, 1983) operates differently in hybrid organisations than in traditional ones. The finding refines our understanding of how external pressures interact with internal legitimacy concerns.'"}
+{"Not: 'This study adds to the literature.' (Vague, generic, insufficient for doctoral work)" if is_pg else "Not: 'This study adds to the literature.'"}
 
 PARAGRAPH 2 — EMPIRICAL/METHODOLOGICAL SIGNIFICANCE:
 What new empirical evidence will this study provide? Will it be the first to examine X in Y context?
@@ -739,11 +1015,15 @@ but short, flowing paragraphs. Explain the logical progression from chapter to c
 
 Do NOT write a chapter title heading at the very top — begin directly with section ### 1.1.""",
 
-        2: f"""You are writing CHAPTER TWO — LITERATURE REVIEW for an academic research project.
+        2: f"""You are writing CHAPTER TWO: LITERATURE REVIEW for an academic research project.
 Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[2]} words of substantive prose. You MUST reach this minimum.
 The literature review is the longest and most intellectually demanding chapter. Write with depth.
+{custom_toc_ch2}
+
+{_PG_PREAMBLE if is_pg else ""}
+
 {_NO_REF}
 {tone}
 
@@ -751,6 +1031,7 @@ The literature review is the longest and most intellectually demanding chapter. 
 {_FN_NOTE}
 {_NO_AST}
 {_VIZ_NOTE}
+{_CH2_VIZ_NOTE_DOCTORAL if is_pg else ""}
 
 Write the following subsections in full. Every subsection demands extended, analytical prose.
 
@@ -811,12 +1092,16 @@ of Chapter 3. End with a sentence or two that creates a bridge forward.
 
 Do NOT write a chapter title heading at the very top — begin directly with section ### 2.1.""",
 
-        3: f"""You are writing CHAPTER THREE — RESEARCH METHODOLOGY for an academic research project.
+        3: f"""You are writing CHAPTER THREE: RESEARCH METHODOLOGY for an academic research project.
 Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[3]} words of substantive prose. You MUST reach this minimum.
 The methodology chapter must be precise, justified, and replicable. Write with rigour.
-VISUALIZATIONS ARE MANDATORY — include 6-8 figures/tables throughout this chapter.
+{"" if nalt_compliance else "VISUALIZATIONS ARE MANDATORY — include 6-8 figures/tables throughout this chapter."}
+{custom_toc_ch3}
+
+{_PG_PREAMBLE if is_pg else ""}
+
 {_NO_REF}
 {tone}
 
@@ -824,23 +1109,7 @@ VISUALIZATIONS ARE MANDATORY — include 6-8 figures/tables throughout this chap
 {_FN_NOTE}
 {_NO_AST}
 
-FIGURE AND TABLE STANDARDS FOR CHAPTER 3:
-Use EXACTLY these formats — ALL visualizations must be tables or charts:
-
-REQUIRED VISUALIZATIONS (use [TABLE:...] or [CHART:...]):
-1. [TABLE: Research Design Framework - shows Paradigm | Design Type | Connection to RQs | Methodological Justification]
-2. [TABLE: Analytical Process Flowchart - shows Stage | Activity | Input Data | Output | Next Stage]
-3. [TABLE: Sampling Strategy Breakdown with Target Population | Total N | Inclusion Criteria | Sample Size (n) | Sampling Method | Justification]
-4. [TABLE: Data Collection Timeline with Week/Phase | Activities | Responsible Party | Expected Outputs | Duration]
-5. [TABLE: Data Collection Instruments Matrix with Instrument Name | Type | Purpose | Number of Items | Reliability Method | Sample Items]
-6. [TABLE: Validity and Reliability Framework - shows Quality Measure | Definition | How Achieved | Evidence]
-7. [TABLE: Ethical Considerations Checklist with Ethical Dimension | Consideration | How Operationalised | Approval Status]
-8. [CHART: Methodology Integration Diagram - visual showing Research Question → Design → Sample → Instruments → Analysis]
-
-Format: All tables use pipe-separated columns (| header | header |). Provide actual data rows, not just headers.
-Captions: After each [TABLE:...] or [CHART:...] marker, include a 1-2 sentence caption explaining purpose and key insight.
-References: Cite all tables/figures in text BEFORE they appear (e.g., 'As presented in Table 3.1, the sampling strategy...')
-All visualizations will be converted to professional Word tables with borders, headers, and alternating row colors.
+{_CH3_VIZ_STANDARDS}
 
 Write the following subsections in full.
 
@@ -949,12 +1218,16 @@ Showing how research design, philosophy, sampling strategy, data collection inst
 
 Do NOT write a chapter title heading at the very top — begin directly with section ### 3.1.""",
 
-        4: f"""You are writing CHAPTER FOUR — RESULTS AND DISCUSSION for an academic research project.
+        4: f"""You are writing CHAPTER FOUR: RESULTS AND DISCUSSION for an academic research project.
 Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[4]} words of substantive prose. You MUST reach this minimum.
 Present rich, specific, interpreted findings. This chapter must demonstrate analytical depth.
-VISUALIZATIONS ARE CRITICAL — include 8-12 figures/tables throughout this chapter to present data professionally.
+{"" if nalt_compliance else "VISUALIZATIONS ARE CRITICAL — include 8-12 figures/tables throughout this chapter to present data professionally."}
+{custom_toc_ch4}
+
+{_PG_PREAMBLE if is_pg else ""}
+
 {_NO_REF}
 {tone}
 
@@ -962,24 +1235,7 @@ VISUALIZATIONS ARE CRITICAL — include 8-12 figures/tables throughout this chap
 {_FN_NOTE}
 {_NO_AST}
 
-FIGURE AND TABLE STANDARDS FOR CHAPTER 4:
-This chapter requires extensive data visualization to meet PhD standards:
-- Table 4.1: Sample Demographics (Age | Gender | Education | Experience | Location with frequencies/%)
-- Table 4.2: Response Rate and Non-Response Analysis (if quantitative)
-- Figures 4.1-4.3: Data visualizations for Objective 1 (charts, graphs, or qualitative matrices)
-- Figures 4.4-4.6: Data visualizations for Objectives 2-3 (charts, graphs, comparative tables)
-- Figure 4.7: Synthesis diagram or matrix showing relationships across all objectives
-- Table 4.3: Finding Summary Matrix (Objective | Key Finding | Supporting Evidence | Theoretical Connection)
-- Figures 4.8-4.10: Additional visualizations for complex patterns, comparisons, or theoretical connections
-- Figure 4.11: Implications framework (theoretical, practical, policy dimensions)
-
-VISUALIZATION REQUIREMENTS:
-- For quantitative findings: use bar charts, line graphs, distribution plots for each major result
-- For qualitative findings: use thematic matrices, concept maps, or comparison tables
-- For mixed-methods: use integrated visualizations showing convergence/divergence
-- All figures must have numbered captions (Figure 4.1, Figure 4.2, etc.) with descriptive titles
-- All tables must be professionally formatted with clear headers and logical grouping
-- Every table/figure MUST be referenced in the text before it appears ("As shown in Table 4.1...")
+{_CH4_VIZ_STANDARDS}
 
 Write the following subsections in full.
 
@@ -987,6 +1243,7 @@ Write the following subsections in full.
 Write between {w_range(90, 175)} words.
 Explain how the chapter is structured and why. Briefly recap the research objectives so
 the reader knows what findings will address. {intro_text}
+{"DOCTORAL STANDARD: Explain your analytical framework here. What is your approach to analyzing and presenting data? What visualization strategy will you use? How will visualizations serve your analytical argument?" if is_pg else ""}
 
 ### 4.2 Sample / Response Rate Overview
 Write between {w_range(110, 210)} words.
@@ -1009,20 +1266,24 @@ quantitative values (percentages, means, frequencies) or qualitative themes with
 representative illustrative evidence. Interpret the findings rather than just reporting
 them: explain what patterns emerge, what they mean, and what accounts for them.
 {obj1_text}
+{"DOCTORAL STANDARD: Interpret findings analytically, not descriptively. Explain mechanisms and patterns. Connect to theoretical framework from Chapter 2. Discuss unexpected findings and anomalies." if is_pg else ""}
 Include professional data visualization immediately after:
 [CHART: Bar chart/line graph/distribution showing Objective 1 findings with specific values]
 OR
 [TABLE: Objective 1 Thematic Analysis Matrix | Theme | Frequency | Representative Quote/Evidence | Theoretical Connection]
+{"OR (DOCTORAL PREFERRED):\n[TABLE: Objective 1 Advanced Analysis Matrix | Key Pattern | Data Support (n/%) | Theoretical Interpretation | Contradictions to Prior Research]" if is_pg else ""}
 
 ### 4.4 Findings Related to Objective 2
 Write between {w_range(180, 350)} words.
 Apply the same approach as 4.3 to the second research objective. Ensure this section has
 its own narrative arc — do not simply replicate the structure of 4.3. Introduce any
 unexpected or contradictory findings and engage with them analytically.
+{"DOCTORAL STANDARD: Vary your analytical approach across objectives. Use different visualization types (e.g., matrices for Obj1, comparative charts for Obj2) to demonstrate analytical sophistication." if is_pg else ""}
 Include data visualization:
 [CHART: Bar chart/line graph showing Objective 2 findings]
 OR
 [TABLE: Objective 2 Findings Summary | Finding | Evidence | Significance]
+{"OR (DOCTORAL PREFERRED):\n[TABLE: Objective 2 Comparative Analysis | Finding | Cases/Groups Where Evident | Cases/Groups Where Absent | Theoretical Explanation]" if is_pg else ""}
 
 ### 4.5 Findings Related to Objective 3
 Write between {w_range(180, 350)} words.
@@ -1064,11 +1325,14 @@ conclusions and recommendations in Chapter 5.
 
 Do NOT write a chapter title heading at the very top — begin directly with section ### 4.1.""",
 
-        5: f"""You are writing CHAPTER FIVE — CONCLUSIONS AND RECOMMENDATIONS for an academic research project.
+        5: f"""You are writing CHAPTER FIVE: CONCLUSIONS AND RECOMMENDATIONS for an academic research project.
 Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[5]} words of substantive prose. You MUST reach this minimum.
 This chapter must deliver a satisfying intellectual conclusion — not a mechanical recap.
+{custom_toc_ch5}
+
+{_PG_PREAMBLE if is_pg else ""}
 
 {tone}
 
@@ -1076,6 +1340,7 @@ This chapter must deliver a satisfying intellectual conclusion — not a mechani
 {_FN_NOTE}
 {_NO_AST}
 {_VIZ_NOTE}
+{_CH5_VIZ_NOTE_DOCTORAL if is_pg else ""}
 
 Write the following subsections in full.
 
@@ -1582,6 +1847,7 @@ def _render_table(doc, table_lines):
 def _create_sample_chart(description: str):
     """
     Create a sample chart image based on description.
+    Parses axis information from description to create proper charts.
     Returns path to saved PNG image.
 
     Strategy:
@@ -1590,44 +1856,116 @@ def _create_sample_chart(description: str):
     3. Fallback to text-based placeholder
     """
 
+    # ─── PARSE DESCRIPTION FOR AXIS INFORMATION ─────────────────
+    # Extract X-axis: ... and Y-axis: ... information
+    x_axis_label = "X-axis"
+    y_axis_label = "Y-axis"
+    chart_title = description
+    x_categories = None
+
+    # Try to extract axis information from description
+    x_match = re.search(r'X[\s\-]*axis:\s*([^Y]+?)(?=Y[\s\-]*axis:|$)', description, re.IGNORECASE)
+    y_match = re.search(r'Y[\s\-]*axis:\s*(.+?)$', description, re.IGNORECASE)
+
+    if x_match:
+        x_axis_label = x_match.group(1).strip()
+        # Extract categories from parentheses if present
+        cat_match = re.search(r'\(([^)]+)\)', x_axis_label)
+        if cat_match:
+            cat_str = cat_match.group(1)
+            x_categories = [c.strip() for c in cat_str.split(',')]
+            x_axis_label = re.sub(r'\s*\([^)]*\).*', '', x_axis_label).strip()
+
+    if y_match:
+        y_axis_label = y_match.group(1).strip()
+        # Remove range information for cleaner label
+        y_axis_label = re.sub(r'\s*\([^)]*\).*', '', y_axis_label).strip()
+
+    # Extract chart title (everything before X-axis)
+    title_match = re.search(r'^([^X]+?)(?=X[\s\-]*axis:|$)', description, re.IGNORECASE)
+    if title_match:
+        chart_title = title_match.group(1).strip()
+
     # ─── TRY MATPLOTLIB FIRST ───────────────────────────────────
     if VISUALIZATION_AVAILABLE:
         try:
-            fig, ax = plt.subplots(figsize=(8, 5), dpi=100)
+            fig, ax = plt.subplots(figsize=(10, 6), dpi=100)
 
             # Generate sample data based on description keywords
             if 'line' in description.lower() or 'trend' in description.lower():
                 x = np.arange(1, 6)
                 y = np.array([20, 35, 48, 62, 78])
-                ax.plot(x, y, marker='o', linewidth=2, markersize=8, color='#2E74B5')
-                ax.set_xlabel('Period', fontsize=11, fontweight='bold')
-                ax.set_ylabel('Value', fontsize=11, fontweight='bold')
-                ax.grid(True, alpha=0.3)
+                ax.plot(x, y, marker='o', linewidth=2.5, markersize=8, color='#2E74B5')
+                ax.set_xlabel(x_axis_label or 'Period', fontsize=12, fontweight='bold')
+                ax.set_ylabel(y_axis_label or 'Value', fontsize=12, fontweight='bold')
+                ax.grid(True, alpha=0.3, linestyle='--')
+                ax.set_ylim(bottom=0)
             elif 'bar' in description.lower():
-                categories = ['Category A', 'Category B', 'Category C', 'Category D']
-                values = [45, 62, 38, 71]
-                ax.bar(categories, values, color='#2E74B5', alpha=0.8, edgecolor='black')
-                ax.set_ylabel('Value', fontsize=11, fontweight='bold')
+                # Use extracted categories if available, otherwise defaults
+                if x_categories and len(x_categories) >= 3:
+                    categories = x_categories[:4]
+                    values = [18, 12, 22, 15] if len(x_categories) == 4 else [18, 12, 22]
+                else:
+                    categories = ['18–30', '31–40', '41–50', 'Above 50']
+                    values = [18, 12, 22, 15]
+
+                # Create bar chart with data value labels on bars
+                bars = ax.bar(categories, values, color='#2E74B5', alpha=0.85, edgecolor='#1F497D', linewidth=1.5)
+
+                # Add value labels on top of bars
+                for bar, val in zip(bars, values):
+                    height = bar.get_height()
+                    ax.text(bar.get_x() + bar.get_width()/2., height,
+                           f'{int(val)}',
+                           ha='center', va='bottom', fontweight='bold', fontsize=11)
+
+                ax.set_xlabel(x_axis_label or 'Categories', fontsize=12, fontweight='bold')
+                ax.set_ylabel(y_axis_label or 'Value', fontsize=12, fontweight='bold')
+                ax.set_ylim(0, max(values) * 1.15)  # Add space for labels
                 plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
+
+                # Add horizontal grid for readability
+                ax.yaxis.grid(True, alpha=0.3, linestyle='--')
+                ax.set_axisbelow(True)
             elif 'pie' in description.lower():
                 labels = ['Group A', 'Group B', 'Group C', 'Group D']
                 sizes = [30, 25, 25, 20]
                 colors = ['#2E74B5', '#4F90C3', '#A9C8E1', '#D9E5F0']
-                ax.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
-                ax.set_title('Distribution', fontweight='bold', fontsize=12)
+                wedges, texts, autotexts = ax.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%',
+                                                    startangle=90, textprops={'fontsize': 10})
+                for autotext in autotexts:
+                    autotext.set_color('white')
+                    autotext.set_fontweight('bold')
             else:
-                # Default: simple bar chart
-                categories = ['Item 1', 'Item 2', 'Item 3']
+                # Default: simple bar chart with proper axes
+                categories = x_categories[:3] if x_categories and len(x_categories) >= 3 else ['Item 1', 'Item 2', 'Item 3']
                 values = [55, 68, 42]
-                ax.bar(categories, values, color='#2E74B5', alpha=0.8, edgecolor='black')
-                ax.set_ylabel('Value', fontsize=11, fontweight='bold')
 
-            ax.set_title(description, fontweight='bold', fontsize=13, pad=15)
+                bars = ax.bar(categories, values, color='#2E74B5', alpha=0.85, edgecolor='#1F497D', linewidth=1.5)
+
+                # Add value labels
+                for bar, val in zip(bars, values):
+                    height = bar.get_height()
+                    ax.text(bar.get_x() + bar.get_width()/2., height,
+                           f'{int(val)}',
+                           ha='center', va='bottom', fontweight='bold', fontsize=11)
+
+                ax.set_xlabel(x_axis_label or 'Categories', fontsize=12, fontweight='bold')
+                ax.set_ylabel(y_axis_label or 'Value', fontsize=12, fontweight='bold')
+                ax.set_ylim(0, max(values) * 1.15)
+                ax.yaxis.grid(True, alpha=0.3, linestyle='--')
+                ax.set_axisbelow(True)
+
+            # Set title and format
+            ax.set_title(chart_title, fontweight='bold', fontsize=14, pad=20)
+            ax.spines['top'].set_visible(False)
+            ax.spines['right'].set_visible(False)
+
             plt.tight_layout()
 
             # Save to temporary file
             with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
-                fig.savefig(tmp.name, dpi=100, bbox_inches='tight')
+                fig.savefig(tmp.name, dpi=100, bbox_inches='tight', facecolor='white')
                 plt.close(fig)
                 return tmp.name
         except Exception as e:
@@ -1639,30 +1977,44 @@ def _create_sample_chart(description: str):
         from PIL import Image, ImageDraw, ImageFont
 
         # Create image
-        width, height = 800, 500
+        width, height = 900, 600
         img = Image.new('RGB', (width, height), color='white')
         draw = ImageDraw.Draw(img)
 
         # Draw border
-        draw.rectangle([10, 10, width-10, height-10], outline='#2E74B5', width=3)
+        draw.rectangle([20, 20, width-20, height-20], outline='#2E74B5', width=2)
 
-        # Draw title
-        title_y = 30
-        draw.text((20, title_y), description, fill='#1F497D')
+        # Draw title (truncated to fit)
+        title_text = chart_title if len(chart_title) < 80 else chart_title[:77] + "..."
+        draw.text((40, 35), title_text, fill='#1F497D')
 
-        # Determine chart type and draw accordingly
+        # Chart area: (60, 80) to (850, 500)
+        chart_left, chart_top = 80, 100
+        chart_right, chart_bottom = 850, 500
+        chart_width = chart_right - chart_left
+        chart_height = chart_bottom - chart_top
+
         desc_lower = description.lower()
 
         if 'line' in desc_lower or 'trend' in desc_lower:
-            # Draw line chart
-            points = [(100, 350), (220, 280), (340, 200), (460, 150), (580, 100)]
+            # Draw line chart with axes
+            draw.line([(chart_left, chart_bottom), (chart_right, chart_bottom)], fill='#1F497D', width=2)  # X-axis
+            draw.line([(chart_left, chart_top), (chart_left, chart_bottom)], fill='#1F497D', width=2)      # Y-axis
+
+            # Draw line
+            points = [(chart_left + i*170, chart_bottom - 50 - i*60) for i in range(5)]
             draw.line(points, fill='#2E74B5', width=3)
             for point in points:
                 draw.ellipse([point[0]-5, point[1]-5, point[0]+5, point[1]+5], fill='#2E74B5')
+
+            # Draw axis labels
+            draw.text((chart_right - 100, chart_bottom + 15), x_axis_label, fill='#1F497D')
+            draw.text((15, chart_top - 30), y_axis_label, fill='#1F497D')
+
         elif 'pie' in desc_lower:
-            # Draw pie chart representation
-            center_x, center_y = width // 2, height // 2 - 30
-            radius = 80
+            # Draw pie chart representation with legend
+            center_x, center_y = (chart_left + chart_right) // 2, (chart_top + chart_bottom) // 2
+            radius = 60
             draw.ellipse([center_x-radius, center_y-radius, center_x+radius, center_y+radius],
                         outline='#2E74B5', width=2)
             # Draw pie segments
@@ -1670,14 +2022,36 @@ def _create_sample_chart(description: str):
             colors = ['#2E74B5', '#4F90C3', '#A9C8E1', '#D9E5F0']
             for i in range(len(colors)):
                 draw.pieslice([center_x-radius, center_y-radius, center_x+radius, center_y+radius],
-                            angles[i], angles[i+1], fill=colors[i], outline='#1F497D')
+                            angles[i], angles[i+1], fill=colors[i], outline='#1F497D', width=2)
         else:
-            # Draw bar chart (default)
-            bar_width = 60
-            bars_x = [120, 240, 360, 480]
+            # Draw bar chart with axes
+            draw.line([(chart_left, chart_bottom), (chart_right, chart_bottom)], fill='#1F497D', width=2)  # X-axis
+            draw.line([(chart_left, chart_top), (chart_left, chart_bottom)], fill='#1F497D', width=2)      # Y-axis
+
+            # Draw bars
+            bar_width = 50
+            bars_x = [chart_left + 60, chart_left + 180, chart_left + 300, chart_left + 420]
             bars_height = [280, 380, 220, 340]
-            for x, h in zip(bars_x, bars_height):
-                draw.rectangle([x, h, x+bar_width, 400], fill='#2E74B5', outline='#1F497D')
+            bar_values = [18, 12, 22, 15]
+
+            for i, (x, h) in enumerate(zip(bars_x, bars_height)):
+                # Draw bar
+                bar_top = chart_bottom - min(h, chart_height - 20)
+                draw.rectangle([x, bar_top, x+bar_width, chart_bottom], fill='#2E74B5', outline='#1F497D', width=1)
+
+                # Add value label on top of bar
+                draw.text((x + bar_width//2 - 8, bar_top - 20), str(bar_values[i]), fill='#1F497D')
+
+                # Add category label below
+                if x_categories and i < len(x_categories):
+                    cat_label = x_categories[i][:10]
+                else:
+                    cat_label = f"Cat {i+1}"
+                draw.text((x + 5, chart_bottom + 10), cat_label, fill='#1F497D')
+
+            # Draw axis labels
+            draw.text((chart_right - 150, chart_bottom + 40), x_axis_label, fill='#1F497D')
+            draw.text((15, chart_top - 30), y_axis_label, fill='#1F497D')
 
         # Save image
         with tempfile.NamedTemporaryFile(suffix='.png', delete=False) as tmp:
@@ -1757,7 +2131,10 @@ def parse_chapter_content(doc, content, fn_mgr=None):
                 if collected_lines:
                     # Process collected lines (each line is a row with | separators)
                     for line in collected_lines:
-                        cells = [cell.strip() for cell in line.split("|")]
+                        # Strip common prefixes like "Headers:", "Row 1:", "Row 2:", etc.
+                        clean_line = re.sub(r"^(Headers?:|Row\s+\d+:)\s*", "", line).strip()
+
+                        cells = [cell.strip() for cell in clean_line.split("|")]
                         cells = [c for c in cells if c]  # Remove empty cells
                         if cells:
                             pipe_line = "| " + " | ".join(cells) + " |"
@@ -1765,7 +2142,9 @@ def parse_chapter_content(doc, content, fn_mgr=None):
 
                     # Add separator after first row (header)
                     if len(table_lines) > 1 and collected_lines:
-                        col_count = len([c for c in collected_lines[0].split("|") if c.strip()])
+                        # Strip prefixes from first line before counting columns
+                        first_line = re.sub(r"^(Headers?:|Row\s+\d+:)\s*", "", collected_lines[0]).strip()
+                        col_count = len([c for c in first_line.split("|") if c.strip()])
                         separator = "| " + " | ".join(["---"] * col_count) + " |"
                         table_lines.insert(1, separator)
 
@@ -1908,7 +2287,10 @@ def parse_chapter_content(doc, content, fn_mgr=None):
                         col_count = None
 
                         for tbl_line in table_lines:
-                            row_cells = [cell.strip() for cell in tbl_line.split("|")]
+                            # Strip common prefixes like "Headers:", "Row 1:", "Row 2:", etc.
+                            clean_line = re.sub(r"^(Headers?:|Row\s+\d+:)\s*", "", tbl_line).strip()
+
+                            row_cells = [cell.strip() for cell in clean_line.split("|")]
                             row_cells = [c for c in row_cells if c]
 
                             if row_cells:
@@ -2081,13 +2463,13 @@ def build_toc_page(doc, research_level, chapters_list=None, custom_toc=None,
     custom_toc            : if provided (non-empty string), render the caller-supplied
                             TOC text instead of the auto-generated one.
     front_matter_sections : list of optional sections included in the document,
-                            e.g. ["declaration","acknowledgements"].
-                            None → all three included.
+                            e.g. ["abstract","declaration","acknowledgements"].
+                            None → only abstract included (default).
     """
     chapters_list = chapters_list or list(range(1, 6))
-    optional_all  = ["declaration", "dedication", "acknowledgements"]
+    optional_all  = ["abstract", "declaration", "dedication", "acknowledgements"]
     if front_matter_sections is None:
-        fm_include = optional_all
+        fm_include = ["abstract"]  # Default: only abstract
     else:
         fm_include = [s.lower().strip() for s in front_matter_sections
                       if s.lower().strip() in optional_all]
@@ -2123,11 +2505,11 @@ def build_toc_page(doc, research_level, chapters_list=None, custom_toc=None,
     # ── Auto-generated TOC ────────────────────────────────
     # Front matter — only list sections actually included in the document
     entries = []
+    if "abstract"        in fm_include: entries.append(("Abstract",           True))
     if "declaration"      in fm_include: entries.append(("Declaration",      True))
     if "dedication"       in fm_include: entries.append(("Dedication",        True))
     if "acknowledgements" in fm_include: entries.append(("Acknowledgements",  True))
     entries += [
-        ("Abstract",               True),
         ("Table of Contents",      True),
         ("List of Tables",         True),
         ("List of Abbreviations",  True),
@@ -2425,16 +2807,38 @@ def build_document(topic: str, research_level: str,
 def _stream_content(client, system: str, prompt: str,
                     model: str, max_tokens: int, level_key: str = "undergraduate",
                     use_thinking_override: bool = None) -> str:
-    # Allow override via use_thinking_override parameter (from UI toggle)
-    # Otherwise, use level-based default: thinking for PhD level only
-    if use_thinking_override is not None:
-        use_thinking = use_thinking_override and model in ("claude-opus-4-6", "claude-sonnet-4-6")
-    else:
-        use_thinking = (level_key == "phd") and model in ("claude-opus-4-6", "claude-sonnet-4-6")
+    """
+    Stream content from Claude API with optional extended thinking.
 
+    THINKING ENFORCEMENT:
+    - If use_thinking_override=True: ENFORCE thinking (error if model doesn't support)
+    - If use_thinking_override=False: Never use thinking, regardless of level
+    - If use_thinking_override=None: Use thinking for PhD level IF model supports it
+    """
     THINKING_BUDGET = 8000   # tokens reserved for Claude's internal reasoning
     MIN_OUTPUT      = 12000  # minimum tokens guaranteed for actual text output
+    THINKING_MODELS = ("claude-opus-4-6", "claude-sonnet-4-6")
 
+    # Determine if thinking should be used
+    if use_thinking_override is True:
+        # ENFORCE thinking when explicitly requested
+        if model not in THINKING_MODELS:
+            raise ValueError(
+                f"Extended thinking is requested but model '{model}' does not support it. "
+                f"Supported models: {', '.join(THINKING_MODELS)}. "
+                f"Please use a model that supports extended thinking or disable the thinking toggle."
+            )
+        use_thinking = True
+        print(f"  [THINKING ENABLED] Using extended thinking for deeper analysis", flush=True)
+    elif use_thinking_override is False:
+        # Explicitly disabled
+        use_thinking = False
+    else:
+        # use_thinking_override is None — use level-based default
+        # Thinking for PhD level IF model supports it
+        use_thinking = (level_key == "phd") and (model in THINKING_MODELS)
+
+    # Build API kwargs based on thinking setting
     if use_thinking:
         # max_tokens must cover thinking budget + output budget
         # Never let adaptive thinking swallow the output capacity
@@ -2468,9 +2872,9 @@ def generate_front_matter(client, topic: str, research_level: str,
     Generate front matter pages.
 
     front_matter_sections : list of optional sections to include.
-        Allowed values: "declaration", "dedication", "acknowledgements"
-        Abstract is ALWAYS included regardless of this list.
-        Default (None) → all three optional sections included.
+        Allowed values: "abstract", "declaration", "dedication", "acknowledgements"
+        Default (None) → abstract included, other sections excluded.
+        Pass ["abstract"] to include only the abstract.
     nalt_compliance : bool, default False
         When True (for BSc legal research), enforce Nigerian Association of
         Law Teachers (NALT) Uniform Format and Citation Guide standards.
@@ -2479,9 +2883,9 @@ def generate_front_matter(client, topic: str, research_level: str,
     profile = LEVEL_PROFILES[research_level]
 
     # Resolve which optional sections to include
-    optional_all = ["declaration", "dedication", "acknowledgements"]
+    optional_all = ["abstract", "declaration", "dedication", "acknowledgements"]
     if front_matter_sections is None:
-        include = optional_all
+        include = ["abstract"]  # Default: only abstract included
     else:
         include = [s.lower().strip() for s in front_matter_sections
                    if s.lower().strip() in optional_all]
@@ -2704,29 +3108,30 @@ def generate_front_matter(client, topic: str, research_level: str,
             "be specific about what each person contributed."
         )
 
-    abstract_word_min = profile['front_words'] // 2
-    abstract_word_max = abstract_word_min + 80
-    pg_note = (
-        "For postgraduate level: include a sentence on epistemological positioning, "
-        "the theoretical framework used, and the study's contribution to theory. "
-        if research_level == "postgraduate" else ""
-    )
-    section_blocks.append(
-        f"## ABSTRACT\n"
-        f"Write a structured abstract of {abstract_word_min}–{abstract_word_max} words covering: "
-        f"(1) background and problem statement, (2) research objectives, "
-        f"(3) methodology and data collection approach, (4) principal findings, "
-        f"(5) conclusions and recommendations. {pg_note}"
-        f"End with: Keywords: [5 relevant academic keywords separated by semicolons]."
-    )
+    if "abstract" in include:
+        abstract_word_min = profile['front_words'] // 2
+        abstract_word_max = abstract_word_min + 80
+        pg_note = (
+            "For postgraduate level: include a sentence on epistemological positioning, "
+            "the theoretical framework used, and the study's contribution to theory. "
+            if research_level == "postgraduate" else ""
+        )
+        section_blocks.append(
+            f"## ABSTRACT\n"
+            f"Write a structured abstract of {abstract_word_min}–{abstract_word_max} words covering: "
+            f"(1) background and problem statement, (2) research objectives, "
+            f"(3) methodology and data collection approach, (4) principal findings, "
+            f"(5) conclusions and recommendations. {pg_note}"
+            f"End with: Keywords: [5 relevant academic keywords separated by semicolons]."
+        )
 
     prompt = (
         f"For an academic research project titled: **{topic}**\n"
         f"Research level: {profile['label']}\n\n"
-        "Write the following front matter sections. Each section must be fully developed "
-        "to the word counts specified. Use ## to introduce each section heading.\n\n"
+        "Write the following front matter sections. Each must be fully developed to the word counts specified. "
+        "Use ## to introduce each section heading.\n\n"
         + "\n\n".join(section_blocks)
-        + "\n\nStart directly with the first ## heading. Do not add any preamble."
+        + "\n\nStart directly with the first ## heading. Do not add any preamble or introduction."
     )
 
     if custom_instructions and custom_instructions.strip():
@@ -2739,6 +3144,37 @@ def generate_front_matter(client, topic: str, research_level: str,
     print("  [Front Matter] generating...", end=" ", flush=True)
     text = _stream_content(client, system, prompt, model, 500, research_level, use_thinking_override=use_thinking)
     print(f"done ({len(text):,} chars)")
+
+    # Filter out unrequested sections from the generated text
+    requested_sections = set()
+    for section in include:
+        if section == "abstract":
+            requested_sections.add("ABSTRACT")
+        elif section == "declaration":
+            requested_sections.add("DECLARATION")
+        elif section == "dedication":
+            requested_sections.add("DEDICATION")
+        elif section == "acknowledgements":
+            requested_sections.add("ACKNOWLEDGEMENTS")
+
+    # Split by ## headings and keep only requested ones
+    parts = re.split(r"(?m)^(## .+)$", text)
+    filtered_parts = [parts[0]]  # Keep any preamble (usually empty)
+
+    i = 1
+    while i + 1 < len(parts):
+        heading = parts[i].strip()
+        body = parts[i + 1].strip()
+        heading_upper = re.sub(r"^## ", "", heading).strip().upper()
+
+        # Keep this section only if it's in the requested list
+        if heading_upper in requested_sections:
+            filtered_parts.append(heading)
+            filtered_parts.append("\n" + body)
+
+        i += 2
+
+    text = "".join(filtered_parts)
     return text
 
 
@@ -2746,9 +3182,10 @@ def generate_chapter(client, topic: str, chapter_num: int,
                      research_level: str, model: str = None,
                      custom_instructions: str = None,
                      use_thinking: bool = False,
-                     nalt_compliance: bool = False) -> str:
+                     nalt_compliance: bool = False,
+                     custom_toc: str = None) -> str:
     model    = model or config.MODEL
-    prompts  = _chapter_prompts(research_level)
+    prompts  = _chapter_prompts(research_level, custom_toc=custom_toc, nalt_compliance=nalt_compliance)
     prompt   = prompts[chapter_num].format(topic=topic)
     profile  = LEVEL_PROFILES[research_level]
     target   = profile["word_targets"][chapter_num]
@@ -2760,6 +3197,7 @@ def generate_chapter(client, topic: str, chapter_num: int,
         "genuine intellectual engagement, specific citations, occasional hedging, and a distinct scholarly voice. "
         "You never produce AI-sounding text. You write fully developed, substantive prose and never truncate, "
         "summarise, or leave placeholders. You meet every word count target without compromise."
+        + HUMAN_WRITING_INSTRUCTION
     )
 
     if nalt_compliance:
