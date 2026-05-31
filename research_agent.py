@@ -814,11 +814,11 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
         f"- References: Cite all tables/figures in text BEFORE they appear with analytical interpretation (e.g., 'As presented in Table 3.1, the sampling strategy...')\n\n"
         f"PROFESSIONAL PRESENTATION:\n"
         f"- All visualizations will be converted to professional Word tables/charts with:\n"
-        f"  • Clean borders and header styling\n"
-        f"  • Alternating row colors for readability\n"
-        f"  • Consistent font sizing and alignment\n"
-        f"  • Clear legends and axis labels for charts\n"
-        f"  • High-resolution quality appropriate for academic publication\n\n"
+        f"  - Clean borders and header styling\n"
+        f"  - Alternating row colors for readability\n"
+        f"  - Consistent font sizing and alignment\n"
+        f"  - Clear legends and axis labels for charts\n"
+        f"  - High-resolution quality appropriate for academic publication\n\n"
     )
 
     # Chapter 2 visualization standards for doctoral level — literature review visualization
