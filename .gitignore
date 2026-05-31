@@ -1,5 +1,4 @@
 # ── Sensitive config (never commit real credentials) ──────
-config.py
 
 # ── Generated documents ───────────────────────────────────
 downloads/
