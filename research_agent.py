@@ -1,5 +1,5 @@
 """
-Academic Research Writeup Agent — 5-Chapter Format
+Academic Research Writeup Agent - 5-Chapter Format
 Generates a complete 5-chapter academic research project in Microsoft Word (.docx).
 Supports undergraduate and postgraduate research levels.
 """
@@ -10,7 +10,7 @@ import re
 import anthropic
 import tempfile
 
-# Visualization imports (optional — graceful fallback if not installed)
+# Visualization imports (optional - graceful fallback if not installed)
 try:
     import matplotlib
     matplotlib.use('Agg')  # Non-interactive backend
@@ -144,13 +144,13 @@ LEVEL_PROFILES = {
         "front_words":  220,
     },
     "postgraduate": {
-        "label":        "Postgraduate (Doctoral) — Stanford PhD Level (2026)",
+        "label":        "Postgraduate (Doctoral) - Stanford PhD Level (2026)",
         "tone":         (
             "Write at a rigorous Stanford PhD level (2026 standard). This is DOCTORAL-LEVEL SCHOLARSHIP.\n\n"
             "EPISTEMOLOGICAL POSITIONING: Explicitly state your epistemological stance and how it shapes your approach "
             "to knowledge production. Engage with ontological questions: What is real? What can be known? How does this study "
             "produce knowledge? Position yourself within epistemological traditions (positivist, interpretivist, critical realist, "
-            "pragmatist, etc.) and justify that positioning. This is not optional — it is foundational.\n\n"
+            "pragmatist, etc.) and justify that positioning. This is not optional - it is foundational.\n\n"
             "THEORETICAL SOPHISTICATION: Engage with theory at the level of theoretical CONTRIBUTION, not application. "
             "Do not simply apply existing theories to your data. Instead: (1) interrogate theoretical assumptions, (2) identify "
             "where theories break down or become unstable, (3) articulate what new theoretical insights your work generates. "
@@ -203,7 +203,7 @@ LEVEL_PROFILES = {
             "Analysis should be sophisticated, nuanced, and reflexive with deep theoretical integration. "
             "Identify tensions, contradictions, and limitations in the literature and in your own approach. "
             "WORD COUNT IS CRITICAL: every subsection must be richly developed. "
-            "Do not skim — excavate. Each argument deserves full development across multiple paragraphs. "
+            "Do not skim - excavate. Each argument deserves full development across multiple paragraphs. "
             "Each main subsection should be at least 200-275 words of dense, substantive prose."
         ),
         "depth":        "critical, theoretically sophisticated, and reflexive",
@@ -216,21 +216,21 @@ LEVEL_PROFILES = {
 #  HUMAN-WRITING SYSTEM INSTRUCTION (shared across all calls)
 # ─────────────────────────────────────────────────────────
 HUMAN_WRITING_INSTRUCTION = """
-════════════════════════════════════════════════════════════════════════════════
+================================================================================
   HUMAN ACADEMIC WRITING STANDARD
   Target: Legitimate detectors (ZeroGPT, Originality.ai) at ~40% or below
   Approach: Authentic academic writing that passes human scrutiny first
-════════════════════════════════════════════════════════════════════════════════
+================================================================================
 
 You are a human academic researcher with genuine field expertise and intellectual investment.
 Your writing should be rigorous AND human (showing both scholarly depth and authentic voice.
 
 KEY PRINCIPLE: The best defense against AI detection is authenticity. Focus on:
-1. NATURAL SENTENCE VARIATION — not mechanical, but genuinely reflective of thought
-2. GENUINE ACADEMIC VOICE — opinionated where warranted, hedged where uncertain
-3. SPECIFIC EVIDENCE — real numbers, real citations, real intellectual engagement
-4. AUTHENTIC HESITATION — only where genuinely present in the research process
-5. READABLE, ACCESSIBLE PROSE — clarity serves argument better than complexity
+1. NATURAL SENTENCE VARIATION - not mechanical, but genuinely reflective of thought
+2. GENUINE ACADEMIC VOICE - opinionated where warranted, hedged where uncertain
+3. SPECIFIC EVIDENCE - real numbers, real citations, real intellectual engagement
+4. AUTHENTIC HESITATION - only where genuinely present in the research process
+5. READABLE, ACCESSIBLE PROSE - clarity serves argument better than complexity
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RULE 1: NATURAL SENTENCE LENGTH VARIATION
@@ -333,7 +333,7 @@ AVOID EXCESSIVE EMPHASIS:
   Don't repeat: "crucial", "pivotal", "paradigm shift", "transformative"
   Legitimate academic language, but signal weak AI writing when overused
 
-PRINCIPLE: These aren't banned — just minimize because detectors flag overuse.
+PRINCIPLE: These aren't banned - just minimize because detectors flag overuse.
 Use naturally occurring academic language instead. Real researchers don't repeat the same
 emphasis words throughout a paper.
 
@@ -353,7 +353,7 @@ DON'T use:
   ✗ Round numbers for rough estimates ("about 100 participants" if you mean ~95)
 
 PRINCIPLE: Specific numbers suggest authentic source consultation. But use estimates
-(roughly, approximately, about) only when actually estimating — don't use them to
+(roughly, approximately, about) only when actually estimating - don't use them to
 mask rounded-off real numbers.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -428,7 +428,7 @@ Don't cite uniformly. Vary:
 Vary citation form:
   "Ibrahim (2019) argues that..."  [author-led]
   "The pattern is well-documented (Ibrahim, 2019; Osei, 2021)."  [end-of-sentence]
-  "This finding — contested by Mensah (2020) — suggests..."  [mid-clause]
+  "This finding - contested by Mensah (2020) - suggests..."  [mid-clause]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RULE 11: MINIMIZE MECHANICAL STRUCTURES
@@ -452,22 +452,22 @@ MANDATORY REFERENCE: PARAGRAPH STYLE EXAMPLES
 Every paragraph you write must look like the GOOD example, never the BAD one.
 ZeroGPT will flag the BAD example as 90%+ AI. The GOOD example scores under 10%.
 
-BAD (AI-detected — do NOT write like this):
+BAD (AI-detected - do NOT write like this):
 "The study revealed that organisational factors significantly influence employee satisfaction.
 Research indicates that leadership style, workplace culture, and compensation packages all
 contribute to overall satisfaction levels. Furthermore, the findings suggest that communication
 plays a central role in mediating these relationships. Additionally, the data demonstrates that
 training and development opportunities enhance employee engagement and commitment."
 
-GOOD (human-quality — model all your paragraphs on this):
-"Three things stood out immediately from the data. First — and this surprised the research
-team — leadership style accounted for only 23.7% of the variance in satisfaction scores,
+GOOD (human-quality - model all your paragraphs on this):
+"Three things stood out immediately from the data. First - and this surprised the research
+team - leadership style accounted for only 23.7% of the variance in satisfaction scores,
 considerably less than the 40% or higher that earlier studies like Mensah (2019) and
 Osei-Kwame (2021) had documented in comparable West African institutional contexts. Why
 the discrepancy? The answer, this researcher believes, has less to do with leadership itself
 than with how satisfaction is operationalised: prior instruments conflated satisfaction with
-engagement, inflating the leadership coefficient. When the measure is cleaner — as it is
-here — the picture changes. Compensation matters more. So does the quality of immediate
+engagement, inflating the leadership coefficient. When the measure is cleaner - as it is
+here - the picture changes. Compensation matters more. So does the quality of immediate
 supervision, which is a different thing from 'leadership style' in the abstract sense that
 much of the literature deploys that phrase. This distinction isn't merely semantic. It has
 real consequences for how organisations invest their development budgets, and the fact
@@ -486,7 +486,7 @@ GPTZERO EXAMPLE: What Triggers 100% Detection
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 This is the wheelbarrow abstract that GPTZero flagged as 100% AI:
 
-"Somewhere between 3,500 and 4,000 years ago — or so the archaeological record suggests —
+"Somewhere between 3,500 and 4,000 years ago - or so the archaeological record suggests -
 human beings began experimenting with single-wheeled load-carrying devices, and the practical
 consequences of that experiment have never really stopped unfolding. The wheelbarrow, in its
 most recognisable form, appears to have originated in Han Dynasty China around 100 BCE, where
@@ -503,11 +503,11 @@ WHY it fails GPTZero:
 
 FIXED VERSION (passes GPTZero):
 
-"The wheelbarrow emerged. Or so the archaeological record suggests — some time between 3,500
+"The wheelbarrow emerged. Or so the archaeological record suggests - some time between 3,500
 and 4,000 years ago. How it actually developed is murky; the evidence points in different
 directions. What we know is that by around 100 BCE, Han Dynasty China was already using
 single-wheeled devices for agricultural work (Needham, 1965). Military use came later, perhaps.
-From there — through trade routes, through conquest, through accident — the technology drifted
+From there - through trade routes, through conquest, through accident - the technology drifted
 westward. Medieval Europe adopted it by roughly the 1200s. And that's where the real story
 becomes complicated."
 
@@ -560,7 +560,7 @@ REQUIRED TABLE FORMAT:
 Every visualization must be self-contained and readable without requiring external explanation.
 Use them in Results/Discussion (Chapter 4) and Literature Review (Chapter 2) where appropriate.
 
-════════════════════════════════════════════════════════════
+============================================================
 """
 
 
@@ -622,12 +622,12 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
         if chapter_sections:
             section_list = "\n".join([f"  {i+1}. {sec}" for i, sec in enumerate(chapter_sections)])
             return (
-                f"\n╔════════════════════════════════════════════════════════════════════════════════╗\n"
-                f"║ ⚠️  CRITICAL — CUSTOM TABLE OF CONTENTS ENFORCEMENT FOR CHAPTER {chapter_num}             ║\n"
-                f"╚════════════════════════════════════════════════════════════════════════════════╝\n\n"
+                f"\n[================================================================================]\n"
+                f"| WARNING  CRITICAL - CUSTOM TABLE OF CONTENTS ENFORCEMENT FOR CHAPTER {chapter_num}             |\n"
+                f"[================================================================================╝\n\n"
                 f"A CUSTOM TABLE OF CONTENTS HAS BEEN PROVIDED FOR THIS CHAPTER.\n\n"
                 f"YOUR INSTRUCTIONS ARE ABSOLUTE:\n"
-                f"- You MUST create ONLY the sections listed below — NO MORE, NO FEWER\n"
+                f"- You MUST create ONLY the sections listed below - NO MORE, NO FEWER\n"
                 f"- You MUST use these section titles EXACTLY as written\n"
                 f"- You MUST create each section as a ### subsection heading\n"
                 f"- You MUST write substantive, developed content under each heading\n"
@@ -641,7 +641,7 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
             )
         return ""
 
-    # Subsection word-count helper — applies 1.0x multiplier to allow full subsection generation (1.1-1.10)
+    # Subsection word-count helper - applies 1.0x multiplier to allow full subsection generation (1.1-1.10)
     # Returns PhD/Postgrad word count if at that level, otherwise returns base undergraduate/postgraduate count
     def w(ug, pg):
         if level_key == "phd":
@@ -651,7 +651,7 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
         else:  # undergraduate
             return str(round(ug * 1.0))  # Use lower targets for undergraduate
 
-    # Range helpers — enforce min/max to prevent over-expansion (replaces "at least" language)
+    # Range helpers - enforce min/max to prevent over-expansion (replaces "at least" language)
     def w_range(ug, pg):
         """Return 'min-max' format to constrain word generation to a reasonable range"""
         if level_key == "phd":
@@ -667,7 +667,7 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
     # Footnote format note appended to every chapter
     _FN_NOTE = (
         "\nFOOTNOTE FORMAT: When a footnote is needed, insert it inline using "
-        "((FN: your footnote text here)) — it will become a proper Word footnote "
+        "((FN: your footnote text here)) - it will become a proper Word footnote "
         "with a superscript number in the body and the note at the bottom of the page."
     )
 
@@ -680,15 +680,15 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
 
     # No-asterisks instruction for all chapters
     _NO_AST = (
-        "\nFORMATTING RULE — NO ASTERISKS: Do NOT use asterisks (*) anywhere in your "
-        "output — not for bold, italic, bullet points, emphasis, or any other purpose. "
+        "\nFORMATTING RULE - NO ASTERISKS: Do NOT use asterisks (*) anywhere in your "
+        "output - not for bold, italic, bullet points, emphasis, or any other purpose. "
         "Use plain prose. For lists, use numbered items (1. 2. 3.) or introduce them "
         "as flowing sentences. Never place a * character anywhere in the text.\n"
     )
 
-    # Visualization instruction — only include when NALT compliance is NOT enabled
+    # Visualization instruction - only include when NALT compliance is NOT enabled
     _VIZ_NOTE = "" if nalt_compliance else (
-        "\nVISUALIZATION INSTRUCTION — PhD STANDARDS:\n"
+        "\nVISUALIZATION INSTRUCTION - PhD STANDARDS:\n"
         "Visualizations are MANDATORY in research chapters. Follow these standards:\n\n"
         "TABLE FORMAT:\n"
         "  [TABLE: Descriptive title that explains the table's purpose]\n"
@@ -720,7 +720,7 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
     )
 
     # Define conditional content OUTSIDE f-string to avoid escape sequence issues
-    phd_gap_note = "CRITICAL FOR PhD: Distinguish between two types of gaps — (1) the PRACTICAL PROBLEM (what is not working in the real world), and (2) the THEORETICAL GAP (what is not adequately explained or understood in the scholarship). Explain how existing theoretical models fail to account for or predict this practical problem. Name the specific theories or frameworks that are inadequate and explain precisely why."
+    phd_gap_note = "CRITICAL FOR PhD: Distinguish between two types of gaps - (1) the PRACTICAL PROBLEM (what is not working in the real world), and (2) the THEORETICAL GAP (what is not adequately explained or understood in the scholarship). Explain how existing theoretical models fail to account for or predict this practical problem. Name the specific theories or frameworks that are inadequate and explain precisely why."
 
     phd_theory_guidance = "This is the intellectual heart of Chapter 1. Articulate EXPLICITLY what theoretical understanding is missing or inadequate. Ask and answer: What do existing theoretical frameworks NOT explain about this problem? What new theoretical insight will this study produce?\n\nDevelop this across multiple paragraphs:\n- PARAGRAPH 1: Name the dominant theoretical framework(s) in the field. Explain what insights each offers and what these theories can explain about your problem.\n- PARAGRAPH 2: Identify the specific theoretical limitation or blind spot. What does this framework miss? What assumption does it make that may not hold in your context? What variation or phenomenon does it fail to account for?\n- PARAGRAPH 3: Explain the theoretical consequence of this gap. What false conclusions might scholars or practitioners draw from applying existing theory uncritically? What does the field not yet understand?\n- PARAGRAPH 4: State what this study will theoretically contribute. Will it extend existing theory to a new context? Refine or challenge a core assumption? Integrate previously separate theoretical traditions? Propose a new framework? Be specific about the form of your theoretical contribution.\n\nThis section must make clear that your study exists to advance KNOWLEDGE, not just to solve a practical problem."
 
@@ -744,31 +744,31 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
         ch4_intro_note = "State the analytical framework guiding interpretation and how it connects to the theoretical framework in Chapter 2."
         ch4_sample_note = "Compare the achieved sample to the target population and discuss implications for transferability."
         ch4_obj1_note = "Connect findings explicitly to the theoretical framework from Chapter 2. Where results confirm prior theory, explain why. Where they challenge it, explore the implications."
-        ch4_obj3_note = "At this stage, begin drawing connections between findings across objectives — note where patterns reinforce each other or where tensions emerge."
-        ch4_synthesis_note = "DO NOT MERELY SUMMARISE. Instead, execute this multi-stage synthesis:\n\nSTAGE 1: CROSS-OBJECTIVE PATTERN IDENTIFICATION (1-2 PARAGRAPHS)\nIdentify overarching themes, patterns, or mechanisms that cut across all four objectives. Ask yourself: What is really going on here? What unifying principle, pattern, or process explains the findings across objectives?\n\nSTAGE 2: EXPECTED vs. UNEXPECTED FINDINGS (1-2 PARAGRAPHS)\nWhich findings DID you anticipate based on the literature? Which findings SURPRISED you or contradicted prior research? Explain divergences between expectations and results.\n\nSTAGE 3: CONTRADICTIONS AND TENSIONS (1 PARAGRAPH IF APPLICABLE)\nDo any objectives produce findings that contradict each other? Do qualitative and quantitative findings diverge? Explain tensions analytically—do not gloss over contradictions.\n\nSTAGE 4: THEORETICAL ARTICULATION (2-3 PARAGRAPHS)\nNow situate your integrated findings in relation to the theoretical framework from Chapter 2 and the theoretical gap from Chapter 1.\n- Sub-point 4a: Does synthesis CONFIRM the theoretical framework? Say so precisely with named theory.\n- Sub-point 4b: Does synthesis CHALLENGE/COMPLICATE theory? Explain specific deviations and theoretical implications.\n- Sub-point 4c: Does synthesis EXTEND theory? Apply existing theory to new context and show what this reveals.\n\nSTAGE 5: INTEGRATION WITH EMPIRICAL LITERATURE (1-2 PARAGRAPHS)\nConnect back to specific studies from Chapter 2. Explain consistency or divergence with prior research. Show how findings resolve conflicting prior studies.\n\nSTAGE 6: LIMITATIONS AND CAVEATS (0.5-1 PARAGRAPH)\nAcknowledge what data do NOT explain. State boundary conditions where patterns might not hold. Signal intellectual maturity and preempt criticism.\n\nINCLUDE AFTER THE SYNTHESIS:\n[TABLE: Synthesis Matrix - Cross-Objective Themes and Theoretical Connections]\nOverarching Theme | Evidence from Obj1-4 | Theoretical Connection\n\nAND:\n[FIGURE: Conceptual Integration Diagram]\nVisual showing how findings interconnect, mechanisms, and theoretical relationships."
+        ch4_obj3_note = "At this stage, begin drawing connections between findings across objectives - note where patterns reinforce each other or where tensions emerge."
+        ch4_synthesis_note = "DO NOT MERELY SUMMARISE. Instead, execute this multi-stage synthesis:\n\nSTAGE 1: CROSS-OBJECTIVE PATTERN IDENTIFICATION (1-2 PARAGRAPHS)\nIdentify overarching themes, patterns, or mechanisms that cut across all four objectives. Ask yourself: What is really going on here? What unifying principle, pattern, or process explains the findings across objectives?\n\nSTAGE 2: EXPECTED vs. UNEXPECTED FINDINGS (1-2 PARAGRAPHS)\nWhich findings DID you anticipate based on the literature? Which findings SURPRISED you or contradicted prior research? Explain divergences between expectations and results.\n\nSTAGE 3: CONTRADICTIONS AND TENSIONS (1 PARAGRAPH IF APPLICABLE)\nDo any objectives produce findings that contradict each other? Do qualitative and quantitative findings diverge? Explain tensions analytically-do not gloss over contradictions.\n\nSTAGE 4: THEORETICAL ARTICULATION (2-3 PARAGRAPHS)\nNow situate your integrated findings in relation to the theoretical framework from Chapter 2 and the theoretical gap from Chapter 1.\n- Sub-point 4a: Does synthesis CONFIRM the theoretical framework? Say so precisely with named theory.\n- Sub-point 4b: Does synthesis CHALLENGE/COMPLICATE theory? Explain specific deviations and theoretical implications.\n- Sub-point 4c: Does synthesis EXTEND theory? Apply existing theory to new context and show what this reveals.\n\nSTAGE 5: INTEGRATION WITH EMPIRICAL LITERATURE (1-2 PARAGRAPHS)\nConnect back to specific studies from Chapter 2. Explain consistency or divergence with prior research. Show how findings resolve conflicting prior studies.\n\nSTAGE 6: LIMITATIONS AND CAVEATS (0.5-1 PARAGRAPH)\nAcknowledge what data do NOT explain. State boundary conditions where patterns might not hold. Signal intellectual maturity and preempt criticism.\n\nINCLUDE AFTER THE SYNTHESIS:\n[TABLE: Synthesis Matrix - Cross-Objective Themes and Theoretical Connections]\nOverarching Theme | Evidence from Obj1-4 | Theoretical Connection\n\nAND:\n[FIGURE: Conceptual Integration Diagram]\nVisual showing how findings interconnect, mechanisms, and theoretical relationships."
         ch4_implications_note = "For theory: what does this study add to, refine, or challenge in the existing theoretical models? For practice: what specific changes in professional practice are warranted? For policy: what specific policy recommendations emerge, addressed to named agencies or decision-makers?"
 
     intro_text = ch4_intro_note if is_pg else "Orient the reader to how findings are organised."
     sample_text = ch4_sample_note if is_pg else "Comment on how representative the sample appears to be."
     obj1_text = ch4_obj1_note if is_pg else "Relate findings directly to relevant literature reviewed in Chapter 2."
     obj3_text = ch4_obj3_note if is_pg else "Discuss how these findings relate to those in 4.3 and 4.4."
-    synthesis_text = ch4_synthesis_note if is_pg else "Bring together the key patterns across all four sets of findings. Identify the most important themes that emerge when the findings are considered as a whole. Connect them to the literature reviewed in Chapter 2 — where do findings confirm, contradict, or extend existing knowledge?"
+    synthesis_text = ch4_synthesis_note if is_pg else "Bring together the key patterns across all four sets of findings. Identify the most important themes that emerge when the findings are considered as a whole. Connect them to the literature reviewed in Chapter 2 - where do findings confirm, contradict, or extend existing knowledge?"
     implications_text = ch4_implications_note if is_pg else "Be concrete: name institutions, policy areas, and professional communities that should act on these findings."
 
     # Postgraduate (Doctoral)-specific preamble
     _PG_PREAMBLE = (
-        "╔═══════════════════════════════════════════════════════════════════╗\n"
-        "║  STANFORD PhD LEVEL (2026) — DOCTORAL EXPECTATIONS               ║\n"
-        "║  This is SCHOLARLY RESEARCH advancing knowledge in your field    ║\n"
-        "╚═══════════════════════════════════════════════════════════════════╝\n\n"
+        "[===================================================================]\n"
+        "|  STANFORD PhD LEVEL (2026) - DOCTORAL EXPECTATIONS               |\n"
+        "|  This is SCHOLARLY RESEARCH advancing knowledge in your field    |\n"
+        "[===================================================================╝\n\n"
         "THIS IS DOCTORAL-LEVEL WORK. IT IS NOT UNDERGRADUATE OR MASTER'S.\n\n"
         "EPISTEMOLOGICAL POSITIONING: State your epistemological stance explicitly. How do you understand "
         "knowledge production? What assumptions underpin your approach? Position yourself within traditions "
         "(positivist, interpretivist, critical realist, pragmatist, etc.). Your epistemology shapes everything.\n\n"
-        "THEORETICAL CONTRIBUTION — NOT APPLICATION: Do not simply apply theories to data. Instead: "
+        "THEORETICAL CONTRIBUTION - NOT APPLICATION: Do not simply apply theories to data. Instead: "
         "(1) Interrogate theoretical assumptions and identify where theories break down, (2) Synthesize "
         "competing traditions and argue for superiority of your synthesis, (3) Generate new theoretical "
-        "insights that extend, refine, or challenge existing frameworks. Theory is not decoration—it is "
+        "insights that extend, refine, or challenge existing frameworks. Theory is not decoration-it is "
         "the intellectual foundation of your contribution.\n\n"
         "LITERATURE AS GENEALOGY: Your literature review is a genealogy of ideas. Trace intellectual "
         "history: How has understanding evolved? What assumptions have shifted? What fundamental tensions "
@@ -790,11 +790,11 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
         "this problem, not like someone discovering it for the first time.\n\n"
     )
 
-    # Chapter 3 visualization standards — only include when NALT compliance is NOT enabled
+    # Chapter 3 visualization standards - only include when NALT compliance is NOT enabled
     _CH3_VIZ_STANDARDS = "" if nalt_compliance else (
         f"FIGURE AND TABLE STANDARDS FOR CHAPTER 3:\n"
         f"{'DOCTORAL-LEVEL METHODOLOGY VISUALIZATION STANDARDS:\n' if is_pg else ''}"
-        f"Use EXACTLY these formats — ALL visualizations must be professional-grade tables or charts:\n\n"
+        f"Use EXACTLY these formats - ALL visualizations must be professional-grade tables or charts:\n\n"
         f"REQUIRED VISUALIZATIONS (use [TABLE:...] or [CHART:...]):\n"
         f"1. [TABLE: Epistemological Positioning Matrix - shows Epistemology | Ontological Assumptions | Knowledge Production | Justification for This Study]\n"
         f"2. [TABLE: Research Design Framework - shows Paradigm | Design Type | Connection to RQs | Methodological Justification]\n"
@@ -821,52 +821,52 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
         f"  - High-resolution quality appropriate for academic publication\n\n"
     )
 
-    # Chapter 2 visualization standards for doctoral level — literature review visualization
+    # Chapter 2 visualization standards for doctoral level - literature review visualization
     _CH2_VIZ_NOTE_DOCTORAL = (
         "\n\nDOCTORAL-LEVEL VISUALIZATION IN LITERATURE REVIEW:\n"
         "Professional literature reviews benefit from strategic visualization of conceptual and theoretical relationships:\n\n"
         "OPTIONAL VISUALIZATIONS:\n"
-        "- [FIGURE: Intellectual History Timeline] — Showing evolution of key concepts/theories over time (20th century to present)\n"
+        "- [FIGURE: Intellectual History Timeline] - Showing evolution of key concepts/theories over time (20th century to present)\n"
         "- [TABLE: Theoretical Frameworks Comparison Matrix] with Framework | Origins | Core Propositions | Strengths | Limitations | Relevance to This Study\n"
-        "- [FIGURE: Conceptual Relationship Diagram] — Showing how central concepts interconnect, diverge, or build upon each other\n"
+        "- [FIGURE: Conceptual Relationship Diagram] - Showing how central concepts interconnect, diverge, or build upon each other\n"
         "- [TABLE: Research Gap Identification Matrix] with Research Question/Topic | What is Known | What Remains Unknown | How This Study Addresses Gap\n"
-        "- [FIGURE: Schools of Thought Mapping] — Visual showing competing paradigms, traditions, or approaches and their relationships\n\n"
+        "- [FIGURE: Schools of Thought Mapping] - Visual showing competing paradigms, traditions, or approaches and their relationships\n\n"
     )
 
-    # Chapter 5 visualization standards for doctoral level — conclusions and implications visualization
+    # Chapter 5 visualization standards for doctoral level - conclusions and implications visualization
     _CH5_VIZ_NOTE_DOCTORAL = (
         "\n\nDOCTORAL-LEVEL VISUALIZATION IN CONCLUSIONS:\n"
         "Strategic use of visualization can strengthen your conclusions and demonstrate intellectual integration:\n\n"
         "OPTIONAL VISUALIZATIONS:\n"
-        "- [FIGURE: Theoretical Integration Diagram] — How findings extend, refine, challenge, or reframe the theoretical framework\n"
+        "- [FIGURE: Theoretical Integration Diagram] - How findings extend, refine, challenge, or reframe the theoretical framework\n"
         "- [TABLE: Knowledge Contribution Summary] with Dimension | Contribution | Evidence | Significance | Future Research Implications\n"
-        "- [FIGURE: Implications Framework Diagram] — Visual showing pathways from findings to theoretical, practical, and policy implications\n"
-        "- [TABLE: Research Agenda Roadmap] — Identifying future research questions generated by this study and their priority/sequencing\n\n"
+        "- [FIGURE: Implications Framework Diagram] - Visual showing pathways from findings to theoretical, practical, and policy implications\n"
+        "- [TABLE: Research Agenda Roadmap] - Identifying future research questions generated by this study and their priority/sequencing\n\n"
     )
 
-    # Chapter 4 visualization standards — only include when NALT compliance is NOT enabled
+    # Chapter 4 visualization standards - only include when NALT compliance is NOT enabled
     _CH4_VIZ_STANDARDS = "" if nalt_compliance else (
         f"FIGURE AND TABLE STANDARDS FOR CHAPTER 4:\n"
         f"{'DOCTORAL-LEVEL DATA ANALYSIS AND VISUALIZATION STANDARDS:\n' if is_pg else ''}"
         f"This chapter requires comprehensive professional data visualization demonstrating analytical sophistication:\n\n"
         f"CORE VISUALIZATIONS (MANDATORY):\n"
-        f"- [TABLE: Sample Demographics Breakdown] — Complete demographic profile with frequencies/percentages across all relevant characteristics\n"
-        f"- [TABLE: Response Rate and Non-Response Analysis] (if quantitative) — Including non-response bias assessment\n"
+        f"- [TABLE: Sample Demographics Breakdown] - Complete demographic profile with frequencies/percentages across all relevant characteristics\n"
+        f"- [TABLE: Response Rate and Non-Response Analysis] (if quantitative) - Including non-response bias assessment\n"
         f"- [TABLE: Objective 1 Findings Summary] with columns: Key Finding | Supporting Evidence | Data Values/Statistics | Theoretical Connection\n"
-        f"- [TABLE: Objective 2 Findings Summary] — Same structure as Objective 1\n"
-        f"- [TABLE: Objective 3 Findings Summary] — Same structure\n"
-        f"- [TABLE: Objective 4 Findings Summary] — Same structure\n\n"
+        f"- [TABLE: Objective 2 Findings Summary] - Same structure as Objective 1\n"
+        f"- [TABLE: Objective 3 Findings Summary] - Same structure\n"
+        f"- [TABLE: Objective 4 Findings Summary] - Same structure\n\n"
         f"ANALYTICAL VISUALIZATION TOOLS {'(DOCTORAL-LEVEL REQUIRED):' if is_pg else '(recommended):'}\n"
         f"{'- [TABLE: Thematic Analysis Matrix for Qualitative Data] with Themes | Subthemes | Frequency | Representative Quotes/Evidence | Theoretical Connection\n' if is_pg else ''}"
         f"{'- [TABLE: Convergence/Divergence Matrix] (if mixed methods) showing Quantitative Findings | Qualitative Findings | Convergence | Divergence | Integration\n' if is_pg else ''}"
-        f"{'- [FIGURE: Concept Mapping Diagram] — Visual showing theoretical relationships between key concepts, themes, or variables and how they interconnect\n' if is_pg else ''}"
-        f"{'- [FIGURE: Theoretical Integration Diagram] — How findings extend, challenge, or refine the theoretical framework from Chapter 2\n' if is_pg else ''}"
-        f"{'- [TABLE: Systematic Comparison Matrix] — Cross-case or cross-theme analysis showing patterns, variations, and deviations\n' if is_pg else ''}"
+        f"{'- [FIGURE: Concept Mapping Diagram] - Visual showing theoretical relationships between key concepts, themes, or variables and how they interconnect\n' if is_pg else ''}"
+        f"{'- [FIGURE: Theoretical Integration Diagram] - How findings extend, challenge, or refine the theoretical framework from Chapter 2\n' if is_pg else ''}"
+        f"{'- [TABLE: Systematic Comparison Matrix] - Cross-case or cross-theme analysis showing patterns, variations, and deviations\n' if is_pg else ''}"
         f"- [CHART: Bar charts, line graphs, scatter plots, or distribution histograms] (For quantitative data showing patterns and relationships\n"
         f"{'- [FIGURE: Process/Flow Diagram] (For mechanisms or sequential processes revealed in analysis\n' if is_pg else ''}"
         f"{'- [TABLE: Validity/Trustworthiness Evidence Matrix] with Quality Criterion | Evidence | Where Documented | Limitation\n' if is_pg else ''}\n"
         f"SYNTHESIS VISUALIZATION:\n"
-        f"- [FIGURE: Synthesis Matrix or Concept Map] — Cross-Objective Integration showing overarching themes, patterns, and theoretical connections\n"
+        f"- [FIGURE: Synthesis Matrix or Concept Map] - Cross-Objective Integration showing overarching themes, patterns, and theoretical connections\n"
         f"- [TABLE: Implications Framework] with Implication Domain | Specific Implication | Target Stakeholder | Actionable Consequence | Theoretical Grounding\n\n"
         f"ADVANCED PRESENTATION STANDARDS {'(DOCTORAL REQUIREMENT):' if is_pg else '(recommended):'}\n\n"
         f"MANDATORY CHART FORMAT (EVERY SINGLE [CHART:...] MUST INCLUDE AXES AND DATA VALUES):\n"
@@ -886,7 +886,7 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
         f"REFERENCING VISUALIZATIONS:\n"
         f"- Cite all tables/figures in text BEFORE they appear\n"
         f"- Integrate discussion of visualizations into analytical prose: explain what patterns they reveal, why they matter theoretically, how they support conclusions\n"
-        f"- Do NOT treat visualizations as peripheral — they are central analytical tools\n\n"
+        f"- Do NOT treat visualizations as peripheral - they are central analytical tools\n\n"
     )
 
     # Build custom ToC instruction for each chapter
@@ -915,7 +915,7 @@ Do not stop writing until you have fully developed every subsection. If in doubt
 {_VIZ_NOTE}
 
 Write the following subsections, each introduced with a ### heading.
-Every subsection must be written in full, developed paragraphs — no bullet summaries, no placeholders.
+Every subsection must be written in full, developed paragraphs - no bullet summaries, no placeholders.
 
 ### 1.1 Background of the Study
 Write between {w_range(140, 280)} words for this subsection.
@@ -923,7 +923,7 @@ Provide {depth} contextual grounding. Open with a striking observation or statis
 immediately establishes why this topic matters. Then trace the historical evolution of the
 problem across at least three distinct time periods, naming key turning points, policy shifts,
 or scholarly debates that shaped the current landscape. Ground every assertion in specific
-evidence — named scholars, years, places, and figures. Close by narrowing the lens from the
+evidence - named scholars, years, places, and figures. Close by narrowing the lens from the
 broad context toward the precise issue this study addresses.
 
 ### 1.2 Statement of the Problem
@@ -932,7 +932,7 @@ Open with a clear, declarative statement of what is wrong or poorly understood. 
 the case across multiple paragraphs: explain the nature of the problem, who it affects, how
 long it has persisted, and why existing responses have been insufficient. Name the specific
 gap, contradiction, or blind spot that this study addresses. The problem statement must feel
-urgent — the reader should finish this section convinced that the study was necessary.
+urgent - the reader should finish this section convinced that the study was necessary.
 {gap_note}
 
 ### 1.2a Theoretical Gap and Contribution
@@ -961,29 +961,29 @@ and the type of evidence that would constitute an answer.
 
 ### 1.6 Significance of the Study
 Write between {w_range(100, 196)} words for this subsection.
-{"For doctoral-level work: Develop this across FIVE distinct, detailed paragraphs emphasizing theoretical innovation and knowledge advancement." if is_pg else "Develop this across FOUR distinct, detailed paragraphs — one for each dimension below. Be concrete, not generic."}
+{"For doctoral-level work: Develop this across FIVE distinct, detailed paragraphs emphasizing theoretical innovation and knowledge advancement." if is_pg else "Develop this across FOUR distinct, detailed paragraphs - one for each dimension below. Be concrete, not generic."}
 
-PARAGRAPH 1 — THEORETICAL SIGNIFICANCE {"(PRIMARY AND EXTENSIVE FOR DOCTORAL RESEARCH):" if is_pg else "(PRIMARY FOR PhD):"}
-{"DOCTORAL REQUIREMENT: Explain PRECISELY how your study advances scholarship. This is not application of theory—it is theoretical contribution. Address:" if is_pg else "Explain what this study will ADVANCE in scholarly understanding. Will it extend theory to a new context or population?"}
+PARAGRAPH 1 - THEORETICAL SIGNIFICANCE {"(PRIMARY AND EXTENSIVE FOR DOCTORAL RESEARCH):" if is_pg else "(PRIMARY FOR PhD):"}
+{"DOCTORAL REQUIREMENT: Explain PRECISELY how your study advances scholarship. This is not application of theory-it is theoretical contribution. Address:" if is_pg else "Explain what this study will ADVANCE in scholarly understanding. Will it extend theory to a new context or population?"}
 {"  (a) Which specific theoretical model(s) or tradition(s) does this study contribute to (name them)?" if is_pg else ""}
 {"  (b) What theoretical INNOVATION does your work produce? (e.g., extend theory to new context, refine core concepts, challenge assumptions, integrate separate traditions, propose new framework)" if is_pg else ""}
 {"  (c) What will scholars understand differently after reading this study?" if is_pg else ""}
 {"  (d) How does this theoretical contribution advance the field's capacity to explain, predict, or understand key phenomena?" if is_pg else ""}
-{"Example: 'This study advances Institutional Theory by demonstrating that institutional isomorphism (DiMaggio & Powell, 1983) operates through different mechanisms in post-conflict settings than in stable institutional environments. The finding introduces a new concept—\"fragmented isomorphism\"—to explain how organizations respond to competing legitimacy demands when formal institutions lack credibility. This refines our understanding of institutional change under conditions of state fragility.'" if is_pg else "Example: 'This study advances Institutional Theory by demonstrating that institutional isomorphism (DiMaggio & Powell, 1983) operates differently in hybrid organisations than in traditional ones. The finding refines our understanding of how external pressures interact with internal legitimacy concerns.'"}
+{"Example: 'This study advances Institutional Theory by demonstrating that institutional isomorphism (DiMaggio & Powell, 1983) operates through different mechanisms in post-conflict settings than in stable institutional environments. The finding introduces a new concept-\"fragmented isomorphism\"-to explain how organizations respond to competing legitimacy demands when formal institutions lack credibility. This refines our understanding of institutional change under conditions of state fragility.'" if is_pg else "Example: 'This study advances Institutional Theory by demonstrating that institutional isomorphism (DiMaggio & Powell, 1983) operates differently in hybrid organisations than in traditional ones. The finding refines our understanding of how external pressures interact with internal legitimacy concerns.'"}
 {"Not: 'This study adds to the literature.' (Vague, generic, insufficient for doctoral work)" if is_pg else "Not: 'This study adds to the literature.'"}
 
-PARAGRAPH 2 — EMPIRICAL/METHODOLOGICAL SIGNIFICANCE:
+PARAGRAPH 2 - EMPIRICAL/METHODOLOGICAL SIGNIFICANCE:
 What new empirical evidence will this study provide? Will it be the first to examine X in Y context?
 Will it use a novel methodological approach? Will it generate longitudinal data where only cross-sectional data exist?
 What gap in the empirical evidence base does it fill? Name specific previous studies and how your work extends them.
 Example: "While Chen (2019) and Okafor (2021) examined this phenomenon in Western contexts, no study has yet explored it in post-conflict African settings. This study generates the first empirical evidence on..."
 
-PARAGRAPH 3 — PRACTICAL/POLICY SIGNIFICANCE:
+PARAGRAPH 3 - PRACTICAL/POLICY SIGNIFICANCE:
 What will practitioners, policymakers, or service providers DO differently based on these findings?
 Name specific organisations, policy areas, or professional communities. Be concrete about the practical changes warranted.
 Example: "These findings have direct implications for primary healthcare policy in East Africa. If the results confirm our hypothesis, the WHO will need to revise its guidelines for community health worker training, potentially affecting 450,000 workers across the region."
 
-PARAGRAPH 4 — BENEFICIARY GROUPS:
+PARAGRAPH 4 - BENEFICIARY GROUPS:
 Who specifically benefits and how? Name academics (which subdisciplines), practitioners (which professions),
 policymakers (which agencies), communities (which populations). Make clear the pathway from evidence to impact.
 Example: "The primary beneficiaries are (1) development researchers studying adaptive capacity in agriculture, (2) extension agents in smallholder farming who need evidence on which interventions work, (3) agricultural policymakers designing rural development programmes, and (4) smallholder farmers themselves, who..."
@@ -996,7 +996,7 @@ justified rather than a limitation of convenience. Acknowledge the trade-offs in
 
 ### 1.8 Limitations of the Study
 Write between {w_range(80, 157)} words for this subsection.
-Identify at least four genuine constraints — methodological, practical, or contextual.
+Identify at least four genuine constraints - methodological, practical, or contextual.
 For each, explain what the limitation is, how it arose, and what steps were taken to
 minimise its impact on the validity and transferability of findings. Be candid: real
 researchers acknowledge imperfection.
@@ -1010,10 +1010,10 @@ definitional controversies relevant to the research.
 
 ### 1.10 Organisation of the Study
 Write between {w_range(52, 101)} words for this subsection.
-Describe what each chapter covers in two to three sentences per chapter — not a list,
+Describe what each chapter covers in two to three sentences per chapter - not a list,
 but short, flowing paragraphs. Explain the logical progression from chapter to chapter.
 
-Do NOT write a chapter title heading at the very top — begin directly with section ### 1.1.""",
+Do NOT write a chapter title heading at the very top - begin directly with section ### 1.1.""",
 
         2: f"""You are writing CHAPTER TWO: LITERATURE REVIEW for an academic research project.
 Topic: {{topic}}
@@ -1039,7 +1039,7 @@ Write the following subsections in full. Every subsection demands extended, anal
 Write between {w_range(100, 210)} words.
 Open by situating the literature review within the study's broader purpose. Explain how
 this chapter is organised and why that organisational logic was chosen. Describe the scope
-of literature reviewed — databases, date range, inclusion criteria — without being mechanical.
+of literature reviewed - databases, date range, inclusion criteria - without being mechanical.
 End with a statement of what the review reveals and how it sets up the research gap.
 
 ### 2.2 Conceptual Review
@@ -1049,7 +1049,7 @@ history (who coined or defined it, when, and in what context), map the range of 
 across the literature (noting where scholars converge and diverge), and state explicitly
 which conceptualisation this study adopts and why. Write this as connected analytical prose,
 not as a series of dictionary definitions.
-{"Engage with conceptual tensions and competing paradigms — do not smooth them over." if is_pg else ""}
+{"Engage with conceptual tensions and competing paradigms - do not smooth them over." if is_pg else ""}
 
 ### 2.3 Theoretical Framework
 Write between {w_range(240, 490)} words.
@@ -1057,7 +1057,7 @@ Identify 2–3 theories or models that directly inform this study. For each theo
 a full sub-argument across multiple paragraphs: name the originator and intellectual
 tradition, describe the core propositions, trace how it has been applied and tested in
 empirical research over the past decade, and make explicit how it will guide this study's
-analytical framework. {"Critically evaluate each theory — identify its explanatory strengths, its known limitations, and how scholars have critiqued or refined it." if is_pg else "Explain how each theory applies to the specific context of this study."}
+analytical framework. {"Critically evaluate each theory - identify its explanatory strengths, its known limitations, and how scholars have critiqued or refined it." if is_pg else "Explain how each theory applies to the specific context of this study."}
 
 ### 2.4 Empirical Review
 Write between {w_range(325, 630)} words.
@@ -1073,12 +1073,12 @@ Write between {w_range(210, 420)} words.
 Focus specifically on studies conducted in comparable contexts or addressing analogous
 sub-questions. For each study reviewed: explain what it investigated, summarise its
 principal findings, assess what it contributes to this study's conceptual or empirical
-foundations, and — critically — identify precisely where it falls short relative to the
+foundations, and - critically - identify precisely where it falls short relative to the
 present study's aims. This section should make the research gap feel inevitable.
 
 ### 2.6 Research Gap
 Write between {w_range(140, 280)} words.
-Do not simply assert that a gap exists — argue for it. Draw together the evidence from the
+Do not simply assert that a gap exists - argue for it. Draw together the evidence from the
 preceding sections to show exactly what has been studied, what remains unstudied, why the
 existing studies are insufficient for this particular problem, and why this gap matters.
 {"Distinguish between empirical gaps (what data are missing), theoretical gaps (what explanatory frameworks have not been tested here), and methodological gaps (how prior studies' designs could be improved)." if is_pg else "Make clear why filling this gap produces knowledge that is both novel and useful."}
@@ -1090,14 +1090,14 @@ intellectual threads that emerge from the review, explain how they relate to eac
 and show explicitly how they set up the methodological choices and analytical framework
 of Chapter 3. End with a sentence or two that creates a bridge forward.
 
-Do NOT write a chapter title heading at the very top — begin directly with section ### 2.1.""",
+Do NOT write a chapter title heading at the very top - begin directly with section ### 2.1.""",
 
         3: f"""You are writing CHAPTER THREE: RESEARCH METHODOLOGY for an academic research project.
 Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[3]} words of substantive prose. You MUST reach this minimum.
 The methodology chapter must be precise, justified, and replicable. Write with rigour.
-{"" if nalt_compliance else "VISUALIZATIONS ARE MANDATORY — include 6-8 figures/tables throughout this chapter."}
+{"" if nalt_compliance else "VISUALIZATIONS ARE MANDATORY - include 6-8 figures/tables throughout this chapter."}
 {custom_toc_ch3}
 
 {_PG_PREAMBLE if is_pg else ""}
@@ -1125,12 +1125,12 @@ Write between {w_range(160, 315)} words.
 Describe the overall research strategy and justify the choice of qualitative, quantitative,
 or mixed-methods design by reference to the nature of the research questions. Cite at least
 three methodologists who support this design choice. Explain what this design can and cannot
-do — including what it sacrifices — and defend the choice against obvious alternatives.
+do - including what it sacrifices - and defend the choice against obvious alternatives.
 {"Connect the design explicitly to the epistemological position stated in 3.1." if is_pg else ""}
 
 ### 3.3 Research Philosophy and Paradigm
 Write between {w_range(160, 350)} words.
-{"Develop the philosophical grounding in detail. Discuss the ontological position (what the researcher believes about the nature of reality — is it singular and knowable, or multiple and constructed?), the epistemological position (what counts as valid knowledge, and how it can be acquired), and how these positions connect to the chosen methodology. Distinguish between positivism, interpretivism, constructivism, pragmatism, and critical realism with enough precision that the reader understands which stance is adopted here and why." if is_pg else "Identify the research paradigm (e.g., interpretivist, positivist, pragmatist) and explain in clear terms how it shapes the study's approach to data, evidence, and knowledge. Draw on at least two methodologists to justify the paradigmatic choice."}
+{"Develop the philosophical grounding in detail. Discuss the ontological position (what the researcher believes about the nature of reality - is it singular and knowable, or multiple and constructed?), the epistemological position (what counts as valid knowledge, and how it can be acquired), and how these positions connect to the chosen methodology. Distinguish between positivism, interpretivism, constructivism, pragmatism, and critical realism with enough precision that the reader understands which stance is adopted here and why." if is_pg else "Identify the research paradigm (e.g., interpretivist, positivist, pragmatist) and explain in clear terms how it shapes the study's approach to data, evidence, and knowledge. Draw on at least two methodologists to justify the paradigmatic choice."}
 
 ### 3.4 Research Approach
 Write between {w_range(100, 196)} words.
@@ -1141,19 +1141,19 @@ After this section, include:
 ### 3.5 Study Area and Setting
 Write between {w_range(115, 224)} words.
 Describe the physical, institutional, or organisational setting with enough specificity that
-the reader can visualise it. Explain why this setting was chosen — what makes it appropriate
+the reader can visualise it. Explain why this setting was chosen - what makes it appropriate
 for answering these research questions. Discuss access, gatekeeping, and any contextual
 factors (political, cultural, institutional) that shaped the fieldwork.
 
 ### 3.6 Target Population
 Write between {w_range(100, 196)} words.
-Define the population with precision — who qualifies, why they qualify, and how large the
+Define the population with precision - who qualifies, why they qualify, and how large the
 total population is (with a source if applicable). Explain the relevance of this population
 to the research questions. Address any challenges in defining or accessing the population.
 
 ### 3.7 Sample Size and Sampling Technique
 Write between {w_range(135, 266)} words.
-Specify the sample size and justify it — cite at least two sources on sample size adequacy
+Specify the sample size and justify it - cite at least two sources on sample size adequacy
 for the chosen design. Describe the sampling technique in precise operational terms: exactly
 how participants were identified, approached, screened, and recruited. {"Discuss how the technique addresses issues of representativeness (quantitative) or theoretical saturation and transferability (qualitative)." if is_pg else "Explain how the sample is representative of the population."}
 Address any non-response and how it was handled.
@@ -1175,7 +1175,7 @@ Instrument Name | Purpose (Which RQ?) | Structure (Sections/Items) | Response Fo
 
 ### 3.9 Validity and Reliability
 Write between {w_range(135, 266)} words.
-{"Address validity and reliability using the criteria appropriate to the paradigm. For quantitative work: construct validity, criterion validity, internal consistency (Cronbach's alpha), and test-retest reliability. For qualitative work: credibility (member-checking, triangulation), transferability (thick description), dependability (audit trail), and confirmability (reflexivity) — drawing on Lincoln and Guba (1985). Explain specifically how each criterion was operationalised in this study." if is_pg else "Explain what steps were taken to ensure the instruments measure what they intend to measure and produce consistent results. Discuss any piloting and revision process. Address both internal validity and reliability."}
+{"Address validity and reliability using the criteria appropriate to the paradigm. For quantitative work: construct validity, criterion validity, internal consistency (Cronbach's alpha), and test-retest reliability. For qualitative work: credibility (member-checking, triangulation), transferability (thick description), dependability (audit trail), and confirmability (reflexivity) - drawing on Lincoln and Guba (1985). Explain specifically how each criterion was operationalised in this study." if is_pg else "Explain what steps were taken to ensure the instruments measure what they intend to measure and produce consistent results. Discuss any piloting and revision process. Address both internal validity and reliability."}
 After this section, include:
 [FIGURE: Validity and Reliability Framework]
 Showing paradigm-appropriate quality measures and how each was operationalised in this study.
@@ -1216,14 +1216,14 @@ After this section, include:
 [FIGURE: Methodology Integration Diagram]
 Showing how research design, philosophy, sampling strategy, data collection instruments, and analytical approach connect as a coherent system.
 
-Do NOT write a chapter title heading at the very top — begin directly with section ### 3.1.""",
+Do NOT write a chapter title heading at the very top - begin directly with section ### 3.1.""",
 
         4: f"""You are writing CHAPTER FOUR: RESULTS AND DISCUSSION for an academic research project.
 Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[4]} words of substantive prose. You MUST reach this minimum.
 Present rich, specific, interpreted findings. This chapter must demonstrate analytical depth.
-{"" if nalt_compliance else "VISUALIZATIONS ARE CRITICAL — include 8-12 figures/tables throughout this chapter to present data professionally."}
+{"" if nalt_compliance else "VISUALIZATIONS ARE CRITICAL - include 8-12 figures/tables throughout this chapter to present data professionally."}
 {custom_toc_ch4}
 
 {_PG_PREAMBLE if is_pg else ""}
@@ -1248,7 +1248,7 @@ the reader knows what findings will address. {intro_text}
 ### 4.2 Sample / Response Rate Overview
 Write between {w_range(110, 210)} words.
 Present the demographic and descriptive profile of the sample across multiple characteristics
-(age, gender, education, experience, geographic distribution — as relevant). Discuss the
+(age, gender, education, experience, geographic distribution - as relevant). Discuss the
 response rate if applicable and explain patterns in non-response. {sample_text}
 Include immediately after this section:
 [TABLE: Sample Demographics Breakdown]
@@ -1276,7 +1276,7 @@ OR
 ### 4.4 Findings Related to Objective 2
 Write between {w_range(180, 350)} words.
 Apply the same approach as 4.3 to the second research objective. Ensure this section has
-its own narrative arc — do not simply replicate the structure of 4.3. Introduce any
+its own narrative arc - do not simply replicate the structure of 4.3. Introduce any
 unexpected or contradictory findings and engage with them analytically.
 {"DOCTORAL STANDARD: Vary your analytical approach across objectives. Use different visualization types (e.g., matrices for Obj1, comparative charts for Obj2) to demonstrate analytical sophistication." if is_pg else ""}
 Include data visualization:
@@ -1304,7 +1304,7 @@ OR
 
 ### 4.7 Synthesis and Discussion of Major Findings
 Write between {w_range(210, 420)} words.
-THIS IS THE INTELLECTUAL HEART OF THE CHAPTER — your opportunity to demonstrate meta-analytical thinking across all four objectives.
+THIS IS THE INTELLECTUAL HEART OF THE CHAPTER - your opportunity to demonstrate meta-analytical thinking across all four objectives.
 
 {synthesis_text}
 
@@ -1320,16 +1320,16 @@ Implication Domain | Specific Implication | Target Stakeholder | Actionable Cons
 ### 4.9 Chapter Summary
 Write between {w_range(100, 196)} words.
 Distil the most important results and analytical insights in two to three substantive
-paragraphs. Do not list findings — synthesise. End with a transition that sets up the
+paragraphs. Do not list findings - synthesise. End with a transition that sets up the
 conclusions and recommendations in Chapter 5.
 
-Do NOT write a chapter title heading at the very top — begin directly with section ### 4.1.""",
+Do NOT write a chapter title heading at the very top - begin directly with section ### 4.1.""",
 
         5: f"""You are writing CHAPTER FIVE: CONCLUSIONS AND RECOMMENDATIONS for an academic research project.
 Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[5]} words of substantive prose. You MUST reach this minimum.
-This chapter must deliver a satisfying intellectual conclusion — not a mechanical recap.
+This chapter must deliver a satisfying intellectual conclusion - not a mechanical recap.
 {custom_toc_ch5}
 
 {_PG_PREAMBLE if is_pg else ""}
@@ -1355,18 +1355,18 @@ Write between {w_range(160, 315)} words.
 Recount the entire research journey in a flowing, synthesised narrative across at least
 four substantive paragraphs: the problem and its context, the objectives and theoretical
 framework, the methodology and its justification, and the principal findings. Do not
-quote verbatim from earlier chapters — reframe and integrate. A reader encountering this
+quote verbatim from earlier chapters - reframe and integrate. A reader encountering this
 study for the first time through this section should understand its full arc.
 
 ### 5.3 Conclusions
 Write between {w_range(180, 350)} words.
-Draw one specific, argued conclusion per research objective — each conclusion in its own
+Draw one specific, argued conclusion per research objective - each conclusion in its own
 paragraph. Each conclusion must: state what the study found, explain what this finding
-means in context, and connect it to the evidence from Chapter 4. {"Where conclusions are tentative or conditional, say so and explain the conditions under which the conclusion holds. Where they challenge prior theory, develop that challenge explicitly." if is_pg else "State conclusions with appropriate confidence — neither overclaiming nor underselling what the data support."}
+means in context, and connect it to the evidence from Chapter 4. {"Where conclusions are tentative or conditional, say so and explain the conditions under which the conclusion holds. Where they challenge prior theory, develop that challenge explicitly." if is_pg else "State conclusions with appropriate confidence - neither overclaiming nor underselling what the data support."}
 
 ### 5.4 Contribution to Knowledge
 Write between {w_range(135, 266)} words.
-{"Articulate the study's contribution across at least three dimensions: theoretical (how it extends, refines, or challenges existing theoretical models), empirical (what new data or patterns it adds to the evidence base), and methodological (whether it demonstrates a novel application of method in this context). Be precise — 'this study contributes to the literature' is not a contribution; naming exactly what it adds is." if is_pg else "Explain in concrete terms what is new or valuable about what this study found. How does it advance understanding beyond what was known before? What practical problems does it help solve?"}
+{"Articulate the study's contribution across at least three dimensions: theoretical (how it extends, refines, or challenges existing theoretical models), empirical (what new data or patterns it adds to the evidence base), and methodological (whether it demonstrates a novel application of method in this context). Be precise - 'this study contributes to the literature' is not a contribution; naming exactly what it adds is." if is_pg else "Explain in concrete terms what is new or valuable about what this study found. How does it advance understanding beyond what was known before? What practical problems does it help solve?"}
 
 ### 5.5 Recommendations
 Write between {w_range(160, 315)} words.
@@ -1374,7 +1374,7 @@ Provide 5–6 specific, actionable, evidence-grounded recommendations. Write eac
 full paragraph rather than a bullet point: name the recommendation, identify the specific
 finding that supports it, name the stakeholder or institution it is directed at, and
 describe what implementing it would look like in practice. Recommendations must flow
-directly from the findings — no recommendation should appear without a grounding in
+directly from the findings - no recommendation should appear without a grounding in
 Chapter 4.
 
 ### 5.6 Recommendations for Future Research
@@ -1388,7 +1388,7 @@ approach, and state what such research would contribute. {"For postgraduate work
 Write between {w_range(80, 154)} words.
 A dignified, forward-looking closing that does not merely repeat the conclusions. Reflect
 on what the study set out to do and what it achieved. End with a final paragraph that
-gestures toward the broader significance of the work — without overreaching.
+gestures toward the broader significance of the work - without overreaching.
 
 ---
 
@@ -1420,7 +1420,7 @@ Include one row for each week showing specific activities, who is responsible, a
 A sample informed consent form that would be used with participants in this study,
 including all required elements (study description, risks, rights, confidentiality, contact details).
 
-Do NOT write a chapter title heading at the very top — begin directly with section ### 5.1.""",
+Do NOT write a chapter title heading at the very top - begin directly with section ### 5.1.""",
     }
 
 
@@ -1441,7 +1441,7 @@ class FootnoteManager:
 
     Strategy:
         1. add_footnote() writes the <w:footnoteReference> superscript into the
-           body paragraph (standard OxmlElement — no internal API required).
+           body paragraph (standard OxmlElement - no internal API required).
         2. The footnote text is queued in self._footnotes.
         3. After doc.save(path), call fn_mgr.inject(path) to inject
            word/footnotes.xml plus the required relationships/content-types
@@ -1688,14 +1688,14 @@ def _add_inline_formatting(paragraph, text, fn_mgr=None):
         # split with one capture group gives [text, fn, text, fn, ...]
         for idx, seg in enumerate(segments):
             if idx % 2 == 0:
-                # Regular text — apply bold/italic
+                # Regular text - apply bold/italic
                 _add_inline_formatting(paragraph, seg, fn_mgr=None)
             else:
-                # Footnote text — insert real Word footnote
+                # Footnote text - insert real Word footnote
                 fn_mgr.add_footnote(paragraph, seg)
         return
 
-    # Bold/italic processing — then strip any leftover asterisks
+    # Bold/italic processing - then strip any leftover asterisks
     parts = re.split(r"(\*\*\*[^*]+\*\*\*|\*\*[^*]+\*\*|\*[^*]+\*)", text)
     for part in parts:
         if part.startswith("***") and part.endswith("***"):
@@ -2089,7 +2089,7 @@ def _create_sample_chart(description: str):
 def parse_chapter_content(doc, content, fn_mgr=None):
     """
     Render markdown-ish chapter content into the Word document.
-    fn_mgr — a FootnoteManager instance; if supplied, ((FN: text)) markers
+    fn_mgr - a FootnoteManager instance; if supplied, ((FN: text)) markers
               become real Word footnotes with page-bottom hyperlinks.
     """
     lines = content.split("\n")
@@ -2503,7 +2503,7 @@ def build_toc_page(doc, research_level, chapters_list=None, custom_toc=None,
         return
 
     # ── Auto-generated TOC ────────────────────────────────
-    # Front matter — only list sections actually included in the document
+    # Front matter - only list sections actually included in the document
     entries = []
     if "abstract"        in fm_include: entries.append(("Abstract",           True))
     if "declaration"      in fm_include: entries.append(("Declaration",      True))
@@ -2516,7 +2516,7 @@ def build_toc_page(doc, research_level, chapters_list=None, custom_toc=None,
         ("", False),
     ]
 
-    # Per-chapter TOC groups — only included up to max_chapters
+    # Per-chapter TOC groups - only included up to max_chapters
     _chapter_groups = {
         1: [
             ("CHAPTER ONE: INTRODUCTION", True),
@@ -2801,7 +2801,7 @@ def build_document(topic: str, research_level: str,
 
 
 # ─────────────────────────────────────────────────────────
-#  CLAUDE API — CONTENT GENERATION
+#  CLAUDE API - CONTENT GENERATION
 # ─────────────────────────────────────────────────────────
 
 def _stream_content(client, system: str, prompt: str,
@@ -2834,7 +2834,7 @@ def _stream_content(client, system: str, prompt: str,
         # Explicitly disabled
         use_thinking = False
     else:
-        # use_thinking_override is None — use level-based default
+        # use_thinking_override is None - use level-based default
         # Thinking for PhD level IF model supports it
         use_thinking = (level_key == "phd") and (model in THINKING_MODELS)
 
@@ -2893,7 +2893,7 @@ def generate_front_matter(client, topic: str, research_level: str,
     system = (
         f"You are a senior academic writer working at {profile['label']} level. "
         "Write formal, substantive academic front matter. Use ## for each section heading. "
-        "Write with authenticity and warmth where appropriate — these pages are read by "
+        "Write with authenticity and warmth where appropriate - these pages are read by "
         "examiners and set the tone for the entire document. "
         + HUMAN_WRITING_INSTRUCTION
     )
@@ -2901,11 +2901,11 @@ def generate_front_matter(client, topic: str, research_level: str,
     if nalt_compliance:
         system += (
             "\n\n"
-            "╔═════════════════════════════════════════════════════════════════════╗\n"
-            "║  NALT COMPLIANCE MODE: Nigerian Legal Research Standards           ║\n"
-            "║  Nigerian Association of Law Teachers (NALT)                       ║\n"
-            "║  Uniform Format and Citation Guide for Legal Research Writing      ║\n"
-            "╚═════════════════════════════════════════════════════════════════════╝\n\n"
+            "[=====================================================================]\n"
+            "|  NALT COMPLIANCE MODE: Nigerian Legal Research Standards           |\n"
+            "|  Nigerian Association of Law Teachers (NALT)                       |\n"
+            "|  Uniform Format and Citation Guide for Legal Research Writing      |\n"
+            "[=====================================================================╝\n\n"
             "STRICT REQUIREMENTS FOR NALT COMPLIANCE:\n\n"
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
             "1. FORMATTING (Physical & Technical)\n"
@@ -3050,7 +3050,7 @@ def generate_front_matter(client, topic: str, research_level: str,
             "   • Write in third person (avoid 'I', 'we', 'the author')\n"
             "   • Structure arguments in clear prose (not bullet points in body)\n"
             "   • Use transitions and logical connectors between sections\n\n"
-            "╚═════════════════════════════════════════════════════════════════════╝\n\n"
+            "[=====================================================================╝\n\n"
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
             "CRITICAL: HUMAN AUTHENTICITY WITHIN NALT CONSTRAINTS\n"
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
@@ -3069,13 +3069,13 @@ def generate_front_matter(client, topic: str, research_level: str,
             "Example of COMPLIANT but HUMAN legal writing:\n"
             "  'The case law suggests X. But this reading misses something fundamental. What\n"
             "   the courts have actually done, reading Okoye and its progeny carefully, is adopt\n"
-            "   a narrower principle — one that Mensah (2015) flagged but never properly named.\n"
+            "   a narrower principle - one that Mensah (2015) flagged but never properly named.\n"
             "   This distinction matters. It changes how we interpret section 14 of the Constitution.'\n\n"
             "DO NOT write:\n"
             "  'The case law indicates that the courts have applied principle X as interpreted\n"
             "   by various scholars. This principle is important to section 14 of the Constitution.'\n\n"
             "Your expertise is showing the HUMAN MIND at work within NALT's formal structure.\n"
-            "╚═════════════════════════════════════════════════════════════════════╝"
+            "[=====================================================================╝"
         )
 
     # Build the section list dynamically
@@ -3095,7 +3095,7 @@ def generate_front_matter(client, topic: str, research_level: str,
             "## DEDICATION\n"
             "Write a heartfelt, personal dedication (60–90 words). Dedicate to specific "
             "named people (family members, mentors, or a community). The dedication should "
-            "feel genuine — avoid generic phrases. It should be warm, brief, and memorable."
+            "feel genuine - avoid generic phrases. It should be warm, brief, and memorable."
         )
     if "acknowledgements" in include:
         section_blocks.append(
@@ -3104,7 +3104,7 @@ def generate_front_matter(client, topic: str, research_level: str,
             "sentences or short paragraphs: the academic supervisor (by title and role), "
             "the institution and department, research participants (without naming them), "
             "colleagues or peers who provided feedback, family and close supporters. "
-            "The tone should be warm and personal, not formulaic. Avoid generic praise — "
+            "The tone should be warm and personal, not formulaic. Avoid generic praise - "
             "be specific about what each person contributed."
         )
 
@@ -3193,7 +3193,7 @@ def generate_chapter(client, topic: str, chapter_num: int,
     system = (
         f"You are a highly experienced human academic researcher writing at {profile['label']} level. "
         "You have spent years publishing in peer-reviewed journals and supervising postgraduate students. "
-        "Your writing is authoritative, specific, and unmistakably human — characterised by varied rhythm, "
+        "Your writing is authoritative, specific, and unmistakably human - characterised by varied rhythm, "
         "genuine intellectual engagement, specific citations, occasional hedging, and a distinct scholarly voice. "
         "You never produce AI-sounding text. You write fully developed, substantive prose and never truncate, "
         "summarise, or leave placeholders. You meet every word count target without compromise."
@@ -3203,11 +3203,11 @@ def generate_chapter(client, topic: str, chapter_num: int,
     if nalt_compliance:
         system += (
             "\n\n"
-            "╔═════════════════════════════════════════════════════════════════════╗\n"
-            "║  NALT COMPLIANCE MODE: Nigerian Legal Research Standards           ║\n"
-            "║  Nigerian Association of Law Teachers (NALT)                       ║\n"
-            "║  Uniform Format and Citation Guide for Legal Research Writing      ║\n"
-            "╚═════════════════════════════════════════════════════════════════════╝\n\n"
+            "[=====================================================================]\n"
+            "|  NALT COMPLIANCE MODE: Nigerian Legal Research Standards           |\n"
+            "|  Nigerian Association of Law Teachers (NALT)                       |\n"
+            "|  Uniform Format and Citation Guide for Legal Research Writing      |\n"
+            "[=====================================================================╝\n\n"
             "STRICT REQUIREMENTS FOR NALT COMPLIANCE:\n\n"
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
             "1. FORMATTING (Physical & Technical)\n"
@@ -3352,7 +3352,7 @@ def generate_chapter(client, topic: str, chapter_num: int,
             "   • Write in third person (avoid 'I', 'we', 'the author')\n"
             "   • Structure arguments in clear prose (not bullet points in body)\n"
             "   • Use transitions and logical connectors between sections\n\n"
-            "╚═════════════════════════════════════════════════════════════════════╝\n\n"
+            "[=====================================================================╝\n\n"
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
             "CRITICAL: HUMAN AUTHENTICITY WITHIN NALT CONSTRAINTS\n"
             "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
@@ -3371,13 +3371,13 @@ def generate_chapter(client, topic: str, chapter_num: int,
             "Example of COMPLIANT but HUMAN legal writing:\n"
             "  'The case law suggests X. But this reading misses something fundamental. What\n"
             "   the courts have actually done, reading Okoye and its progeny carefully, is adopt\n"
-            "   a narrower principle — one that Mensah (2015) flagged but never properly named.\n"
+            "   a narrower principle - one that Mensah (2015) flagged but never properly named.\n"
             "   This distinction matters. It changes how we interpret section 14 of the Constitution.'\n\n"
             "DO NOT write:\n"
             "  'The case law indicates that the courts have applied principle X as interpreted\n"
             "   by various scholars. This principle is important to section 14 of the Constitution.'\n\n"
             "Your expertise is showing the HUMAN MIND at work within NALT's formal structure.\n"
-            "╚═════════════════════════════════════════════════════════════════════╝"
+            "[=====================================================================╝"
         )
 
     if custom_instructions and custom_instructions.strip():
@@ -3400,7 +3400,7 @@ def generate_chapter(client, topic: str, chapter_num: int,
 
 def main():
     print("=" * 60)
-    print("   ACADEMIC RESEARCH WRITEUP AGENT  —  5-CHAPTER FORMAT")
+    print("   ACADEMIC RESEARCH WRITEUP AGENT  -  5-CHAPTER FORMAT")
     print("=" * 60)
 
     topic = input("\nResearch topic:\n> ").strip()
