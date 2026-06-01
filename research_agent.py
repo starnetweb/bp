@@ -584,49 +584,65 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
     is_pg   = (level_key == "postgraduate")
 
     # Helper: extract custom sections for a specific chapter from provided custom_toc
+    # Maps chapter numbers to all recognised forms (word and digit)
+    _CHAPTER_FORMS = {
+        1: ["ONE", "1"], 2: ["TWO", "2"], 3: ["THREE", "3"],
+        4: ["FOUR", "4"], 5: ["FIVE", "5"]
+    }
+
+    def _is_any_chapter_header(line_stripped: str) -> bool:
+        """Return True if line looks like any CHAPTER heading (word or numeric)."""
+        return bool(re.match(
+            r'^CHAPTER\s+(?:\d+|ONE|TWO|THREE|FOUR|FIVE)\b', line_stripped, re.IGNORECASE
+        ))
+
     def extract_custom_sections(chapter_num: int) -> str:
         """
         Parse custom_toc and extract sections for the given chapter.
+        Handles both numeric ('CHAPTER 1') and word ('CHAPTER ONE') formats.
+        Also handles chapter title on a separate line from the CHAPTER heading.
         Returns instruction text to enforce those sections, or empty string if not provided.
         """
         if not custom_toc or not custom_toc.strip():
             return ""
 
+        forms = _CHAPTER_FORMS.get(chapter_num, [str(chapter_num)])
+
+        def is_chapter_header(s: str) -> bool:
+            return any(
+                re.match(rf'^CHAPTER\s+{form}\b', s, re.IGNORECASE)
+                for form in forms
+            )
+
         lines = custom_toc.split('\n')
         chapter_sections = []
         current_chapter = None
+        chapter_title_consumed = False   # first non-empty line after header = title, skip it
 
         for line in lines:
             line_stripped = line.strip()
             if not line_stripped:
                 continue
 
-            # Check if this line identifies a chapter (e.g., "Chapter 1:" or "CHAPTER 1")
-            # This pattern ONLY matches chapter headers, not subsections
-            is_chapter_header = (
-                line_stripped.upper().startswith(f"CHAPTER {chapter_num}") or \
-                line_stripped.startswith(f"Chapter {chapter_num}")
-            )
-
-            # Check if this is a DIFFERENT chapter (next chapter header)
-            is_different_chapter = (
-                re.match(r'^CHAPTER\s+\d+|^Chapter\s+\d+', line_stripped) and \
-                not is_chapter_header
-            )
-
-            if is_chapter_header:
+            if is_chapter_header(line_stripped):
                 current_chapter = chapter_num
+                chapter_title_consumed = False
                 continue
+
+            # Stop when we reach a different chapter
+            if current_chapter == chapter_num and _is_any_chapter_header(line_stripped):
+                break
 
             # If we found our chapter, collect its sections
             if current_chapter == chapter_num:
-                # Stop if we hit a different chapter
-                if is_different_chapter:
-                    break
-
-                # Collect subsection lines (any non-empty, non-chapter line)
-                if line_stripped and not re.match(r'^CHAPTER\s+\d+|^Chapter\s+\d+', line_stripped):
-                    chapter_sections.append(line_stripped)
+                # The first non-empty non-chapter line is the chapter title (e.g. "INTRODUCTION")
+                # Skip it — it is not a subsection
+                has_number_prefix = bool(re.match(r'^\d+[\.:]\d', line_stripped))
+                if not chapter_title_consumed and not has_number_prefix:
+                    chapter_title_consumed = True
+                    continue
+                chapter_title_consumed = True
+                chapter_sections.append(line_stripped)
 
         if chapter_sections:
             section_list = "\n".join([f"  {i+1}. {sec}" for i, sec in enumerate(chapter_sections)])
@@ -2414,12 +2430,16 @@ def extract_chapter_titles_from_custom_toc(custom_toc: str) -> dict:
     """
     Parse custom TOC text and extract chapter titles for chapters 1-5.
 
-    Expected format (flexible):
-      CHAPTER ONE: INTRODUCTION
-        1.1 Background
-      CHAPTER THREE: SYSTEM DESIGN
-        3.1 Architecture
-      etc.
+    Handles two formats:
+      Format A (title on same line):
+        CHAPTER ONE: INTRODUCTION
+        CHAPTER 3: SYSTEM DESIGN
+
+      Format B (title on next non-empty line, e.g. user's TOC format):
+        CHAPTER ONE
+
+        INTRODUCTION
+        1:1 Background ...
 
     Returns dict: {1: "INTRODUCTION", 3: "SYSTEM DESIGN", ...}
     """
@@ -2427,39 +2447,54 @@ def extract_chapter_titles_from_custom_toc(custom_toc: str) -> dict:
     if not custom_toc or not custom_toc.strip():
         return chapter_titles
 
+    # Map chapter index to regex alternatives for word/numeric forms
+    _CHAPTER_PATTERNS = [
+        (1, r'ONE|1'),
+        (2, r'TWO|2'),
+        (3, r'THREE|3'),
+        (4, r'FOUR|4'),
+        (5, r'FIVE|5'),
+    ]
+
     lines = custom_toc.strip().splitlines()
-    for line in lines:
-        line = line.strip()
-        # Match patterns like: "CHAPTER ONE: INTRODUCTION", "CHAPTER 3: SYSTEM DESIGN"
-        match = re.search(r'CHAPTER\s+(?:ONE|1)[:\s-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
-        if match:
-            title = match.group(1).strip()
-            chapter_titles[1] = title.upper()
-            continue
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
 
-        match = re.search(r'CHAPTER\s+(?:TWO|2)[:\s-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
-        if match:
-            title = match.group(1).strip()
-            chapter_titles[2] = title.upper()
-            continue
+        matched_num = None
+        inline_title = None
+        for (num, pat) in _CHAPTER_PATTERNS:
+            # Format A: "CHAPTER ONE: INTRODUCTION" or "CHAPTER 1 - INTRODUCTION"
+            m = re.match(rf'^CHAPTER\s+(?:{pat})\s*[:\s-]+(.+)', line, re.IGNORECASE)
+            if m:
+                matched_num = num
+                inline_title = m.group(1).strip()
+                break
+            # Format B: bare "CHAPTER ONE" (title will be on the next non-empty line)
+            m = re.match(rf'^CHAPTER\s+(?:{pat})\s*$', line, re.IGNORECASE)
+            if m:
+                matched_num = num
+                inline_title = None
+                break
 
-        match = re.search(r'CHAPTER\s+(?:THREE|3)[:\s-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
-        if match:
-            title = match.group(1).strip()
-            chapter_titles[3] = title.upper()
-            continue
+        if matched_num is not None:
+            if inline_title:
+                chapter_titles[matched_num] = inline_title.upper()
+            else:
+                # Look ahead for the first non-empty, non-subsection line
+                j = i + 1
+                while j < len(lines):
+                    candidate = lines[j].strip()
+                    if not candidate:
+                        j += 1
+                        continue
+                    # A subsection number like "1.1" or "1:1" means we've passed the title
+                    if re.match(r'^\d+[\.:]\d', candidate):
+                        break
+                    chapter_titles[matched_num] = candidate.upper()
+                    break
 
-        match = re.search(r'CHAPTER\s+(?:FOUR|4)[:\s-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
-        if match:
-            title = match.group(1).strip()
-            chapter_titles[4] = title.upper()
-            continue
-
-        match = re.search(r'CHAPTER\s+(?:FIVE|5)[:\s-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
-        if match:
-            title = match.group(1).strip()
-            chapter_titles[5] = title.upper()
-            continue
+        i += 1
 
     return chapter_titles
 
