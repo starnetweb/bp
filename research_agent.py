@@ -2431,31 +2431,31 @@ def extract_chapter_titles_from_custom_toc(custom_toc: str) -> dict:
     for line in lines:
         line = line.strip()
         # Match patterns like: "CHAPTER ONE: INTRODUCTION", "CHAPTER 3: SYSTEM DESIGN"
-        match = re.search(r'CHAPTER\s+(?:ONE|1)[:\s--]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        match = re.search(r'CHAPTER\s+(?:ONE|1)[:\s-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
         if match:
             title = match.group(1).strip()
             chapter_titles[1] = title.upper()
             continue
 
-        match = re.search(r'CHAPTER\s+(?:TWO|2)[:\s--]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        match = re.search(r'CHAPTER\s+(?:TWO|2)[:\s-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
         if match:
             title = match.group(1).strip()
             chapter_titles[2] = title.upper()
             continue
 
-        match = re.search(r'CHAPTER\s+(?:THREE|3)[:\s--]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        match = re.search(r'CHAPTER\s+(?:THREE|3)[:\s-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
         if match:
             title = match.group(1).strip()
             chapter_titles[3] = title.upper()
             continue
 
-        match = re.search(r'CHAPTER\s+(?:FOUR|4)[:\s--]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        match = re.search(r'CHAPTER\s+(?:FOUR|4)[:\s-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
         if match:
             title = match.group(1).strip()
             chapter_titles[4] = title.upper()
             continue
 
-        match = re.search(r'CHAPTER\s+(?:FIVE|5)[:\s--]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
+        match = re.search(r'CHAPTER\s+(?:FIVE|5)[:\s-]+(.+?)(?:\s*$|\s*[:\d])', line, re.IGNORECASE)
         if match:
             title = match.group(1).strip()
             chapter_titles[5] = title.upper()
