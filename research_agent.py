@@ -2132,6 +2132,11 @@ def parse_chapter_content(doc, content, fn_mgr=None):
 
         if re.match(r"^#{1,2} ", line) and not line.startswith("###"):
             text  = re.sub(r"^#{1,2} ", "", line).strip()
+            # Back-matter sections (References, Appendices, Bibliography) always
+            # start on their own page
+            _BACK_MATTER = {"REFERENCES", "APPENDICES", "APPENDIX", "BIBLIOGRAPHY"}
+            if text.upper() in _BACK_MATTER:
+                add_page_break(doc)
             p     = doc.add_heading(text, level=2)
             _style_section_heading(p, 2)
             i += 1
