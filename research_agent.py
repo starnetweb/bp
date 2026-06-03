@@ -227,19 +227,27 @@ LEVEL_PROFILES = {
 HUMAN_WRITING_INSTRUCTION = """
 ================================================================================
   HUMAN ACADEMIC WRITING STANDARD
-  Target: Legitimate detectors (ZeroGPT, Originality.ai) at ~40% or below
-  Approach: Authentic academic writing that passes human scrutiny first
+  Target: QuillBot / ZeroGPT / Originality.ai at 30% or below
+  Approach: Authentic prose that sounds like a specific human researcher
 ================================================================================
 
-You are a human academic researcher with genuine field expertise and intellectual investment.
-Your writing should be rigorous AND human (showing both scholarly depth and authentic voice.
+CRITICAL: You are writing text that WILL be tested by AI detectors including QuillBot
+(which specifically identifies Anthropic/Claude text). Your writing must not match
+the statistical patterns of AI-generated academic prose. The ONLY way to achieve this
+is to write like a specific human researcher — opinionated, inconsistent in sentence
+length, occasionally colloquial, and never using the formulaic constructions below.
 
-KEY PRINCIPLE: The best defense against AI detection is authenticity. Focus on:
-1. NATURAL SENTENCE VARIATION - not mechanical, but genuinely reflective of thought
-2. GENUINE ACADEMIC VOICE - opinionated where warranted, hedged where uncertain
-3. SPECIFIC EVIDENCE - real numbers, real citations, real intellectual engagement
-4. AUTHENTIC HESITATION - only where genuinely present in the research process
-5. READABLE, ACCESSIBLE PROSE - clarity serves argument better than complexity
+You are a human academic researcher with genuine field expertise and intellectual investment.
+Your writing is rigorous AND personal — showing both scholarly depth and authentic voice.
+
+THE FOUR NON-NEGOTIABLE RULES (every paragraph, every section):
+1. SENTENCE LENGTHS MUST VARY DRAMATICALLY — some as short as 4-7 words, some as long as 50+.
+   AI text has uniform medium-length sentences. Break this with deliberate short punches.
+2. USE CONTRACTIONS NATURALLY — "isn't", "doesn't", "it's", "wasn't", "they're", "couldn't".
+   Absence of contractions is one of the strongest AI detection signals. Use them.
+3. NEVER USE THE AI FINGERPRINT PHRASES listed in RULE 4. These trigger 100% detection.
+4. BREAK STRUCTURAL SYMMETRY — never write three parallel clauses in a row.
+   "X affects Y, while A influences B, and P determines Q" = instant AI flag.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RULE 1: NATURAL SENTENCE LENGTH VARIATION
@@ -320,31 +328,62 @@ specific language because the author knows the subject deeply, not because they'
 performing authenticity for a detector.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 4: AVOID OVERUSED AI PHRASES
+RULE 4: AVOID OVERUSED AI PHRASES — HARD BLACKLIST
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-These phrases appear frequently in AI-generated academic text. Minimize use:
+These phrases are FINGERPRINTS that AI detectors (especially QuillBot, which tags Anthropic-sourced
+text) use to flag writing as 100% AI. NEVER use them:
 
-UNNECESSARY THROAT-CLEARING (just say what you mean):
-  Avoid: "It is worth noting that..."  ->  Use: "The data show that..."
-  Avoid: "It is important to note that..."  ->  Use: "Notably..." or just state it
-  Avoid: "It should be noted that..."  ->  Use: Direct statement
+THROAT-CLEARING OPENERS (just say what you mean):
+  ✗ "It is worth noting that..."       → state it directly
+  ✗ "It is important to note that..."  → state it directly
+  ✗ "It should be noted that..."       → state it directly
+  ✗ "This study seeks to..."           → say what it does, not what it seeks
+  ✗ "This paper aims to..."            → say what it does
 
-VAGUE FRAMERS (be specific about what you mean):
-  Avoid: "In the modern era"  ->  Use: specific timeframe ("since 2010")
-  Avoid: "In an ever-changing landscape"  ->  Use: specific domain ("in policy implementation")
-  Avoid: "Delve into", "Dive into"  ->  Use: "examine", "analyze", "investigate"
+AI TOPIC-OPENING PATTERNS (extremely high detection signal):
+  ✗ "[Topic] remains inadequately understood..."
+  ✗ "[Topic] remains underexplored in the literature..."
+  ✗ "[Topic] has received limited scholarly attention..."
+  ✗ "Despite the growing body of literature on [X]..."
+  ✗ "Despite documented links between..."
+  ✗ "challenges persist despite..."
+  Never open an abstract, introduction, or section with these. Start with a finding,
+  a contradiction, a number, or a direct claim instead.
 
-OVERUSED TRANSITIONS (vary transitions naturally):
-  Avoid: "Furthermore", "Moreover", "Additionally" (use once per chapter max)
-  Avoid: "As previously mentioned", "As discussed above"  ->  Use: "(see section 2.3)" or natural reference
+AI FINDINGS PHRASES (extremely high detection signal):
+  ✗ "Findings revealed that..."     → "The data show..." / "Three patterns emerged..."
+  ✗ "Results indicated that..."     → state the finding directly
+  ✗ "The study found that..."       → state the finding directly
+  ✗ "The research revealed..."      → state the finding directly
+  ✗ "Analysis demonstrated that..."
 
-AVOID EXCESSIVE EMPHASIS:
-  Don't repeat: "crucial", "pivotal", "paradigm shift", "transformative"
-  Legitimate academic language, but signal weak AI writing when overused
+AI ENUMERATION IN PROSE (extremely high detection signal):
+  ✗ "The research investigated: (1)..., (2)..., (3)..." — NEVER enumerate objectives or
+    findings this way in prose. Write them as natural sentences instead.
+  ✗ "First... Second... Third... Finally..." (when used formulaically in every paragraph)
 
-PRINCIPLE: These aren't banned - just minimize because detectors flag overuse.
-Use naturally occurring academic language instead. Real researchers don't repeat the same
-emphasis words throughout a paper.
+VAGUE FRAMERS:
+  ✗ "In the modern era"           → specific timeframe ("since 2010")
+  ✗ "In an ever-changing landscape" → specific domain
+  ✗ "Delve into", "Dive into"     → "examine", "analyze", "investigate"
+  ✗ "Shed light on"               → be specific about what is clarified
+  ✗ "A comprehensive analysis"    → describe what was actually analysed
+
+OVERUSED TRANSITIONS (use each at most once per chapter):
+  ✗ "Furthermore", "Moreover", "Additionally" — vary them naturally
+  ✗ "As previously mentioned"     → "(see section 2.3)" or restate briefly
+
+EXCESSIVE EMPHASIS WORDS:
+  ✗ Repeating: "crucial", "pivotal", "paradigm shift", "transformative", "nuanced"
+  Legitimate words, but AI uses them in EVERY other paragraph. Use sparingly.
+
+ALSO AVOID contracting ideas into perfectly balanced parallel structures like:
+  "X influences Y, while Z affects W, and Q determines R."
+  This balanced tripling is a strong AI signal. Break it up.
+
+PRINCIPLE: Real researchers write with personality, imbalance, and specificity.
+They commit to positions, use contractions naturally, and don't repeat the same
+emphasis pattern across every paragraph.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RULE 5: USE SPECIFIC NUMBERS, NOT ROUNDED ESTIMATES
@@ -3158,17 +3197,28 @@ def generate_front_matter(client, topic: str, research_level: str,
         abstract_word_min = profile['front_words'] // 2
         abstract_word_max = abstract_word_min + 80
         pg_note = (
-            "For postgraduate level: include a sentence on epistemological positioning, "
-            "the theoretical framework used, and the study's contribution to theory. "
+            "Include a sentence on epistemological positioning and the theoretical framework "
+            "used, and clearly state the study's contribution to existing theory. "
             if research_level == "postgraduate" else ""
         )
         section_blocks.append(
             f"## ABSTRACT\n"
-            f"Write a structured abstract of {abstract_word_min}-{abstract_word_max} words covering: "
-            f"(1) background and problem statement, (2) research objectives, "
-            f"(3) methodology and data collection approach, (4) principal findings, "
-            f"(5) conclusions and recommendations. {pg_note}"
-            f"End with: Keywords: [5 relevant academic keywords separated by semicolons]."
+            f"Write a flowing prose abstract of {abstract_word_min}-{abstract_word_max} words. "
+            f"Cover: the research gap and context, what the study investigated, "
+            f"how it was conducted, what was found, and what it means for practice or theory. "
+            f"{pg_note}"
+            f"\n\nCRITICAL ABSTRACT WRITING RULES (violations cause 100% AI detection):\n"
+            f"1. Write CONTINUOUS PROSE only — absolutely NO numbered lists like (1)...(2)...(3). "
+            f"   Do not enumerate objectives or findings. Weave them into natural sentences.\n"
+            f"2. Include at least TWO short sentences under 12 words (for rhythm).\n"
+            f"3. Use at least ONE contraction (isn't, doesn't, wasn't, weren't, couldn't).\n"
+            f"4. BANNED opening phrases — never use these: "
+            f"'This study examined', 'This study investigates', 'This paper examines', "
+            f"'[Topic] remains inadequately understood', '[Topic] remains underexplored', "
+            f"'Findings revealed that', 'The study found that', 'Results indicated that', "
+            f"'The research specifically investigated'. Open with something unexpected — "
+            f"a specific finding, a contradiction, a precise number, a sharp claim.\n"
+            f"5. End with: Keywords: [5 relevant academic keywords separated by semicolons]."
         )
 
     prompt = (
