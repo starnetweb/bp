@@ -385,9 +385,11 @@ DIRECT QUESTION TO THE READER — 1–2 times per chapter:
   "How, then, can a policy framework designed for urban contexts apply meaningfully
    in dispersed rural settings?"
 
-EM DASHES for interruption and emphasis — use freely:
+EM DASHES for interruption and emphasis — use sparingly (2–3 times per chapter maximum):
   "The finding — which surprised even the research team — suggests a more complex
    relationship than the literature had led us to expect."
+Do NOT use em dashes in every paragraph. Overuse dilutes the effect and makes the
+writing look mechanical. Reserve them for genuinely important interruptions only.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RULE 10 — VOICE AND REGISTER
@@ -396,7 +398,7 @@ Prefer active voice. Reserve passive for methods sections only.
 Occasionally use parenthetical asides (no more than twice per section) to add texture.
 Vary between formal and slightly informal academic register — authoritative but not robotic.
 Show occasional mild frustration, surprise, or emphasis — real researchers have opinions:
-  "What is striking — and somewhat troubling — is..."
+  "What is striking, and somewhat troubling, is..."
   "This, frankly, is the weakest part of the existing literature."
   "The answer, it turns out, is more interesting than the question."
 
