@@ -2002,9 +2002,10 @@ def parse_chapter_content(doc, content, fn_mgr=None):
             continue
 
         # ── Table marker [TABLE: description] ────────────────
-        if line.startswith("[TABLE:"):
+        if line.lstrip().startswith("[TABLE:"):
             # Match [TABLE: ...] with optional content after closing bracket
-            match = re.match(r"\[TABLE:\s*(.+?)\](.*)", line)
+            # Use lstrip() so leading whitespace in AI output doesn't break detection
+            match = re.match(r"\[TABLE:\s*(.+?)\](.*)", line.lstrip())
             if match:
                 table_title = match.group(1).strip()
                 table_content = match.group(2).strip()
@@ -2098,8 +2099,8 @@ def parse_chapter_content(doc, content, fn_mgr=None):
             continue
 
         # ── Chart marker [CHART: description] ─────────────────
-        if line.startswith("[CHART:"):
-            match = re.match(r"\[CHART:\s*(.+?)\]", line)
+        if line.lstrip().startswith("[CHART:"):
+            match = re.match(r"\[CHART:\s*(.+?)\]", line.lstrip())
             if match:
                 description = match.group(1).strip()
                 chart_path = _create_sample_chart(description)
@@ -2145,6 +2146,9 @@ def parse_chapter_content(doc, content, fn_mgr=None):
 
         elif line.startswith("### "):
             text = line[4:].strip()
+            # Each Appendix sub-section (Appendix A, B, C …) starts on a fresh page
+            if re.match(r'^appendix\b', text, re.IGNORECASE):
+                add_page_break(doc)
             p    = doc.add_heading(text, level=3)
             _style_section_heading(p, 3)
             i += 1
@@ -2167,13 +2171,13 @@ def parse_chapter_content(doc, content, fn_mgr=None):
 
         else:
             # ── Check for inline table (line with many | separators) ──
-            if line.count("|") >= 4:
-                # This looks like a table embedded in a line
+            if line.count("|") >= 3:
+                # This looks like a table embedded in a line (3 pipes = 4 columns minimum)
                 # Try to parse it as a table
                 cells = [cell.strip() for cell in line.split("|")]
                 cells = [c for c in cells if c]  # remove empty cells
 
-                if len(cells) >= 4:
+                if len(cells) >= 3:
                     # Collect all consecutive table-like lines
                     table_lines = []
                     table_lines.append(line)
@@ -2182,7 +2186,7 @@ def parse_chapter_content(doc, content, fn_mgr=None):
                     # Collect more table rows
                     while i < len(lines):
                         next_line = lines[i].rstrip()
-                        if not next_line.strip() or next_line.count("|") < 4:
+                        if not next_line.strip() or next_line.count("|") < 3:
                             break
                         table_lines.append(next_line)
                         i += 1
@@ -2229,7 +2233,7 @@ def parse_chapter_content(doc, content, fn_mgr=None):
                         or re.match(r"^[\-\*] ", l)
                         or re.match(r"^\d+\. ", l)
                         or l.lstrip().startswith("|")
-                        or l.count("|") >= 4):  # Skip inline tables
+                        or l.count("|") >= 3):  # Skip inline tables (3 pipes = 4-column table)
                     break
                 para_lines.append(l)
                 i += 1
