@@ -966,12 +966,25 @@ def _run_agent(job_id: str, topic: str, research_level: str,
             log("")
 
         # ── Extract ## REFERENCES from chapter 5 (Issue 3) ──────────────
+        # Only slice the references block — stop at ## APPENDICES so the
+        # appendix content stays in chapters[5] and goes through
+        # parse_chapter_content (which adds page breaks, renders tables, etc.)
         references_text = ""
         if 5 in chapters:
             ref_match = re.search(r'\n## REFERENCES', chapters[5], re.IGNORECASE)
             if ref_match:
-                references_text = chapters[5][ref_match.start():]
-                chapters[5]     = chapters[5][:ref_match.start()]
+                tail = chapters[5][ref_match.start():]
+                # Look for ## APPENDICES / ## APPENDIX inside that tail
+                app_match = re.search(r'\n## APPENDIC', tail, re.IGNORECASE)
+                if app_match:
+                    # References = from ## REFERENCES up to (not including) ## APPENDICES
+                    references_text = tail[:app_match.start()]
+                    # Leave ## APPENDICES onwards inside chapters[5] for parse_chapter_content
+                    chapters[5] = chapters[5][:ref_match.start()] + tail[app_match.start():]
+                else:
+                    # No appendices block found — take everything after ## REFERENCES
+                    references_text = tail
+                    chapters[5]     = chapters[5][:ref_match.start()]
 
         # Build document
         log("► Assembling Word document...", "accent")
