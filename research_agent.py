@@ -3328,8 +3328,15 @@ def generate_chapter(client, topic: str, chapter_num: int,
         )
 
     print(f"  [Ch {chapter_num}] {CHAPTER_SUBTITLES[chapter_num]}...", end=" ", flush=True)
-    # Allow token budget based on target word count with 800 token minimum buffer
-    text = _stream_content(client, system, prompt, model, max(5000, int(target * 2)), research_level, use_thinking_override=use_thinking)
+    # Chapter 5 includes References + Appendix A/B/C on top of the body word target,
+    # so it needs a much larger token budget than target * 2 would give.
+    # Postgraduate Appendix A alone is a 14-question interview guide (~1500 words).
+    if chapter_num == 5:
+        ch5_floor = 9000 if research_level == "postgraduate" else 7000
+        token_budget = max(ch5_floor, int(target * 2))
+    else:
+        token_budget = max(5000, int(target * 2))
+    text = _stream_content(client, system, prompt, model, token_budget, research_level, use_thinking_override=use_thinking)
     print(f"done ({len(text):,} chars)")
     return text
 
