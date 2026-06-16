@@ -1556,6 +1556,11 @@ class FootnoteManager:
             fn.set(f'{{{W}}}id', str(fn_id))
             p = etree.SubElement(fn, f'{{{W}}}p')
 
+            # Apply FootnoteText paragraph style so text renders at 10pt page-bottom
+            pPr = etree.SubElement(p, f'{{{W}}}pPr')
+            pStyle = etree.SubElement(pPr, f'{{{W}}}pStyle')
+            pStyle.set(f'{{{W}}}val', 'FootnoteText')
+
             r_num = etree.SubElement(p, f'{{{W}}}r')
             rPr   = etree.SubElement(r_num, f'{{{W}}}rPr')
             rs    = etree.SubElement(rPr, f'{{{W}}}rStyle')
@@ -1569,6 +1574,32 @@ class FootnoteManager:
 
         footnotes_xml = etree.tostring(
             root, xml_declaration=True, encoding='UTF-8', standalone=True
+        )
+
+        # ── Footnote styles to inject into word/styles.xml ──
+        FOOTNOTE_STYLES = (
+            b'<w:style w:type="character" w:styleId="FootnoteReference"'
+            b' xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+            b'<w:name w:val="footnote reference"/>'
+            b'<w:basedOn w:val="DefaultParagraphFont"/>'
+            b'<w:uiPriority w:val="99"/><w:semiHidden/><w:unhideWhenUsed/>'
+            b'<w:rPr><w:vertAlign w:val="superscript"/></w:rPr>'
+            b'</w:style>'
+            b'<w:style w:type="paragraph" w:styleId="FootnoteText"'
+            b' xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+            b'<w:name w:val="footnote text"/>'
+            b'<w:basedOn w:val="Normal"/><w:link w:val="FootnoteTextChar"/>'
+            b'<w:uiPriority w:val="99"/><w:semiHidden/><w:unhideWhenUsed/>'
+            b'<w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr>'
+            b'<w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>'
+            b'</w:style>'
+            b'<w:style w:type="character" w:styleId="FootnoteTextChar"'
+            b' xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">'
+            b'<w:name w:val="Footnote Text Char"/>'
+            b'<w:basedOn w:val="DefaultParagraphFont"/><w:link w:val="FootnoteText"/>'
+            b'<w:uiPriority w:val="99"/><w:semiHidden/><w:unhideWhenUsed/>'
+            b'<w:rPr><w:sz w:val="20"/><w:szCs w:val="20"/></w:rPr>'
+            b'</w:style>'
         )
 
         # ── Rewrite the .docx zip ────────────────────────
@@ -1599,6 +1630,12 @@ class FootnoteManager:
                     elif item.filename == 'word/footnotes.xml':
                         has_footnotes_xml = True
                         data = footnotes_xml   # replace existing
+
+                    elif item.filename == 'word/styles.xml':
+                        # Inject footnote styles if not already present
+                        if b'FootnoteReference' not in data:
+                            data = data.replace(b'</w:styles>',
+                                                FOOTNOTE_STYLES + b'</w:styles>')
 
                     zout.writestr(item, data)
 
