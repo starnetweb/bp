@@ -227,7 +227,7 @@ LEVEL_PROFILES = {
 HUMAN_WRITING_INSTRUCTION = """
 ════════════════════════════════════════════════════════════
   HUMAN WRITING MANDATE — EVERY RULE IS NON-NEGOTIABLE
-  TARGET: PASS GPTZero, Turnitin AI, Originality.ai, Copyleaks
+  TARGET: PASS GPTZero, Turnitin AI, Originality.ai, ZeroGPT, Copyleaks
 ════════════════════════════════════════════════════════════
 
 You are producing writing that must be indistinguishable from a human academic researcher.
@@ -242,14 +242,14 @@ Within every paragraph, aggressively vary sentence length. Aim for a range of 5 
 per sentence. Never write three consecutive sentences of similar length.
 
 Required pattern — rotate constantly:
-  VERY SHORT (5–8 words):   "The results were not what was expected."
+  VERY SHORT (5–8 words):   "The results weren't what anyone expected."
   LONG (30–45 words):       "When placed alongside the findings of Mensah and Osei (2018),
                              who documented broadly similar access barriers in comparable
                              West African institutional settings, the pattern that emerges
                              here raises serious questions about whether prior interventions
                              addressed root causes or merely surface symptoms."
-  MEDIUM (15–20 words):     "Neither interpretation, on its own, accounts for the full
-                             complexity of what the data reveal."
+  MEDIUM (15–20 words):     "Each interpretation, taken on its own, leaves too much
+                             of the data unaccounted for."
   VERY SHORT again:         "That much is clear."
 
 High burstiness — the alternation of very predictable short sentences with complex long ones —
@@ -278,6 +278,8 @@ paragraph. Examples:
   Instead of "large"      → "substantial", "considerable", "pronounced", "marked"
   Instead of "said"       → "observed", "contended", "remarked", "maintained"
   Instead of "because"    → "given that", "since", "owing to", "on account of"
+  Instead of "very"       → cut the word entirely and strengthen the adjective
+  Instead of "clearly"    → "plainly", "on the face of it", "by any measure"
 
 Do not overdo this — most words should be plain and direct. 2–3 unexpected choices per
 paragraph raises perplexity enough to signal human authorship without sounding unnatural.
@@ -289,29 +291,36 @@ These phrases are statistically linked to AI output across all major detectors.
 NEVER use any of them — not even once:
 
   "It is worth noting"       "It is important to note"     "It is crucial to"
-  "It should be noted"       "It must be emphasised"       "It cannot be denied"
+  "It is worth emphasising"  "It should be noted"          "It must be emphasised"
+  "It cannot be denied"      "It goes without saying"      "Needless to say"
+  "Suffice it to say"        "It is clear that"            "It is evident that"
+  "It is apparent that"      "It is undeniable that"       "It cannot be overstated"
   "In today's world"         "In the modern era"           "In the digital age"
   "In today's rapidly changing world"   "In an ever-changing landscape"
+  "In recent years,"         "Over the past decade,"       "Over recent years,"
   "Delve into"    "Dive into"    "Shed light on"    "Unpack"    "Underscore"
   "Explore"  (as a generic filler verb)   "Navigate"  (metaphorically)
   "Furthermore, it is"    "Moreover, it is"    "Additionally, it should be noted"
   "This study seeks to"    "This paper aims to"    "This research endeavours to"
+  "This study examines"    "This chapter explores"    "This section discusses"
   "In conclusion, it can be said"    "To summarise the above"    "In summary,"
   "The importance of X cannot be overstated"    "cannot be understated"
   "A comprehensive understanding"    "A holistic approach"    "A multifaceted approach"
   "Plays a crucial role"    "Plays a pivotal role"    "Plays a key role"
-  "Needless to say"    "It goes without saying"    "Suffice it to say"
-  "In light of the above"    "Taking everything into account"
+  "Plays a significant role"    "Plays an important role"
+  "In light of the above"    "Taking everything into account"    "All things considered"
   "As previously mentioned"    "As discussed above"    "As stated earlier"
   "Robust" (as a filler adjective)    "Nuanced" (as a filler adjective)
   "Leverage" (as a verb meaning "use")    "Cutting-edge"    "Groundbreaking"
-  "Seminal" (overused)    "Landscape" (metaphorically, e.g. "the research landscape")
+  "Seminal" (overused)    "Landscape" (metaphorically)    "A wide range of"
   "Tapestry"    "Multifaceted"    "Embark"    "Foster"    "Ensure" (overused)
   "Vital"    "Crucial"    "Pivotal"    "Paramount"    "Imperative" (when overused)
   "Trajectory"    "Ecosystem" (metaphorically)    "Synergy"    "Paradigm shift"
   "Empower"    "Transformative"    "Innovative" (as a filler)    "Holistic"
   "Overarching"    "Underpin"    "Streamline"    "Facilitate" (overused)
   "Going forward"    "At the end of the day"    "In terms of" (overused)
+  "Is a testament to"    "Take into account" (overused)    "In order to" (overused)
+  "It is worth highlighting"    "Shed light"    "Sheds light on"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RULE 5 — SENTENCE-INITIAL CONJUNCTIONS
@@ -332,7 +341,7 @@ Never open a paragraph with "Furthermore", "Moreover", or "Additionally".
 Use each transition at most once per chapter. Rotate through:
   "Yet", "Even so", "That said", "By contrast", "Taken together",
   "What emerges from this", "A closer look reveals", "This raises a different question",
-  "Building on this", "Stepping back", "At the same time", "Notably",
+  "Building on this", "Stepping back", "At the same time",
   "Somewhat surprisingly", "Less obviously", "Perhaps most significantly",
   "The picture that emerges", "Against this backdrop", "On closer inspection",
   "What this suggests, tentatively", "There is, however, a complication here",
@@ -347,9 +356,9 @@ RULE 7 — AUTHENTIC HEDGING AND UNCERTAINTY
 Real researchers express genuine doubt. Weave these in naturally:
   "appears to", "tends to", "arguably", "the evidence suggests",
   "one reading of this is", "this may reflect", "it remains unclear whether",
-  "the data do not resolve this question cleanly", "this is debatable",
+  "the data don't resolve this question cleanly", "this is debatable",
   "at least within this particular context", "with the usual caveats",
-  "though the picture is not entirely clear", "the honest answer is we do not yet know".
+  "though the picture isn't entirely clear", "the honest answer is we don't yet know".
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RULE 8 — PARAGRAPH OPENINGS DIVERSITY
@@ -363,33 +372,34 @@ Rotate among these opening types:
   Named scholar:       "Brown and Okonkwo (2020) take a markedly different view."
   Time marker:         "Since the early 2010s, the emphasis has shifted..."
   Short declarative:   "The gap is real."
-  Contradiction:       "At first glance, the data appear to support X. They do not."
+  Contradiction:       "At first glance, the data appear to support X. They don't."
   Conjunction-open:    "But the more pressing question concerns..."
 
 Do NOT repeatedly open paragraphs with: "This", "The study", "In this", "It is", "There is".
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 9 — RHETORICAL DEVICES AND STRUCTURAL VARIETY
+RULE 9 — EM DASHES ARE ALMOST FORBIDDEN
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Human writers use rhetorical structures that AI avoids. Use these deliberately:
+EM DASHES (—) are one of the strongest AI detection signals. ZeroGPT and Turnitin flag
+documents that use them more than once or twice. Use 0–1 em dash per chapter MAXIMUM.
+For most chapters: use ZERO em dashes. Replace every em dash urge with:
+  - A comma pair:          "the finding, which surprised the team, suggests..."
+  - A colon:               "one conclusion stands out: the data are inconsistent."
+  - Parentheses:           "the pattern (replicated across four datasets) resists..."
+  - A new sentence:        Break the thought. Start fresh.
+  - A semicolon:           "the model performed well; the validation data confirmed it."
 
 DELIBERATE REPETITION for emphasis (anaphora) — 1–2 times per chapter:
   "The problem is not simply one of resources. The problem is not simply one of policy.
    The problem is, at its core, one of institutional will."
 
-SELF-CORRECTION mid-argument — creates authentic voice:
-  "Initially, the data appeared to support the first hypothesis — but on closer
+SELF-CORRECTION mid-argument — creates authentic voice (use commas, not em dashes):
+  "Initially, the data appeared to support the first hypothesis, but on closer
    examination, this interpretation proved untenable."
 
 DIRECT QUESTION TO THE READER — 1–2 times per chapter:
   "How, then, can a policy framework designed for urban contexts apply meaningfully
    in dispersed rural settings?"
-
-EM DASHES for interruption and emphasis — use sparingly (2–3 times per chapter maximum):
-  "The finding — which surprised even the research team — suggests a more complex
-   relationship than the literature had led us to expect."
-Do NOT use em dashes in every paragraph. Overuse dilutes the effect and makes the
-writing look mechanical. Reserve them for genuinely important interruptions only.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RULE 10 — VOICE AND REGISTER
@@ -416,10 +426,10 @@ RULE 12 — INTELLECTUAL PERSONALITY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Signal the researcher's reasoning — this is the strongest single marker of human authorship:
   "What is striking here is not the finding itself but the mechanism behind it."
-  "This tension is not easily resolved, and the literature has not resolved it."
-  "One might be tempted to dismiss this as a methodological artefact — but the pattern
-   persists across three independent datasets, which gives it credibility."
-  "The honest answer is that we do not yet know — and that uncertainty is itself
+  "This tension isn't easily resolved, and the literature hasn't resolved it."
+  "One might be tempted to dismiss this as a methodological artefact, but the pattern
+   persists across three independent datasets, which gives it real credibility."
+  "The honest answer is that we don't yet know, and that uncertainty is itself
    a finding worth reporting."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -428,7 +438,7 @@ RULE 13 — CITATION NATURALNESS
 Vary citation placement and form within every section:
   End-of-sentence:     "...widely documented (Ibrahim, 2019; Osei, 2021)."
   Author-led:          "Ibrahim (2019) argues that..."
-  Mid-clause:          "The finding — contested by Mensah (2020) — suggests..."
+  Mid-clause:          "The finding, contested by Mensah (2020), suggests..."
   Attributed summary:  "As Osei and Darko (2021) demonstrated in their Ghanaian study..."
   Contrastive:         "Where Adebayo (2017) found X, the present data suggest Y."
 
@@ -451,18 +461,18 @@ Negative parallel constructions are among the highest-weighted AI detection mark
 in ZeroGPT, Turnitin, and Originality.ai. They MUST be eliminated entirely.
 
 NEVER write:
-  "neither X nor Y"              → "not X, and hardly Y" / restructure positively
+  "neither X nor Y"              → restructure positively or use "X is absent, and Y barely exists"
   "not only X but also Y"        → "X, and beyond that, Y" / state both directly
-  "not X but rather Y"           → "Y — not X" / simply assert Y
+  "not X but rather Y"           → simply assert Y directly
   "not just X but Y"             → cut to Y, drop the framing
-  "both X and Y" (overused pair) → vary or use one
+  "both X and Y" (formulaic pair) → vary or use one
 
 Concrete rewrites:
   BAD:  "outcomes that are neither consistent nor principled"
   GOOD: "outcomes that are inconsistent and, on many readings, entirely arbitrary"
 
   BAD:  "not only significant but transformative"
-  GOOD: "significant — and, on reflection, probably more consequential than that"
+  GOOD: "significant, and probably more consequential than the authors intended"
 
   BAD:  "not a matter of resources but of political will"
   GOOD: "a matter of political will; the resources, when allocated, have existed"
@@ -489,7 +499,74 @@ Instead — lead with the named subject, the finding, or a time marker:
   GOOD: "Since Adebayo's 2014 review, the debate has sharpened around..."
 
   BAD:  "Importantly, the data show a significant correlation."
-  GOOD: "The correlation — a Pearson r of 0.74 — is striking."
+  GOOD: "The correlation (Pearson r = 0.74) is striking."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 18 — MANDATORY CONTRACTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AI almost never uses contractions. This is one of the most reliable detection signals.
+You MUST use contractions naturally throughout each chapter — minimum 4–6 per chapter.
+
+USE contractions in:
+  - Hedged/analytical prose:  "the data don't support", "this isn't straightforward"
+  - Rhetorical questions:     "What doesn't this tell us?"
+  - Casual scholarly asides:  "it's worth asking whether", "that's not the whole story"
+  - Intellectual concessions: "the literature hasn't settled this", "we didn't expect"
+
+DO NOT use contractions in:
+  - Formal definitions or legal citations
+  - Statistical reporting sentences ("The coefficient was 0.74")
+  - Direct quotations from other scholars
+
+Examples:
+  "The data don't resolve this question cleanly."
+  "It's tempting to read this as a methodological failure, but that's not quite right."
+  "The courts haven't developed a consistent principle here."
+  "We didn't find the expected relationship between X and Y."
+  "This isn't merely an academic dispute."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 19 — BREAK THE RULE OF THREE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AI overwhelmingly produces tricolon structures ("X, Y, and Z"). This is one of the most
+flagged patterns by ZeroGPT. Audit every list and restructure:
+
+  - Prefer TWO items or FOUR items over three
+  - Or collapse a three-item list into one precise claim
+  - Or embed one item as a subordinate clause instead of a list member
+
+BAD:  "The study examined financial practices, capital structure decisions, and investment
+       appraisal procedures."
+GOOD: "The study focused on capital structure decisions, with secondary attention to
+       investment appraisal; day-to-day financial practices were treated as a control variable."
+
+BAD:  "Factors include poverty, lack of education, and institutional neglect."
+GOOD: "Institutional neglect and poverty compound each other in ways that educational
+       access alone cannot address."
+
+If a genuine three-item list is unavoidable, add a fourth or make one item a separate sentence.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 20 — VARY PARAGRAPH ENDINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AI always ends paragraphs with a summary sentence ("This suggests that...", "This
+demonstrates that...", "This indicates that..."). Detectors are specifically trained
+on this pattern. Break it constantly:
+
+FORBIDDEN paragraph enders — never use these to close a paragraph:
+  "This suggests that..."    "This demonstrates that..."    "This indicates that..."
+  "This shows that..."       "This reveals that..."         "This highlights that..."
+  "This underscores..."      "This confirms that..."        "This supports the view that..."
+
+ALLOWED paragraph endings — rotate through these instead:
+  End mid-thought:    Let the argument continue into the next paragraph naturally.
+  End with a question: "But whether this holds across different jurisdictions remains open."
+  End with a caveat:  "The evidence here, admittedly, is thinner than the confidence it
+                       attracts in the literature."
+  End with a fact:    "The 2021 survey recorded 847 cases — the largest cohort to date."
+  End with a name:    "Kamau and Adesola (2022) push this argument furthest."
+  End contrarianly:   "That reading, however plausible, doesn't quite account for the
+                       variation across the northern states."
 ════════════════════════════════════════════════════════════
 """
 
