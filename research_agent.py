@@ -589,6 +589,61 @@ ALLOWED paragraph endings — rotate through these instead:
 
 
 # ─────────────────────────────────────────────────────────
+#  CUSTOM TOC PARSER  (module-level so generate_chapter can use it)
+# ─────────────────────────────────────────────────────────
+_CHAPTER_WORD_FORMS = {
+    1: ["ONE", "1"], 2: ["TWO", "2"], 3: ["THREE", "3"],
+    4: ["FOUR", "4"], 5: ["FIVE", "5"],
+}
+
+def _parse_chapter_sections(custom_toc: str, chapter_num: int) -> list:
+    """
+    Return the list of subsection titles for chapter_num found in custom_toc.
+    Handles 'CHAPTER ONE: TITLE' (title inline) and 'CHAPTER ONE / TITLE' (title on next line).
+    Returns [] when custom_toc is absent or the chapter is not found.
+    """
+    if not custom_toc or not custom_toc.strip():
+        return []
+
+    forms = _CHAPTER_WORD_FORMS.get(chapter_num, [str(chapter_num)])
+
+    def _is_this_chapter(s: str) -> bool:
+        return any(
+            re.match(rf'^CHAPTER\s+{form}\b', s, re.IGNORECASE)
+            for form in forms
+        )
+
+    def _is_any_chapter(s: str) -> bool:
+        return bool(re.match(
+            r'^CHAPTER\s+(?:\d+|ONE|TWO|THREE|FOUR|FIVE)\b', s, re.IGNORECASE
+        ))
+
+    sections: list = []
+    in_chapter = False
+    title_consumed = False
+
+    for raw in custom_toc.split('\n'):
+        line = raw.strip()
+        if not line:
+            continue
+        if _is_this_chapter(line):
+            in_chapter = True
+            title_consumed = False
+            continue
+        if in_chapter and _is_any_chapter(line):
+            break
+        if in_chapter:
+            has_num = bool(re.match(r'^\d+[\.:]\d', line))
+            if not title_consumed and not has_num:
+                title_consumed = True   # skip chapter title line
+                continue
+            title_consumed = True
+            sections.append(line)
+
+    return sections
+
+
+# ─────────────────────────────────────────────────────────
 #  CHAPTER PROMPT TEMPLATES
 # ─────────────────────────────────────────────────────────
 def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bool = False, use_footnotes: bool = False) -> dict:
@@ -3422,6 +3477,35 @@ def generate_chapter(client, topic: str, chapter_num: int,
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
         "NOW BEGIN WRITING. Every violation of the above is a detection failure.\n"
     )
+
+    # ── Final structural override ─────────────────────────────────────────────
+    # Appended AFTER all default section instructions AND the writing mandate so
+    # this is the last thing the model reads — recency bias makes it decisive.
+    # It explicitly cancels the default section headings that appeared earlier.
+    if custom_toc and custom_toc.strip():
+        _custom_sections = _parse_chapter_sections(custom_toc, chapter_num)
+        if _custom_sections:
+            _per_sec = max(200, target // len(_custom_sections))
+            _sec_list = "\n".join(
+                f"  {i+1}. {sec}" for i, sec in enumerate(_custom_sections)
+            )
+            prompt += (
+                "\n\n"
+                "╔══════════════════════════════════════════════════════════════════════╗\n"
+                "║  *** FINAL STRUCTURAL OVERRIDE — THIS CANCELS ALL DEFAULT SECTIONS ***║\n"
+                "╚══════════════════════════════════════════════════════════════════════╝\n\n"
+                "A CUSTOM TABLE OF CONTENTS was provided by the researcher for this chapter.\n"
+                "Every default section heading shown earlier in this prompt (e.g. Background\n"
+                "of the Study, Statement of the Problem, Research Design, Results, etc.) is a\n"
+                "TEMPLATE PLACEHOLDER that has now been CANCELLED. Do NOT use those headings.\n\n"
+                "YOUR REQUIRED SECTIONS — USE ONLY THESE, IN THIS EXACT ORDER:\n\n"
+                f"{_sec_list}\n\n"
+                f"Target approximately {_per_sec} words per section.\n"
+                "Write each section as a ### heading followed by full substantive prose.\n"
+                "Do NOT add sections not listed above. Do NOT rename any section.\n"
+                "Do NOT reorder any section. Any other structure is a document failure.\n"
+            )
+    # ─────────────────────────────────────────────────────────────────────────
 
     system = (
         f"You are a highly experienced human academic researcher writing at {profile['label']} level. "
