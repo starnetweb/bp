@@ -950,8 +950,6 @@ Do not stop writing until you have fully developed every subsection. If in doubt
 
 {_NO_REF}
 {tone}
-
-{HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
 {_NO_AST}
 {_VIZ_NOTE}
@@ -1068,8 +1066,6 @@ The literature review is the longest and most intellectually demanding chapter. 
 
 {_NO_REF}
 {tone}
-
-{HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
 {_NO_AST}
 {_VIZ_NOTE}
@@ -1146,8 +1142,6 @@ The methodology chapter must be precise, justified, and replicable. Write with r
 
 {_NO_REF}
 {tone}
-
-{HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
 {_NO_AST}
 
@@ -1272,8 +1266,6 @@ Present rich, specific, interpreted findings. This chapter must demonstrate anal
 
 {_NO_REF}
 {tone}
-
-{HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
 {_NO_AST}
 
@@ -1377,8 +1369,6 @@ This chapter must deliver a satisfying intellectual conclusion - not a mechanica
 {_PG_PREAMBLE if is_pg else ""}
 
 {tone}
-
-{HUMAN_WRITING_INSTRUCTION}
 {_FN_NOTE}
 {_NO_AST}
 {_VIZ_NOTE}
@@ -3308,6 +3298,28 @@ def generate_chapter(client, topic: str, chapter_num: int,
     prompt   = prompts[chapter_num].format(topic=topic)
     profile  = LEVEL_PROFILES[research_level]
     target   = profile["word_targets"][chapter_num]
+
+    # Append the writing mandate LAST in the user prompt — models attend most to
+    # the end of the input, so this placement overrides structural-instruction drift.
+    prompt += (
+        "\n\n" + HUMAN_WRITING_INSTRUCTION +
+        "\n\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "⚠️  BEFORE YOU WRITE — COMMIT TO ALL OF THESE NOW:\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "✓ Use contractions naturally: don't, isn't, can't, we've, it's, they're (min 4–6 total)\n"
+        "✓ NEVER end a paragraph with 'This suggests...', 'This demonstrates...', 'This indicates...',\n"
+        "  'This shows...', 'This highlights...', 'This underscores...', 'This confirms...'\n"
+        "✓ Use ZERO em dashes (—). Replace with commas, colons, semicolons, or a new sentence.\n"
+        "✓ Break ALL tricolons: no 'X, Y, and Z' three-item lists. Use 2 or 4+ items instead.\n"
+        "✓ Start NO sentence with 'This study', 'This paper', 'This chapter', 'In recent years',\n"
+        "  'Importantly,', 'Significantly,', 'Notably,', 'Furthermore,', 'Moreover,'\n"
+        "✓ Vary paragraph endings: end some mid-thought, some with a question, some with a caveat,\n"
+        "  some with a named scholar, some with a contrarian note — never always with a summary.\n"
+        "✓ Alternate short sentences (5–8 words) with long ones (30–45 words) — AGGRESSIVELY.\n"
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+        "NOW BEGIN WRITING. Every violation of the above is a detection failure.\n"
+    )
 
     system = (
         f"You are a highly experienced human academic researcher writing at {profile['label']} level. "
