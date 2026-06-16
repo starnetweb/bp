@@ -1008,7 +1008,8 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         research_agent.build_toc_page(doc, research_level,
                                       chapters_list=chapters_list,
                                       custom_toc=custom_toc,
-                                      front_matter_sections=fm_include)  # pass [] not None
+                                      front_matter_sections=fm_include,
+                                      nalt_compliance=nalt_compliance)
         research_agent.build_abbreviations_page(doc)
 
         # One FootnoteManager per document — shared across all chapters

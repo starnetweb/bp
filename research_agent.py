@@ -2568,7 +2568,7 @@ def extract_chapter_titles_from_custom_toc(custom_toc: str) -> dict:
 
 
 def build_toc_page(doc, research_level, chapters_list=None, custom_toc=None,
-                   front_matter_sections=None):
+                   front_matter_sections=None, nalt_compliance=False):
     """
     Render the Table of Contents page.
 
@@ -2623,8 +2623,13 @@ def build_toc_page(doc, research_level, chapters_list=None, custom_toc=None,
     if "declaration"      in fm_include: entries.append(("Declaration",      True))
     if "dedication"       in fm_include: entries.append(("Dedication",        True))
     if "acknowledgements" in fm_include: entries.append(("Acknowledgements",  True))
+    entries += [("Table of Contents", True)]
+    if nalt_compliance:
+        entries += [
+            ("List of Cases",      True),
+            ("List of Statutes",   True),
+        ]
     entries += [
-        ("Table of Contents",      True),
         ("List of Tables",         True),
         ("List of Abbreviations",  True),
         ("", False),
@@ -3222,6 +3227,47 @@ def generate_front_matter(client, topic: str, research_level: str,
             "be specific about what each person contributed."
         )
 
+    # NALT-only mandatory sections: List of Cases and List of Statutes
+    if nalt_compliance:
+        section_blocks.append(
+            "## LIST OF CASES\n"
+            "Generate a comprehensive List of Cases for this legal research project. "
+            "List all Nigerian cases (and any relevant comparative cases) that are cited "
+            "or are material to the research topic. Format each entry as:\n"
+            "  Case Name [Year] Law Report Citation (Court)\n"
+            "Example:\n"
+            "  Abacha v FRN [2006] 6 NWLR (Pt 975) 100 (Supreme Court)\n"
+            "  Gani Fawehinmi v Abacha [1996] 9 NWLR (Pt 475) 710 (Court of Appeal)\n"
+            "Requirements:\n"
+            "• Arrange strictly alphabetically by the first word of the case name\n"
+            "• Minimum 15 cases — more for a thorough project\n"
+            "• Nigerian Supreme Court and Court of Appeal cases take priority\n"
+            "• Include High Court cases where directly relevant\n"
+            "• For unreported cases: Suit No. [number] ([court], [date])\n"
+            "• Do NOT number the entries — run them as a plain alphabetical list\n"
+            "• Include only cases genuinely relevant to: " + topic
+        )
+        section_blocks.append(
+            "## LIST OF STATUTES\n"
+            "Generate a comprehensive List of Statutes for this legal research project. "
+            "List all Nigerian statutes, constitutional provisions, legislative instruments, "
+            "regulations, and decrees that are cited or material to the research topic. "
+            "Format each entry as:\n"
+            "  Statute Name, Cap [Letter/Number], Laws of the Federation of Nigeria [Year]\n"
+            "For constitutional provisions:\n"
+            "  Constitution of the Federal Republic of Nigeria 1999 (as amended)\n"
+            "For state laws:\n"
+            "  [State] [Name] Law, [Year]\n"
+            "Requirements:\n"
+            "• List the Constitution of Nigeria first (if relevant), then federal statutes "
+            "  alphabetically, then state laws alphabetically\n"
+            "• Minimum 8 statutes — more where the topic is legislation-heavy\n"
+            "• Include the specific sections cited where possible (e.g., 'section 35')\n"
+            "• Include relevant international conventions Nigeria has ratified where applicable\n"
+            "• Do NOT number the entries — run them as a plain list\n"
+            "• Include only statutes genuinely relevant to: " + topic
+        )
+
     if "abstract" in include:
         abstract_word_min = profile['front_words'] // 2
         abstract_word_max = abstract_word_min + 80
@@ -3267,7 +3313,9 @@ def generate_front_matter(client, topic: str, research_level: str,
         )
 
     print("  [Front Matter] generating...", end=" ", flush=True)
-    text = _stream_content(client, system, prompt, model, 500, research_level, use_thinking_override=use_thinking)
+    # NALT needs more tokens: List of Cases + List of Statutes add ~2 extra pages
+    fm_budget = 3000 if nalt_compliance else 500
+    text = _stream_content(client, system, prompt, model, fm_budget, research_level, use_thinking_override=use_thinking)
     print(f"done ({len(text):,} chars)")
 
     # Filter out unrequested sections from the generated text
