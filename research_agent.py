@@ -321,6 +321,13 @@ NEVER use any of them — not even once:
   "Going forward"    "At the end of the day"    "In terms of" (overused)
   "Is a testament to"    "Take into account" (overused)    "In order to" (overused)
   "It is worth highlighting"    "Shed light"    "Sheds light on"
+  "Utilize" / "Utilizing" (always use "use" instead — one of the top AI signals)
+  "Elucidate"    "Illuminate" (as a metaphor)    "Unveil"    "Hence"
+  "Intricate" (as filler)    "Remarkable" (as filler)    "Exciting" (as filler)
+  "Stark" (as filler)    "Powerful" (as filler adjective)
+  "Ever-evolving"    "It remains to be seen"    "Glimpse into"
+  "In a world where"    "Revolutionize"    "Disruptive" (as filler)
+  "Enhance" (overused)    "Underscore" (as a verb)    "Showcase"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RULE 5 — SENTENCE-INITIAL CONJUNCTIONS
@@ -402,7 +409,7 @@ DIRECT QUESTION TO THE READER — 1–2 times per chapter:
    in dispersed rural settings?"
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-RULE 10 — VOICE AND REGISTER
+RULE 10 — VOICE, REGISTER, AND ADJECTIVE DISCIPLINE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Prefer active voice. Reserve passive for methods sections only.
 Occasionally use parenthetical asides (no more than twice per section) to add texture.
@@ -411,6 +418,16 @@ Show occasional mild frustration, surprise, or emphasis — real researchers hav
   "What is striking, and somewhat troubling, is..."
   "This, frankly, is the weakest part of the existing literature."
   "The answer, it turns out, is more interesting than the question."
+
+CUT FILLER ADJECTIVES AND ADVERBS — AI loads sentences with intensifiers that add no
+information. Before every adjective or adverb, ask: does this word add specific meaning?
+If not, delete it. Never write:
+  "highly significant" → "significant" (or give the actual figure)
+  "deeply complex" → "complex" (or explain what makes it complex)
+  "fundamentally important" → "important" (or say why)
+  "truly remarkable" → cut "truly" entirely
+  "extremely challenging" → "challenging" (or describe the challenge specifically)
+  "very" before any adjective → delete "very" and strengthen the adjective instead
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RULE 11 — SPECIFICITY OVER GENERALITY
@@ -3317,6 +3334,10 @@ def generate_chapter(client, topic: str, chapter_num: int,
         "✓ Vary paragraph endings: end some mid-thought, some with a question, some with a caveat,\n"
         "  some with a named scholar, some with a contrarian note — never always with a summary.\n"
         "✓ Alternate short sentences (5–8 words) with long ones (30–45 words) — AGGRESSIVELY.\n"
+        "✓ NEVER write 'utilize' — always write 'use'. NEVER write 'elucidate', 'illuminate',\n"
+        "  'unveil', 'hence', 'intricate', 'remarkable', 'stark', 'exciting', 'ever-evolving'.\n"
+        "✓ Cut filler adjectives: delete 'very', 'highly', 'deeply', 'truly', 'extremely'\n"
+        "  before any adjective — strengthen the adjective itself or drop it entirely.\n"
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
         "NOW BEGIN WRITING. Every violation of the above is a detection failure.\n"
     )
