@@ -743,6 +743,34 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
         "as flowing sentences. Never place a * character anywhere in the text.\n"
     )
 
+    # NALT case/statute citation mandate — injected into every chapter when NALT is on
+    _NALT_CITE_NOTE = "" if not nalt_compliance else (
+        "\n\n╔══════════════════════════════════════════════════════════════════╗\n"
+        "║  NALT MANDATORY: CITE CASES AND STATUTES THROUGHOUT THIS CHAPTER ║\n"
+        "╚══════════════════════════════════════════════════════════════════╝\n"
+        "This is a NALT-compliant Nigerian legal research document. Every chapter MUST\n"
+        "contain substantial citation of Nigerian case law and legislation in the body text.\n\n"
+        "CASES — MANDATORY IN EVERY CHAPTER:\n"
+        "• Cite a minimum of 5–8 Nigerian cases per chapter, woven into the argument\n"
+        "• Use FULL citation on first mention: Case Name [Year] Vol NWLR (Pt No.) Page (Court)\n"
+        "  Example: Gani Fawehinmi v Abacha [1996] 9 NWLR (Pt 475) 710 (CA)\n"
+        "• Use SHORT form on subsequent mentions: Fawehinmi's case; Okoye v Lagos (supra)\n"
+        "• Discuss what the court HELD, the RATIO, and why it is relevant — not just the name\n"
+        "• Contrast cases where courts reached different conclusions on similar facts\n"
+        "• Supreme Court and Court of Appeal decisions carry the most weight — prioritise them\n"
+        "• For unreported cases: Suit No. [number] ([Court], [Date]) (unreported)\n\n"
+        "STATUTES — MANDATORY IN EVERY CHAPTER:\n"
+        "• Cite a minimum of 3–5 statutes or constitutional provisions per chapter\n"
+        "• Always cite specific sections: 'section 35(1) of the Constitution of the Federal\n"
+        "  Republic of Nigeria 1999 (as amended)' or 'section 4, Evidence Act, CAP E14 LFN 2004'\n"
+        "• Quote the actual statutory text where it is pivotal to the argument\n"
+        "• Discuss judicial interpretation of the provision — how courts have read it\n"
+        "• Flag statutory ambiguities, lacunae, or inconsistencies where they exist\n\n"
+        "ALL CITATIONS GO IN FOOTNOTES (NALT format — never parenthetical in body text).\n"
+        "The body text names the case/statute; the footnote carries the full citation.\n"
+        "╚══════════════════════════════════════════════════════════════════╝\n"
+    )
+
     # Visualization instruction - only include when NALT compliance is NOT enabled
     _VIZ_NOTE = "" if nalt_compliance else (
         "\nVISUALIZATION INSTRUCTION - PhD STANDARDS:\n"
@@ -969,6 +997,7 @@ Do not stop writing until you have fully developed every subsection. If in doubt
 {tone}
 {_FN_NOTE}
 {_NO_AST}
+{_NALT_CITE_NOTE}
 {_VIZ_NOTE}
 
 Write the following subsections, each introduced with a ### heading.
@@ -1085,6 +1114,7 @@ The literature review is the longest and most intellectually demanding chapter. 
 {tone}
 {_FN_NOTE}
 {_NO_AST}
+{_NALT_CITE_NOTE}
 {_VIZ_NOTE}
 {_CH2_VIZ_NOTE_DOCTORAL if is_pg else ""}
 
@@ -1161,6 +1191,7 @@ The methodology chapter must be precise, justified, and replicable. Write with r
 {tone}
 {_FN_NOTE}
 {_NO_AST}
+{_NALT_CITE_NOTE}
 
 {_CH3_VIZ_STANDARDS}
 
@@ -1285,6 +1316,7 @@ Present rich, specific, interpreted findings. This chapter must demonstrate anal
 {tone}
 {_FN_NOTE}
 {_NO_AST}
+{_NALT_CITE_NOTE}
 
 {_CH4_VIZ_STANDARDS}
 
@@ -1388,6 +1420,7 @@ This chapter must deliver a satisfying intellectual conclusion - not a mechanica
 {tone}
 {_FN_NOTE}
 {_NO_AST}
+{_NALT_CITE_NOTE}
 {_VIZ_NOTE}
 {_CH5_VIZ_NOTE_DOCTORAL if is_pg else ""}
 
