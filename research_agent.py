@@ -3418,6 +3418,11 @@ def generate_front_matter(client, topic: str, research_level: str,
         elif section == "acknowledgements":
             requested_sections.add("ACKNOWLEDGEMENTS")
 
+    # NALT sections are always kept when nalt_compliance is on
+    if nalt_compliance:
+        requested_sections.add("LIST OF CASES")
+        requested_sections.add("LIST OF STATUTES")
+
     # Split by ## headings and keep only requested ones
     parts = re.split(r"(?m)^(## .+)$", text)
     filtered_parts = [parts[0]]  # Keep any preamble (usually empty)
