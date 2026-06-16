@@ -3713,11 +3713,16 @@ def generate_chapter(client, topic: str, chapter_num: int,
     # Chapter 5 includes References + Appendix A/B/C on top of the body word target,
     # so it needs a much larger token budget than target * 2 would give.
     # Postgraduate Appendix A alone is a 14-question interview guide (~1500 words).
-    if chapter_num == 5:
-        ch5_floor = 9000 if research_level == "postgraduate" else 7000
-        token_budget = max(ch5_floor, int(target * 2))
-    else:
-        token_budget = max(5000, int(target * 2))
+    # Chapter 2 (literature review) and 3 (methodology) have the most subsections
+    # (~15 each at doctoral level) and routinely exceed the target * 2 floor.
+    # Chapter 5 at postgraduate level includes appendices, interview guides, etc.
+    _ch_floors = {
+        "postgraduate": {1: 8000, 2: 12000, 3: 12000, 4: 9000, 5: 9000},
+        "phd":          {1: 7000, 2: 10000, 3: 10000, 4: 8000, 5: 7000},
+        "undergraduate":{1: 5000, 2: 6000,  3: 6000,  4: 5000, 5: 7000},
+    }
+    _floor = _ch_floors.get(research_level, {}).get(chapter_num, 5000)
+    token_budget = max(_floor, int(target * 2))
     text = _stream_content(client, system, prompt, model, token_budget, research_level, use_thinking_override=use_thinking)
     print(f"done ({len(text):,} chars)")
     return text
