@@ -739,7 +739,8 @@ def generate():
         target=_run_agent,
         args=(job_id, topic, research_level, chapters_list,
               extra_email, custom_toc, front_matter_sections,
-              custom_instructions, use_thinking, nalt_compliance),
+              custom_instructions, use_thinking, nalt_compliance,
+              use_footnotes),
         daemon=True
     ).start()
 
@@ -884,7 +885,8 @@ def _run_agent(job_id: str, topic: str, research_level: str,
                front_matter_sections: list = None,
                custom_instructions: str = None,
                use_thinking: bool = False,
-               nalt_compliance: bool = False):
+               nalt_compliance: bool = False,
+               use_footnotes: bool = False):
     job = JOBS[job_id]
     q   = job["log_queue"]
 
