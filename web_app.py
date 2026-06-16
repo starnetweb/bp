@@ -343,6 +343,8 @@ input:focus{border-color:var(--accent)}
           AT <input type="checkbox" id="thinking-toggle" onchange="toggleThinking()" style="width:18px;height:18px;cursor:pointer;margin-left:10px"/>
           <span style="margin-left:10px">-</span>
           NALT <input type="checkbox" id="nalt-compliance-toggle" onchange="toggleNALT()" style="width:18px;height:18px;cursor:pointer;margin-left:10px"/>
+          <span style="margin-left:10px">-</span>
+          FN <input type="checkbox" id="fn-toggle" style="width:18px;height:18px;cursor:pointer;margin-left:10px" title="Include professional Word footnotes (hyperlinked, page-bottom)"/>
         </label>
         <div id="custom-toc-wrap">
           <textarea id="custom-toc" placeholder="Enter your TOC, one item per line. Example:&#10;CHAPTER ONE: INTRODUCTION&#10;  1.1  Background of the Study&#10;  1.2  Statement of the Problem&#10;  1.3  Research Objectives&#10;&#10;CHAPTER TWO: LITERATURE REVIEW&#10;  2.1  Conceptual Framework&#10;  ..."></textarea>
@@ -534,7 +536,8 @@ async function start(){
   const fmSections=getFmSections();
   const useThinking=document.getElementById('thinking-toggle').checked;
   const naltCompliance=document.getElementById('nalt-compliance-toggle').checked;
-  const payload={project_topic:topic,research_level:selectedLevel,chapters:chaptersStr,front_matter_sections:fmSections,use_thinking:useThinking,nalt_compliance:naltCompliance};
+  const useFootnotes=document.getElementById('fn-toggle').checked;
+  const payload={project_topic:topic,research_level:selectedLevel,chapters:chaptersStr,front_matter_sections:fmSections,use_thinking:useThinking,nalt_compliance:naltCompliance,use_footnotes:useFootnotes};
   if(customToc) payload.custom_toc=customToc;
   if(email) payload.email=email;
   if(phone) payload.phone=phone;
@@ -711,8 +714,9 @@ def generate():
     extra_email           = (data.get("email") or "").strip() or None
     front_matter_sections = data.get("front_matter_sections")  # list or None → defaults to all
     custom_instructions   = (data.get("custom_instructions") or "").strip() or None
-    use_thinking          = data.get("use_thinking", False)  # Default to False if not provided
-    nalt_compliance       = data.get("nalt_compliance", False)  # Default to False if not provided
+    use_thinking          = data.get("use_thinking", False)
+    nalt_compliance       = data.get("nalt_compliance", False)
+    use_footnotes         = data.get("use_footnotes", False)
 
     if not topic:
         return jsonify({"error": "project_topic is required"}), 400
@@ -916,6 +920,7 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         log(f"  MODEL    : {config.MODEL}", "header")
         log(f"  THINKING : {'ON (deeper analysis)' if use_thinking else 'OFF'}", "header")
         log(f"  NALT     : {'ON (Nigerian legal standards)' if nalt_compliance else 'OFF'}", "header")
+        log(f"  FOOTNOTES: {'ON (professional Word footnotes)' if use_footnotes else 'OFF'}", "header")
         if custom_instructions:
             ci_preview = custom_instructions[:60] + ("…" if len(custom_instructions) > 60 else "")
             log(f"  CUSTOM   : {ci_preview}", "header")
@@ -960,7 +965,8 @@ def _run_agent(job_id: str, topic: str, research_level: str,
                 custom_instructions=custom_instructions,
                 use_thinking=use_thinking,
                 nalt_compliance=nalt_compliance,
-                custom_toc=custom_toc
+                custom_toc=custom_toc,
+                use_footnotes=use_footnotes
             )
             log(f"  ✓ Chapter {num} complete — {len(chapters[num]):,} chars", "success")
             log("")

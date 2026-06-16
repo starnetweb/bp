@@ -443,6 +443,53 @@ RULE 15 — WRITE FULLY — NO TRUNCATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Write every subsection in full. Never use placeholders, summaries, or shorthand like
 "[expand here]" or "[continue]". Every word of the required count must be substantive prose.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 16 — DESTROY NEGATIVE PARALLEL CONSTRUCTIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Negative parallel constructions are among the highest-weighted AI detection markers
+in ZeroGPT, Turnitin, and Originality.ai. They MUST be eliminated entirely.
+
+NEVER write:
+  "neither X nor Y"              → "not X, and hardly Y" / restructure positively
+  "not only X but also Y"        → "X, and beyond that, Y" / state both directly
+  "not X but rather Y"           → "Y — not X" / simply assert Y
+  "not just X but Y"             → cut to Y, drop the framing
+  "both X and Y" (overused pair) → vary or use one
+
+Concrete rewrites:
+  BAD:  "outcomes that are neither consistent nor principled"
+  GOOD: "outcomes that are inconsistent and, on many readings, entirely arbitrary"
+
+  BAD:  "not only significant but transformative"
+  GOOD: "significant — and, on reflection, probably more consequential than that"
+
+  BAD:  "not a matter of resources but of political will"
+  GOOD: "a matter of political will; the resources, when allocated, have existed"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 17 — FORBIDDEN SENTENCE STARTERS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+These phrases at the START of a sentence are detection tripwires — never use them:
+
+  "This study..."       "The study..."        "The present study..."
+  "This paper..."       "The paper..."        "This research..."
+  "This chapter..."     "This section..."     "This work..."
+  "Research has shown..." "Studies have shown..." "It has been shown that..."
+  "In recent years..."  "Over the past decade..." "Over recent years..."
+  "Importantly,..."     "Significantly,..."   "Notably,..." (as sentence openers)
+  "It is clear that..." "It is evident that..." "It is apparent that..."
+  "Overall,..."  (as a filler opener)
+
+Instead — lead with the named subject, the finding, or a time marker:
+  BAD:  "This study examined how Nigerian judges exercise discretion."
+  GOOD: "Nigerian judges exercise discretion within a framework that..."
+
+  BAD:  "In recent years, scholars have debated..."
+  GOOD: "Since Adebayo's 2014 review, the debate has sharpened around..."
+
+  BAD:  "Importantly, the data show a significant correlation."
+  GOOD: "The correlation — a Pearson r of 0.74 — is striking."
 ════════════════════════════════════════════════════════════
 """
 
@@ -450,7 +497,7 @@ Write every subsection in full. Never use placeholders, summaries, or shorthand 
 # ─────────────────────────────────────────────────────────
 #  CHAPTER PROMPT TEMPLATES
 # ─────────────────────────────────────────────────────────
-def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bool = False) -> dict:
+def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bool = False, use_footnotes: bool = False) -> dict:
     profile = LEVEL_PROFILES[level_key]
     tone    = profile["tone"]
     depth   = profile["depth"]
@@ -563,12 +610,29 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
         max_words = val + 20             # 20 words above target for natural variation
         return f"{min_words}-{max_words}"
 
-    # Footnote format note appended to every chapter
+    # Footnote instruction — strong mandatory block when footnotes are on, empty otherwise
     _FN_NOTE = (
-        "\nFOOTNOTE FORMAT: When a footnote is needed, insert it inline using "
-        "((FN: your footnote text here)) - it will become a proper Word footnote "
-        "with a superscript number in the body and the note at the bottom of the page."
-    )
+        "\n\n╔══════════════════════════════════════════════════════╗\n"
+        "║   MANDATORY FOOTNOTES — THIS IS NON-NEGOTIABLE      ║\n"
+        "╚══════════════════════════════════════════════════════╝\n"
+        "This document uses REAL WORD FOOTNOTES. Every citation, statistic,\n"
+        "direct quote, case reference, and attributable claim MUST be footnoted.\n\n"
+        "FORMAT — insert exactly like this, immediately after the word/sentence:\n"
+        "  ((FN: Author A. A. & Author B. B. (Year). Title. Journal, Vol(Issue), pp. DOI))\n\n"
+        "REQUIREMENTS:\n"
+        "  • Minimum 10 footnotes per chapter — spread across ALL sections\n"
+        "  • Every in-text citation (Author, Year) MUST have a corresponding ((FN: ...))\n"
+        "  • Footnote text must be a complete, properly formatted citation or explanatory note\n"
+        "  • Legal topics: include case names, statute sections, law review citations\n"
+        "  • Do NOT cluster footnotes — at least one footnote per paragraph\n"
+        "  • Do NOT duplicate footnote text — each is unique\n\n"
+        "EXAMPLE:\n"
+        "  'Pre-trial detention rates in Nigeria exceed continental averages by a factor\n"
+        "  of three ((FN: Nigerian Prisons Service, Annual Report 2022, p. 47; see also\n"
+        "  Amnesty International, Justice in Jeopardy (2021) p. 23, reporting 72%\n"
+        "  pre-trial detainee population at time of census)).'\n"
+        "══════════════════════════════════════════════════════"
+    ) if use_footnotes else ""
 
     # No-references instruction for chapters 1-4
     _NO_REF = (
@@ -3123,9 +3187,10 @@ def generate_chapter(client, topic: str, chapter_num: int,
                      custom_instructions: str = None,
                      use_thinking: bool = False,
                      nalt_compliance: bool = False,
-                     custom_toc: str = None) -> str:
+                     custom_toc: str = None,
+                     use_footnotes: bool = False) -> str:
     model    = model or config.MODEL
-    prompts  = _chapter_prompts(research_level, custom_toc=custom_toc, nalt_compliance=nalt_compliance)
+    prompts  = _chapter_prompts(research_level, custom_toc=custom_toc, nalt_compliance=nalt_compliance, use_footnotes=use_footnotes)
     prompt   = prompts[chapter_num].format(topic=topic)
     profile  = LEVEL_PROFILES[research_level]
     target   = profile["word_targets"][chapter_num]
