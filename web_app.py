@@ -19,6 +19,8 @@ from email.mime.text       import MIMEText
 from email                 import encoders
 
 import functools
+import sqlite3
+from datetime import datetime, timezone
 from flask import (
     Flask, render_template_string, request,
     jsonify, Response, send_file, abort,
@@ -60,18 +62,73 @@ import research_agent
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
 
-# ─── Auth ────────────────────────────────────────────────
-_RAW_PW = "ineedpasswords2"
-USERS = {
-    "ogechi": generate_password_hash(_RAW_PW),
-    "control": generate_password_hash(_RAW_PW),
-}
+# ─── Database ────────────────────────────────────────────
+DB_PATH = os.path.join(OUTPUT_DIR, "app.db")
 
+def _get_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def _init_db():
+    conn = _get_db()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            username     TEXT PRIMARY KEY,
+            password_hash TEXT NOT NULL,
+            is_admin     INTEGER NOT NULL DEFAULT 0
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS documents (
+            id           INTEGER PRIMARY KEY AUTOINCREMENT,
+            username     TEXT NOT NULL,
+            topic        TEXT NOT NULL,
+            chapters     TEXT NOT NULL,
+            generated_at TEXT NOT NULL,
+            job_id       TEXT,
+            filename     TEXT
+        )
+    """)
+    conn.execute(
+        "INSERT OR IGNORE INTO users (username, password_hash, is_admin) VALUES (?, ?, ?)",
+        ("ogechi", generate_password_hash("ineedpasswords2"), 0)
+    )
+    conn.execute(
+        "INSERT OR IGNORE INTO users (username, password_hash, is_admin) VALUES (?, ?, ?)",
+        ("control", generate_password_hash("ineedpasswords2"), 1)
+    )
+    conn.commit()
+    conn.close()
+
+def _fmt_chapters(chapters_list):
+    if not chapters_list:
+        return "Ch. 1–5"
+    chs = sorted(chapters_list)
+    if chs == list(range(1, 6)):
+        return "Ch. 1–5"
+    if len(chs) == 1:
+        return f"Ch. {chs[0]} only"
+    if chs == list(range(chs[0], chs[-1] + 1)):
+        return f"Ch. {chs[0]}–{chs[-1]}"
+    return "Ch. " + ", ".join(str(c) for c in chs)
+
+# ─── Auth ────────────────────────────────────────────────
 def login_required(f):
     @functools.wraps(f)
     def decorated(*args, **kwargs):
         if not session.get("user"):
             return redirect(url_for("login", next=request.path))
+        return f(*args, **kwargs)
+    return decorated
+
+def admin_required(f):
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("user"):
+            return redirect(url_for("login", next=request.path))
+        if not session.get("is_admin"):
+            abort(403)
         return f(*args, **kwargs)
     return decorated
 
@@ -124,6 +181,147 @@ LOGIN_HTML = """<!doctype html>
 </body>
 </html>"""
 
+ADMIN_HTML = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Research Agent</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0f172a;color:#e2e8f0;font-family:'Segoe UI',system-ui,sans-serif;padding:2rem 1rem;min-height:100vh}
+  h1{font-size:1.4rem;font-weight:700;color:#f1f5f9;margin-bottom:.3rem}
+  .sub{color:#64748b;font-size:.82rem;margin-bottom:2rem}
+  h2{font-size:1rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.07em;margin-bottom:1rem;margin-top:2rem}
+  .card{background:#1e293b;border:1px solid #334155;border-radius:10px;padding:1.5rem;margin-bottom:1.5rem}
+  table{width:100%;border-collapse:collapse;font-size:.88rem}
+  th{text-align:left;padding:.55rem .75rem;background:#0f172a;color:#64748b;font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #334155}
+  td{padding:.6rem .75rem;border-bottom:1px solid #1e293b;vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:#1e293b44}
+  .badge{display:inline-block;padding:.15rem .55rem;border-radius:999px;font-size:.72rem;font-weight:600}
+  .badge-admin{background:#312e81;color:#a5b4fc}
+  .badge-user{background:#0f2e1f;color:#4ade80}
+  .btn{display:inline-flex;align-items:center;padding:.35rem .85rem;border-radius:6px;font-size:.82rem;font-weight:600;border:none;cursor:pointer;text-decoration:none;transition:background .15s}
+  .btn-red{background:#7f1d1d;color:#fca5a5}.btn-red:hover{background:#991b1b}
+  .btn-green{background:#14532d;color:#86efac}.btn-green:hover{background:#166534}
+  .btn-ghost{background:#334155;color:#cbd5e1}.btn-ghost:hover{background:#475569}
+  form.inline{display:inline}
+  .add-form{display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end;margin-top:1rem}
+  .add-form label{display:block;color:#64748b;font-size:.75rem;font-weight:600;text-transform:uppercase;margin-bottom:.3rem}
+  .add-form input{padding:.5rem .85rem;background:#0f172a;border:1px solid #334155;border-radius:7px;color:#f1f5f9;font-size:.88rem;outline:none;width:160px}
+  .add-form input:focus{border-color:#6366f1}
+  .add-form select{padding:.5rem .85rem;background:#0f172a;border:1px solid #334155;border-radius:7px;color:#f1f5f9;font-size:.88rem;outline:none}
+  .dl-link{color:#818cf8;text-decoration:none;font-size:.82rem}.dl-link:hover{color:#a5b4fc;text-decoration:underline}
+  .flash{padding:.65rem 1rem;border-radius:8px;font-size:.85rem;margin-bottom:1rem}
+  .flash-ok{background:#0f2e1f;border:1px solid #166534;color:#86efac}
+  .flash-err{background:#450a0a;border:1px solid #7f1d1d;color:#fca5a5}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem}
+  .overflow{overflow-x:auto}
+  .empty{color:#475569;font-size:.85rem;padding:.75rem 0;text-align:center}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div>
+    <h1>Admin Panel</h1>
+    <p class="sub">Research Agent — logged in as <strong>{{ current_user }}</strong></p>
+  </div>
+  <div style="display:flex;gap:.75rem">
+    <a href="/" class="btn btn-ghost">← App</a>
+    <a href="/logout" class="btn btn-red">Sign Out</a>
+  </div>
+</div>
+
+{% if flash_ok %}<div class="flash flash-ok">{{ flash_ok }}</div>{% endif %}
+{% if flash_err %}<div class="flash flash-err">{{ flash_err }}</div>{% endif %}
+
+<h2>User Management</h2>
+<div class="card">
+  <div class="overflow">
+  <table>
+    <thead>
+      <tr><th>Username</th><th>Role</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td>{{ u.username }}</td>
+        <td>
+          {% if u.is_admin %}<span class="badge badge-admin">Admin</span>
+          {% else %}<span class="badge badge-user">User</span>{% endif %}
+        </td>
+        <td>
+          {% if not u.is_admin %}
+          <form class="inline" method="post" action="/admin/users/remove/{{ u.username }}"
+                onsubmit="return confirm('Remove user {{ u.username }}?')">
+            <button class="btn btn-red" type="submit">Remove</button>
+          </form>
+          {% else %}
+          <span style="color:#475569;font-size:.8rem">Protected</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+
+  <form class="add-form" method="post" action="/admin/users/add">
+    <div>
+      <label>Username</label>
+      <input name="username" type="text" required autocomplete="off" placeholder="username">
+    </div>
+    <div>
+      <label>Password</label>
+      <input name="password" type="password" required placeholder="password">
+    </div>
+    <div>
+      <label>Role</label>
+      <select name="role">
+        <option value="user">User</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <div style="padding-top:1.4rem">
+      <button class="btn btn-green" type="submit">Add User</button>
+    </div>
+  </form>
+</div>
+
+<h2>Document History</h2>
+<div class="card">
+  <div class="overflow">
+  <table>
+    <thead>
+      <tr><th>User</th><th>Topic</th><th>Chapters</th><th>Date</th><th>Time (UTC)</th><th>Document</th></tr>
+    </thead>
+    <tbody>
+      {% if docs %}
+        {% for d in docs %}
+        <tr>
+          <td>{{ d.username }}</td>
+          <td style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="{{ d.topic }}">{{ d.topic }}</td>
+          <td>{{ d.chapters }}</td>
+          <td>{{ d.generated_at[:10] }}</td>
+          <td>{{ d.generated_at[11:16] }}</td>
+          <td>
+            {% if d.job_id %}
+            <a class="dl-link" href="/download/{{ d.job_id }}">⬇ Download</a>
+            {% else %}<span style="color:#475569">—</span>{% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      {% else %}
+        <tr><td colspan="6" class="empty">No documents generated yet.</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+  </div>
+</div>
+</body>
+</html>"""
+
 JOBS: dict[str, dict] = {}
 OUTPUT_DIR = (
     "/app/downloads"
@@ -131,6 +329,7 @@ OUTPUT_DIR = (
     else os.path.join(os.path.dirname(os.path.abspath(__file__)), "downloads")
 )
 os.makedirs(OUTPUT_DIR, exist_ok=True)
+_init_db()
 
 
 # ─────────────────────────────────────────────────────────
@@ -747,9 +946,14 @@ def login():
     if request.method == "POST":
         username = request.form.get("username", "").strip().lower()
         password = request.form.get("password", "")
-        pw_hash = USERS.get(username)
-        if pw_hash and check_password_hash(pw_hash, password):
+        conn = _get_db()
+        row = conn.execute(
+            "SELECT password_hash, is_admin FROM users WHERE username = ?", (username,)
+        ).fetchone()
+        conn.close()
+        if row and check_password_hash(row["password_hash"], password):
             session["user"] = username
+            session["is_admin"] = bool(row["is_admin"])
             return redirect(request.args.get("next") or url_for("index"))
         error = "Invalid username or password."
     return render_template_string(LOGIN_HTML, error=error)
@@ -759,6 +963,63 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for("login"))
+
+
+@app.route("/admin")
+@admin_required
+def admin():
+    conn = _get_db()
+    users = conn.execute("SELECT username, is_admin FROM users ORDER BY is_admin DESC, username").fetchall()
+    docs  = conn.execute(
+        "SELECT username, topic, chapters, generated_at, job_id FROM documents ORDER BY generated_at DESC"
+    ).fetchall()
+    conn.close()
+    return render_template_string(
+        ADMIN_HTML,
+        current_user=session["user"],
+        users=users,
+        docs=docs,
+        flash_ok=request.args.get("ok"),
+        flash_err=request.args.get("err"),
+    )
+
+
+@app.route("/admin/users/add", methods=["POST"])
+@admin_required
+def admin_add_user():
+    username = request.form.get("username", "").strip().lower()
+    password = request.form.get("password", "").strip()
+    role     = request.form.get("role", "user")
+    if not username or not password:
+        return redirect(url_for("admin", err="Username and password are required."))
+    try:
+        conn = _get_db()
+        conn.execute(
+            "INSERT INTO users (username, password_hash, is_admin) VALUES (?, ?, ?)",
+            (username, generate_password_hash(password), 1 if role == "admin" else 0)
+        )
+        conn.commit()
+        conn.close()
+        return redirect(url_for("admin", ok=f"User '{username}' added."))
+    except sqlite3.IntegrityError:
+        return redirect(url_for("admin", err=f"Username '{username}' already exists."))
+
+
+@app.route("/admin/users/remove/<username>", methods=["POST"])
+@admin_required
+def admin_remove_user(username):
+    conn = _get_db()
+    row = conn.execute("SELECT is_admin FROM users WHERE username = ?", (username,)).fetchone()
+    if not row:
+        conn.close()
+        return redirect(url_for("admin", err=f"User '{username}' not found."))
+    if row["is_admin"]:
+        conn.close()
+        return redirect(url_for("admin", err="Admin users cannot be removed."))
+    conn.execute("DELETE FROM users WHERE username = ?", (username,))
+    conn.commit()
+    conn.close()
+    return redirect(url_for("admin", ok=f"User '{username}' removed."))
 
 
 @app.route("/")
@@ -816,6 +1077,7 @@ def generate():
 
     chapters_list = research_agent.parse_chapters(chapters_raw)
 
+    username = session.get("user", "unknown")
     job_id = str(uuid.uuid4())
     JOBS[job_id] = {
         "status":    "running",
@@ -831,7 +1093,7 @@ def generate():
         args=(job_id, topic, research_level, chapters_list,
               extra_email, custom_toc, front_matter_sections,
               custom_instructions, use_thinking, nalt_compliance,
-              use_footnotes),
+              use_footnotes, username),
         daemon=True
     ).start()
 
@@ -980,7 +1242,8 @@ def _run_agent(job_id: str, topic: str, research_level: str,
                custom_instructions: str = None,
                use_thinking: bool = False,
                nalt_compliance: bool = False,
-               use_footnotes: bool = False):
+               use_footnotes: bool = False,
+               username: str = "unknown"):
     job = JOBS[job_id]
     q   = job["log_queue"]
 
@@ -1139,6 +1402,25 @@ def _run_agent(job_id: str, topic: str, research_level: str,
 
         log(f"  ✓ Document saved: {filename}", "success")
         log("")
+
+        # Log to persistent DB
+        try:
+            _conn = _get_db()
+            _conn.execute(
+                "INSERT INTO documents (username, topic, chapters, generated_at, job_id, filename) VALUES (?, ?, ?, ?, ?, ?)",
+                (
+                    username,
+                    topic,
+                    _fmt_chapters(chapters_list),
+                    datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+                    job_id,
+                    filename,
+                )
+            )
+            _conn.commit()
+            _conn.close()
+        except Exception:
+            pass
 
         # Send email (to config recipients + optional per-job client email)
         log("► Sending email...", "accent")
