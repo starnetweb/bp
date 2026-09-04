@@ -63,10 +63,9 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
 
 # ─── Database ────────────────────────────────────────────
-DB_PATH = os.path.join(OUTPUT_DIR, "app.db")
-
 def _get_db():
-    conn = sqlite3.connect(DB_PATH)
+    db_path = os.path.join(OUTPUT_DIR, "app.db")
+    conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     return conn
 
