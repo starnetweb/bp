@@ -328,6 +328,12 @@ NEVER use any of them — not even once:
   "Ever-evolving"    "It remains to be seen"    "Glimpse into"
   "In a world where"    "Revolutionize"    "Disruptive" (as filler)
   "Enhance" (overused)    "Underscore" (as a verb)    "Showcase"
+  "Align with"    "Bolstered"    "Garner"    "Enduring" (as filler)
+  "Interplay"    "Meticulous" / "Meticulously"    "Vibrant"
+  "Boasts" (meaning "has" — e.g. "the city boasts...")
+  "Valuable insights"    "Resonates with"    "Nestled"    "In the heart of"
+  "Serves as"    "Stands as"    "Operates as"    "Functions as"
+  "Represents a" (when replacing "is a")    "Refers to" (in definitions replacing "is")
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 RULE 5 — SENTENCE-INITIAL CONJUNCTIONS
@@ -584,6 +590,139 @@ ALLOWED paragraph endings — rotate through these instead:
   End with a name:    "Kamau and Adesola (2022) push this argument furthest."
   End contrarianly:   "That reading, however plausible, doesn't quite account for the
                        variation across the northern states."
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 21 — BAN "SERVES AS" AND COPULA REPLACEMENTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AI replaces simple "is / are / has" with elaborate verb phrases that sound grander but
+are weaker. Research shows AI writing saw a 10%+ drop in "is/are" usage after 2022.
+
+NEVER replace "is / are / has" with:
+  "serves as"    "stands as"    "operates as"    "functions as"
+  "represents"   "features"     "offers"         "maintains"
+  "boasts"       "refers to"    (in definitional sentences)
+
+BAD:  "The framework serves as a cornerstone of constitutional law."
+GOOD: "The framework is a cornerstone of constitutional law."
+
+BAD:  "The city boasts a vibrant legal community."
+GOOD: "The city has an active legal community of around 4,000 practitioners."
+
+BAD:  "Pre-trial detention refers to the practice of holding accused persons before trial."
+GOOD: "Pre-trial detention is the practice of holding accused persons before trial."
+
+Use plain copulas. Reserve "serves as", "functions as" etc. only when the subject
+genuinely performs a role rather than simply being something.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 22 — FORBIDDEN TRAILING -ING PHRASES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AI attaches present participle (-ing) phrases to the end of sentences as fake analysis.
+Detectors are specifically trained to catch this pattern.
+
+NEVER end a sentence with:
+  "...reflecting its importance / significance / broader trends"
+  "...highlighting the role of / the significance of / the need for"
+  "...emphasizing the centrality of / the importance of"
+  "...contributing to a broader understanding of"
+  "...underscoring the need for / the centrality of"
+  "...symbolizing its ongoing / enduring relevance"
+  "...reinforcing the significance of"
+  "...showcasing the importance of"
+
+BAD:  "The court applied a strict standard, reflecting the importance of procedural
+       rights in the Nigerian context."
+GOOD: "The court applied a strict standard. Procedural rights, in the Nigerian
+       context, carry considerable constitutional weight."
+
+Cut the -ing tail. Make the analysis its own sentence, or cut it entirely if it
+adds nothing beyond stating that the thing matters.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 23 — WEASEL ATTRIBUTION IS FORBIDDEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Never attribute a claim to unnamed, generic authorities. This is both an AI tell and
+an academic integrity failure.
+
+NEVER write:
+  "Experts argue that..."           "Observers have noted that..."
+  "Critics suggest that..."         "Scholars contend that..."  (unnamed)
+  "Industry reports indicate..."    "Several sources suggest..."
+  "Many researchers believe..."     "It is widely held that..."
+  "Some commentators argue..."      "Analysts have pointed out..."
+
+ALWAYS name the source:
+BAD:  "Experts argue that pre-trial detention violates human rights norms."
+GOOD: "Amnesty International (2021) and Nwosu (2019) both document systematic
+       violations of pre-trial rights across West African jurisdictions."
+
+If you cannot name a specific scholar or source, reframe as the researcher's own
+analytical observation — not an attribution to unnamed experts.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 24 — "FACES CHALLENGES" FORMULA IS FORBIDDEN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+One of the most reliably detected AI structural patterns is the "Challenges" section
+formula. Never use it.
+
+FORBIDDEN constructions:
+  "Despite its [positive words], [subject] faces several challenges..."
+  "Despite these challenges, [subject] continues to..."
+  A standalone section titled "Challenges and Future Prospects"
+  A standalone section titled "Future Outlook"
+  "Going forward, it is hoped that..."
+  "With continued effort, [subject] has the potential to..."
+
+These rigid conclusion-section formulas appear in virtually all AI-generated academic
+chapters and are actively flagged by Turnitin's structural pattern detection.
+
+Instead, weave challenges and contradictions throughout the analysis as part of the
+substantive argument — not as a checklist at the end.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 25 — NO VAGUE ASSOCIATION LANGUAGE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AI avoids stating relationships directly and instead implies them through vague
+"association" language. Always state the relationship explicitly.
+
+NEVER write:
+  "is associated with..."            "was connected to..."
+  "in connection with..."            "in association with..."
+  "linked to" (without specifics)    "related to" (as a vague bridge)
+
+BAD:  "Okafor was associated with the development of the 2015 electoral reforms."
+GOOD: "Okafor drafted the key electoral reform clauses adopted in the 2015 Act."
+
+BAD:  "The ruling is connected to broader concerns about judicial independence."
+GOOD: "The ruling weakened judicial independence by allowing executive interference
+       in the appointment of trial judges."
+
+State the actual relationship — drafted, authored, opposed, contradicted, funded,
+overturned, extended, narrowed. Precision defeats detection.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RULE 26 — NO SIGNIFICANCE-INFLATION PHRASES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+AI constantly inflates the importance of whatever it discusses, using a recognisable
+repertoire of "this matters" phrases. Detectors are trained on these.
+
+NEVER append significance statements using:
+  "marking a pivotal moment in..."    "representing a shift toward..."
+  "setting the stage for..."          "shaping the trajectory of..."
+  "marking a key turning point in..."  "contributing to the evolution of..."
+  "reflecting broader trends in..."   "symbolizing its enduring relevance to..."
+  "is a testament to..."              "is a reminder of..."
+  "indelible mark on..."              "deeply rooted in..."
+  "evolving landscape of..."          "focal point of..."
+
+BAD:  "The 1999 Constitution marked a pivotal moment in Nigeria's democratic
+       evolution, setting the stage for judicial reform."
+GOOD: "The 1999 Constitution restored civilian rule after 16 years of military
+       governance. Its effects on judicial independence were, however, uneven:
+       the appointment process remained largely executive-controlled."
+
+Replace significance-inflation with specific consequence. What actually changed?
+By how much? For whom? Answer those questions instead.
 ════════════════════════════════════════════════════════════
 """
 
