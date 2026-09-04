@@ -18,10 +18,13 @@ from email.mime.base       import MIMEBase
 from email.mime.text       import MIMEText
 from email                 import encoders
 
+import functools
 from flask import (
     Flask, render_template_string, request,
-    jsonify, Response, send_file, abort
+    jsonify, Response, send_file, abort,
+    session, redirect, url_for
 )
+from werkzeug.security import generate_password_hash, check_password_hash
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -55,7 +58,71 @@ except ImportError:
 import research_agent
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
+
+# ─── Auth ────────────────────────────────────────────────
+_RAW_PW = "ineedpasswords2"
+USERS = {
+    "ogechi": generate_password_hash(_RAW_PW),
+    "control": generate_password_hash(_RAW_PW),
+}
+
+def login_required(f):
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get("user"):
+            return redirect(url_for("login", next=request.path))
+        return f(*args, **kwargs)
+    return decorated
+
+LOGIN_HTML = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign In — Research Agent</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{min-height:100vh;display:flex;align-items:center;justify-content:center;
+       background:#0f172a;font-family:'Segoe UI',system-ui,sans-serif}
+  .card{background:#1e293b;border:1px solid #334155;border-radius:12px;
+        padding:2.5rem 2rem;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  h1{color:#f1f5f9;font-size:1.4rem;font-weight:700;margin-bottom:.4rem;text-align:center}
+  p.sub{color:#94a3b8;font-size:.85rem;text-align:center;margin-bottom:1.8rem}
+  label{display:block;color:#94a3b8;font-size:.78rem;font-weight:600;
+        letter-spacing:.05em;margin-bottom:.4rem;text-transform:uppercase}
+  input{width:100%;padding:.7rem 1rem;background:#0f172a;border:1px solid #334155;
+        border-radius:8px;color:#f1f5f9;font-size:.95rem;outline:none;
+        transition:border-color .2s}
+  input:focus{border-color:#6366f1}
+  .field{margin-bottom:1.2rem}
+  button{width:100%;padding:.8rem;background:#6366f1;color:#fff;font-size:.95rem;
+         font-weight:600;border:none;border-radius:8px;cursor:pointer;margin-top:.4rem;
+         transition:background .2s}
+  button:hover{background:#4f46e5}
+  .error{background:#450a0a;border:1px solid #7f1d1d;color:#fca5a5;
+         border-radius:8px;padding:.7rem 1rem;font-size:.85rem;margin-bottom:1rem}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Research Agent</h1>
+  <p class="sub">Sign in to continue</p>
+  {% if error %}<div class="error">{{ error }}</div>{% endif %}
+  <form method="post">
+    <div class="field">
+      <label>Username</label>
+      <input name="username" type="text" autocomplete="username" autofocus required>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input name="password" type="password" autocomplete="current-password" required>
+    </div>
+    <button type="submit">Sign In</button>
+  </form>
+</div>
+</body>
+</html>"""
 
 JOBS: dict[str, dict] = {}
 OUTPUT_DIR = (
@@ -672,12 +739,36 @@ function reset(){
 #  ROUTES
 # ─────────────────────────────────────────────────────────
 
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if session.get("user"):
+        return redirect(url_for("index"))
+    error = None
+    if request.method == "POST":
+        username = request.form.get("username", "").strip().lower()
+        password = request.form.get("password", "")
+        pw_hash = USERS.get(username)
+        if pw_hash and check_password_hash(pw_hash, password):
+            session["user"] = username
+            return redirect(request.args.get("next") or url_for("index"))
+        error = "Invalid username or password."
+    return render_template_string(LOGIN_HTML, error=error)
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+
 @app.route("/")
+@login_required
 def index():
     return render_template_string(HTML)
 
 
 @app.route("/generate", methods=["POST"])
+@login_required
 def generate():
     """
     POST /generate — JSON body fields  (all names match the web UI form)
@@ -748,6 +839,7 @@ def generate():
 
 
 @app.route("/stream/<job_id>")
+@login_required
 def stream(job_id):
     if job_id not in JOBS:
         abort(404)
@@ -785,6 +877,7 @@ def stream(job_id):
 
 
 @app.route("/api/job-status/<job_id>")
+@login_required
 def job_status(job_id):
     """Polling endpoint for job status (fallback if SSE fails)."""
     try:
@@ -829,6 +922,7 @@ def job_status(job_id):
 
 
 @app.route("/debug/jobs")
+@login_required
 def debug_jobs():
     """Debug endpoint: show all jobs in memory"""
     jobs_info = {}
@@ -843,6 +937,7 @@ def debug_jobs():
 
 
 @app.route("/download/<job_id>")
+@login_required
 def download(job_id):
     # First try in-memory JOBS
     if job_id in JOBS and JOBS[job_id].get("file_path"):
