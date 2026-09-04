@@ -2274,6 +2274,11 @@ def parse_chapter_content(doc, content, fn_mgr=None):
             i += 1
             continue
 
+        # ── Skip markdown horizontal rules (--- / *** / ___) ─
+        if re.match(r'^[-*_]{3,}\s*$', line.strip()):
+            i += 1
+            continue
+
         # ── Table marker [TABLE: description] ────────────────
         if line.lstrip().startswith("[TABLE:"):
             # Match [TABLE: ...] with optional content after closing bracket
