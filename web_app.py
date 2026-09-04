@@ -937,7 +937,6 @@ def debug_jobs():
 
 
 @app.route("/download/<job_id>")
-@login_required
 def download(job_id):
     # First try in-memory JOBS
     if job_id in JOBS and JOBS[job_id].get("file_path"):
