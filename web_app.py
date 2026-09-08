@@ -1100,7 +1100,6 @@ def generate():
 
 
 @app.route("/stream/<job_id>")
-@login_required
 def stream(job_id):
     if job_id not in JOBS:
         abort(404)
