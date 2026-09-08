@@ -20,7 +20,7 @@ from email                 import encoders
 
 import functools
 import sqlite3
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from flask import (
     Flask, render_template_string, request,
     jsonify, Response, send_file, abort,
@@ -61,6 +61,7 @@ import research_agent
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
+app.permanent_session_lifetime = timedelta(hours=24)
 
 # ─── Database ────────────────────────────────────────────
 def _get_db():
@@ -951,6 +952,7 @@ def login():
         ).fetchone()
         conn.close()
         if row and check_password_hash(row["password_hash"], password):
+            session.permanent = True
             session["user"] = username
             session["is_admin"] = bool(row["is_admin"])
             return redirect(request.args.get("next") or url_for("index"))
