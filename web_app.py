@@ -1138,7 +1138,6 @@ def stream(job_id):
 
 
 @app.route("/api/job-status/<job_id>")
-@login_required
 def job_status(job_id):
     """Polling endpoint for job status (fallback if SSE fails)."""
     try:
