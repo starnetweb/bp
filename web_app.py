@@ -60,7 +60,26 @@ except ImportError:
 import research_agent
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY") or os.urandom(24)
+def _get_or_create_secret_key():
+    env_key = os.environ.get("SECRET_KEY")
+    if env_key:
+        return env_key
+    # No SECRET_KEY in env: use a persistent file on the volume mount so sessions
+    # survive container restarts. /app/downloads is the only mounted volume.
+    _key_dir = "/app/downloads" if os.path.isdir("/app/downloads") else os.path.dirname(os.path.abspath(__file__))
+    key_file = os.path.join(_key_dir, ".secret_key")
+    if os.path.exists(key_file):
+        with open(key_file, "rb") as f:
+            return f.read()
+    key = os.urandom(32)
+    try:
+        with open(key_file, "wb") as f:
+            f.write(key)
+    except OSError:
+        pass
+    return key
+
+app.secret_key = _get_or_create_secret_key()
 app.permanent_session_lifetime = timedelta(hours=24)
 
 # ─── Database ────────────────────────────────────────────
