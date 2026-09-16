@@ -1199,17 +1199,22 @@ def debug_jobs():
 
 @app.route("/download/<job_id>")
 def download(job_id):
+    DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+    def _file_response(path, filename):
+        with open(path, "rb") as f:
+            data = f.read()
+        resp = Response(data, mimetype=DOCX_MIME)
+        resp.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
+        resp.headers["Content-Length"] = str(len(data))
+        return resp
+
     # First try in-memory JOBS
     if job_id in JOBS and JOBS[job_id].get("file_path"):
         path = JOBS[job_id]["file_path"]
         filename = JOBS[job_id]["filename"]
         if os.path.exists(path):
-            return send_file(
-                path,
-                as_attachment=True,
-                download_name=filename,
-                mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            )
+            return _file_response(path, filename)
 
     # Fallback: search filesystem for file matching job_id
     try:
@@ -1217,12 +1222,8 @@ def download(job_id):
             if file.startswith(job_id) and file.endswith(".docx"):
                 path = os.path.join(OUTPUT_DIR, file)
                 if os.path.exists(path):
-                    return send_file(
-                        path,
-                        as_attachment=True,
-                        download_name=file.split("_", 1)[1] if "_" in file else file,
-                        mimetype="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    )
+                    fname = file.split("_", 1)[1] if "_" in file else file
+                    return _file_response(path, fname)
     except:
         pass
 
