@@ -109,6 +109,17 @@ def _init_db():
             filename     TEXT
         )
     """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS jobs (
+            job_id     TEXT PRIMARY KEY,
+            status     TEXT NOT NULL DEFAULT 'running',
+            file_path  TEXT,
+            filename   TEXT,
+            error      TEXT,
+            emailed    INTEGER NOT NULL DEFAULT 0,
+            created_at REAL NOT NULL
+        )
+    """)
     conn.execute(
         "INSERT OR IGNORE INTO users (username, password_hash, is_admin) VALUES (?, ?, ?)",
         ("ogechi", generate_password_hash("ineedpasswords2"), 0)
@@ -1107,6 +1118,15 @@ def generate():
         "emailed":   False,
         "error":     None,
     }
+    try:
+        _c = _get_db()
+        _c.execute(
+            "INSERT OR REPLACE INTO jobs (job_id, status, created_at) VALUES (?, 'running', ?)",
+            (job_id, __import__("time").time())
+        )
+        _c.commit(); _c.close()
+    except Exception:
+        pass
 
     threading.Thread(
         target=_run_agent,
@@ -1122,11 +1142,10 @@ def generate():
 
 @app.route("/stream/<job_id>")
 def stream(job_id):
-    if job_id not in JOBS:
-        abort(404)
+    import json as _json, time as _time
 
-    def generate_events():
-        import json
+    def generate_queue_events():
+        """Real-time stream — used when this worker owns the job."""
         job = JOBS[job_id]
         while True:
             try:
@@ -1134,17 +1153,53 @@ def stream(job_id):
             except queue.Empty:
                 yield "event: ping\ndata: {}\n\n"
                 continue
-
             if item["type"] == "log":
-                yield f"event: log\ndata: {json.dumps({'msg': item['msg'], 'tag': item['tag']})}\n\n"
+                yield f"event: log\ndata: {_json.dumps({'msg': item['msg'], 'tag': item['tag']})}\n\n"
             elif item["type"] == "done":
-                yield (f"event: done\ndata: {json.dumps({'filename': item['filename'], 'job_id': job_id, 'emailed': item['emailed']})}\n\n")
+                yield f"event: done\ndata: {_json.dumps({'filename': item['filename'], 'job_id': job_id, 'emailed': item['emailed']})}\n\n"
                 break
             elif item["type"] == "error":
-                yield f"event: error_event\ndata: {json.dumps({'msg': item['msg']})}\n\n"
+                yield f"event: error_event\ndata: {_json.dumps({'msg': item['msg']})}\n\n"
                 break
 
-    return Response(generate_events(), mimetype="text/event-stream",
+    def generate_db_polling_events():
+        """DB-polling fallback — used when a different worker owns the job."""
+        yield f"event: log\ndata: {_json.dumps({'msg': 'Generating your document...', 'tag': 'info'})}\n\n"
+        while True:
+            try:
+                _pc = _get_db()
+                row = _pc.execute(
+                    "SELECT status, file_path, filename, error, emailed FROM jobs WHERE job_id=?",
+                    (job_id,)
+                ).fetchone()
+                _pc.close()
+            except Exception:
+                row = None
+            if row is None:
+                yield f"event: error_event\ndata: {_json.dumps({'msg': 'Job not found'})}\n\n"
+                break
+            if row["status"] == "done":
+                yield f"event: log\ndata: {_json.dumps({'msg': '✅ ALL DONE — document ready for download!', 'tag': 'success'})}\n\n"
+                yield f"event: done\ndata: {_json.dumps({'filename': row['filename'], 'job_id': job_id, 'emailed': bool(row['emailed'])})}\n\n"
+                break
+            elif row["status"] == "error":
+                yield f"event: error_event\ndata: {_json.dumps({'msg': row['error'] or 'Unknown error'})}\n\n"
+                break
+            else:
+                yield "event: ping\ndata: {}\n\n"
+                _time.sleep(3)
+
+    if job_id in JOBS:
+        gen = generate_queue_events()
+    else:
+        _chk = _get_db()
+        _exists = _chk.execute("SELECT 1 FROM jobs WHERE job_id=?", (job_id,)).fetchone()
+        _chk.close()
+        if not _exists:
+            abort(404)
+        gen = generate_db_polling_events()
+
+    return Response(gen, mimetype="text/event-stream",
                     headers={
                         "Cache-Control": "no-cache, no-store, must-revalidate",
                         "Pragma": "no-cache",
@@ -1162,41 +1217,48 @@ def job_status(job_id):
     """Polling endpoint for job status (fallback if SSE fails)."""
     try:
         import json
-        if job_id not in JOBS:
+
+        if job_id in JOBS:
+            job = JOBS[job_id]
+            logs = []
+            try:
+                while not job["log_queue"].empty():
+                    try:
+                        item = job["log_queue"].get_nowait()
+                        if item["type"] == "log":
+                            logs.append({"msg": item["msg"], "tag": item["tag"]})
+                        elif item["type"] == "done":
+                            return jsonify({"status": "done", "filename": item["filename"],
+                                            "emailed": item["emailed"], "logs": logs})
+                        elif item["type"] == "error":
+                            return jsonify({"status": "error", "error": item["msg"], "logs": logs})
+                    except:
+                        break
+            except:
+                pass
+            return jsonify({"status": "generating", "logs": logs})
+
+        # Job not in this worker's memory — check persistent DB
+        try:
+            _sc = _get_db()
+            row = _sc.execute(
+                "SELECT status, filename, error, emailed FROM jobs WHERE job_id=?",
+                (job_id,)
+            ).fetchone()
+            _sc.close()
+        except Exception:
+            row = None
+
+        if row is None:
             return jsonify({"status": "error", "error": "Job not found"}), 404
 
-        job = JOBS[job_id]
-        logs = []
-
-        # Drain all logs from queue without blocking
-        try:
-            while not job["log_queue"].empty():
-                try:
-                    item = job["log_queue"].get_nowait()
-                    if item["type"] == "log":
-                        logs.append({"msg": item["msg"], "tag": item["tag"]})
-                    elif item["type"] == "done":
-                        return jsonify({
-                            "status": "done",
-                            "filename": item["filename"],
-                            "emailed": item["emailed"],
-                            "logs": logs
-                        })
-                    elif item["type"] == "error":
-                        return jsonify({
-                            "status": "error",
-                            "error": item["msg"],
-                            "logs": logs
-                        })
-                except:
-                    break
-        except:
-            pass
-
-        return jsonify({
-            "status": "generating",
-            "logs": logs
-        })
+        if row["status"] == "done":
+            return jsonify({"status": "done", "filename": row["filename"],
+                            "emailed": bool(row["emailed"]), "logs": []})
+        elif row["status"] == "error":
+            return jsonify({"status": "error", "error": row["error"] or "Unknown error", "logs": []})
+        else:
+            return jsonify({"status": "generating", "logs": []})
     except Exception as e:
         return jsonify({"status": "error", "error": str(e)}), 500
 
@@ -1418,6 +1480,15 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         job["file_path"] = out_path
         job["filename"]  = filename
         job["status"]    = "done"
+        try:
+            _dc = _get_db()
+            _dc.execute(
+                "UPDATE jobs SET status='done', file_path=?, filename=? WHERE job_id=?",
+                (out_path, filename, job_id)
+            )
+            _dc.commit(); _dc.close()
+        except Exception:
+            pass
 
         log(f"  ✓ Document saved: {filename}", "success")
         log("")
@@ -1466,6 +1537,15 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         log(f"\n❌ Error: {exc}", "error")
         log(traceback.format_exc(), "error")
         q.put({"type": "error", "msg": str(exc)})
+        try:
+            _ec = _get_db()
+            _ec.execute(
+                "UPDATE jobs SET status='error', error=? WHERE job_id=?",
+                (str(exc), job_id)
+            )
+            _ec.commit(); _ec.close()
+        except Exception:
+            pass
 
 
 # ─────────────────────────────────────────────────────────
