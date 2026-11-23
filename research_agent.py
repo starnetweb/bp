@@ -3080,31 +3080,64 @@ def generate_abbreviations(client, topic: str, chapters: dict, model: str) -> li
     text = "\n\n".join(chapters[n] for n in sorted(chapters))
     if len(text) > 60000:
         text = text[:30000] + "\n...\n" + text[-30000:]
-    prompt = (
-        f"Research topic: {topic}\n\n"
-        "Below is the full text of a research document. List the abbreviations, acronyms and "
-        "technical terms with standard short forms that are specific to this topic and "
-        "that actually appear in the text (e.g. for a finance topic: ROE, EPS, IFRS). "
-        "Do NOT include generic items such as APA, GDP, UN, WHO, SPSS, e.g., i.e., et al. "
-        "unless they are genuinely central to this topic and used in the text. "
-        "Return 6-15 entries, alphabetical. Respond with ONLY a JSON array of "
-        '[["ABBR", "Full meaning"], ...] and nothing else.\n\n'
-        f"TEXT:\n{text}"
-    )
-    try:
+    MIN_ITEMS = 7
+
+    def _ask(prompt):
         kw = {}
         if model == "claude-sonnet-5-5":
             kw["thinking"] = {"type": "between_tools"}
         resp = client.messages.create(
-            model=model, max_tokens=1500 + (8000 if "-5-" in model and not kw else 0),
+            model=model, max_tokens=2000 + (8000 if "-5-" in model and not kw else 0),
             messages=[{"role": "user", "content": prompt}], **kw,
         )
         raw = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
         m = re.search(r"\[.*\]", raw, re.DOTALL)
         data = json.loads(m.group(0)) if m else []
-        return [(str(a).strip(), str(b).strip()) for a, b in data if str(a).strip() and str(b).strip()]
+        out = []
+        for item in data:
+            try:
+                a, b = item[0], item[1]
+            except Exception:
+                continue
+            if str(a).strip() and str(b).strip():
+                out.append((str(a).strip(), str(b).strip()))
+        return out
+
+    fmt = ('Respond with ONLY a JSON array of [["ABBR", "Full meaning"], ...] and nothing else.')
+    prompt = (
+        f"Research topic: {topic}\n\n"
+        "Below is the text of a research document. Produce the List of Abbreviations for it: "
+        "acronyms, abbreviations and standard short forms of key terms, institutions, methods, "
+        "variables, indices and frameworks that are specific to this topic and its field "
+        "(e.g. for a finance topic: ROE, EPS, IFRS). Prefer ones used in the text, but include "
+        "closely related standard terms of the field if needed. "
+        "Avoid purely generic items such as APA, e.g., i.e., et al. "
+        f"You MUST return at least {MIN_ITEMS} entries (aim for 10-15), alphabetical. {fmt}\n\n"
+        f"TEXT:\n{text}"
+    )
+    result = []
+    try:
+        result = _ask(prompt)
     except Exception:
-        return []
+        result = []
+    if len(result) < MIN_ITEMS:
+        try:
+            have = ", ".join(a for a, _ in result)
+            retry = (
+                f"Research topic: {topic}\n\n"
+                f"List 12 abbreviations, acronyms or standard short forms of key terms, institutions, "
+                f"methods, variables or frameworks that a researcher in this field would use in a "
+                f"study on this topic. {('Exclude these already listed: ' + have + '. ') if have else ''}"
+                f"At least {MIN_ITEMS} entries are required. {fmt}"
+            )
+            seen = {a.lower() for a, _ in result}
+            for a, b in _ask(retry):
+                if a.lower() not in seen:
+                    seen.add(a.lower())
+                    result.append((a, b))
+        except Exception:
+            pass
+    return sorted(result, key=lambda x: x[0].lower())
 
 
 def build_abbreviations_page(doc, abbreviations=None):
