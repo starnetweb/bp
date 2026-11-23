@@ -3092,9 +3092,12 @@ def generate_abbreviations(client, topic: str, chapters: dict, model: str) -> li
         f"TEXT:\n{text}"
     )
     try:
+        kw = {}
+        if model == "claude-sonnet-5-5":
+            kw["thinking"] = {"type": "between_tools"}
         resp = client.messages.create(
-            model=model, max_tokens=1500,
-            messages=[{"role": "user", "content": prompt}],
+            model=model, max_tokens=1500 + (8000 if "-5-" in model and not kw else 0),
+            messages=[{"role": "user", "content": prompt}], **kw,
         )
         raw = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
         m = re.search(r"\[.*\]", raw, re.DOTALL)
@@ -3229,7 +3232,8 @@ def _stream_content(client, system: str, prompt: str,
         kwargs = dict(
             model=model,
             max_tokens=actual_max,
-            thinking={"type": "enabled", "budget_tokens": THINKING_BUDGET},
+            thinking=({"type": "adaptive"} if model.startswith("claude-") and "-5-" in model
+                      else {"type": "enabled", "budget_tokens": THINKING_BUDGET}),
             system=system,
             messages=[{"role": "user", "content": prompt}],
         )
@@ -3240,6 +3244,12 @@ def _stream_content(client, system: str, prompt: str,
             system=system,
             messages=[{"role": "user", "content": prompt}],
         )
+        # Sonnet 5.5 thinks by default and rejects {"type": "disabled"};
+        # without this the thinking eats max_tokens and the text comes back empty.
+        if model == "claude-sonnet-5-5":
+            kwargs["thinking"] = {"type": "between_tools"}
+        elif "-5-" in model:
+            kwargs["max_tokens"] = max_tokens + 8000
 
     with client.messages.stream(**kwargs) as stream:
         return "".join(stream.text_stream)
