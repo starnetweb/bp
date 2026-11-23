@@ -7,10 +7,10 @@ ANTHROPIC_API_KEY = "sk-ant-api03-..."
 
 # ── Model selection ───────────────────────────────────────────
 # Options (best → cheapest):
-#   "claude-opus-4-6"    (best quality)
-#   "claude-sonnet-4-6"  (great quality, recommended)
-#   "claude-haiku-4-5"   (good for drafts)
-MODEL = "claude-sonnet-4-6"
+#   "claude-opus-5-5"    (best quality)
+#   "claude-sonnet-5-5"  (great quality, recommended)
+#   "claude-haiku-5-5"   (good for drafts)
+MODEL = "claude-sonnet-5-5"
 
 # ── Email delivery ────────────────────────────────────────────
 SMTP_HOST     = "smtp.gmail.com"

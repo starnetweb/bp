@@ -35,7 +35,7 @@ try:
     import config as _cfg
     class config:
         ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY") or _cfg.ANTHROPIC_API_KEY
-        MODEL             = os.environ.get("MODEL")             or getattr(_cfg, "MODEL", "claude-sonnet-4-5")
+        MODEL             = os.environ.get("MODEL")             or getattr(_cfg, "MODEL", "claude-sonnet-5-5")
         SMTP_HOST         = os.environ.get("SMTP_HOST")         or getattr(_cfg, "SMTP_HOST", "smtp.gmail.com")
         SMTP_PORT         = int(os.environ.get("SMTP_PORT", 0)) or getattr(_cfg, "SMTP_PORT", 587)
         SMTP_USER         = os.environ.get("SMTP_USER")         or getattr(_cfg, "SMTP_USER", "")
@@ -48,7 +48,7 @@ try:
 except ImportError:
     class config:
         ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
-        MODEL             = os.environ.get("MODEL", "claude-sonnet-4-5")
+        MODEL             = os.environ.get("MODEL", "claude-sonnet-5-5")
         SMTP_HOST         = os.environ.get("SMTP_HOST", "smtp.gmail.com")
         SMTP_PORT         = int(os.environ.get("SMTP_PORT", "587"))
         SMTP_USER         = os.environ.get("SMTP_USER", "")
@@ -1369,7 +1369,7 @@ def _run_agent(job_id: str, topic: str, research_level: str,
 
         # THINKING ENFORCEMENT: Validate that model supports thinking if requested
         if use_thinking:
-            THINKING_MODELS = ("claude-opus-4-6", "claude-sonnet-4-6")
+            THINKING_MODELS = ("claude-opus-5-5", "claude-sonnet-5-5")
             if config.MODEL not in THINKING_MODELS:
                 error_msg = (
                     f"Extended thinking is enabled, but model '{config.MODEL}' does not support it. "

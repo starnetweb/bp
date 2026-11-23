@@ -14,10 +14,10 @@ ANTHROPIC_API_KEY = ""
 
 # ── Model selection ───────────────────────────────────────────
 # Options (best → cheapest):
-#   "claude-opus-4-6"    ~$0.40–0.80 per document  (best quality)
-#   "claude-sonnet-4-6"  ~$0.10–0.20 per document  (great quality, recommended)
-#   "claude-haiku-4-5"   ~$0.03–0.06 per document  (good for drafts)
-MODEL = "claude-sonnet-4-6"
+#   "claude-opus-5-5"    ~$0.30–0.60 per document  (best quality)
+#   "claude-sonnet-5-5"  ~$0.07–0.15 per document  (great quality, recommended)
+#   "claude-haiku-5-5"   ~$0.02–0.04 per document  (good for drafts)
+MODEL = "claude-sonnet-5-5"
 
 # ── Email delivery ────────────────────────────────────────────
 # The finished .docx will be emailed to these addresses.

@@ -31,11 +31,11 @@ try:
     import config as _cfg
     class config:
         ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY") or _cfg.ANTHROPIC_API_KEY
-        MODEL             = os.environ.get("MODEL") or getattr(_cfg, "MODEL", "claude-sonnet-4-5")
+        MODEL             = os.environ.get("MODEL") or getattr(_cfg, "MODEL", "claude-sonnet-5-5")
 except ImportError:
     class config:
         ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
-        MODEL             = os.environ.get("MODEL", "claude-sonnet-4-5")
+        MODEL             = os.environ.get("MODEL", "claude-sonnet-5-5")
 
 # ─────────────────────────────────────────────────────────
 #  CHAPTER SELECTION HELPERS
@@ -3168,7 +3168,7 @@ def _stream_content(client, system: str, prompt: str,
     """
     THINKING_BUDGET = 8000   # tokens reserved for Claude's internal reasoning
     MIN_OUTPUT      = 12000  # minimum tokens guaranteed for actual text output
-    THINKING_MODELS = ("claude-opus-4-6", "claude-sonnet-4-6")
+    THINKING_MODELS = ("claude-opus-5-5", "claude-sonnet-5-5")
 
     # Determine if thinking should be used
     if use_thinking_override is True:
