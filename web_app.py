@@ -1448,7 +1448,11 @@ def _run_agent(job_id: str, topic: str, research_level: str,
                                       custom_toc=custom_toc,
                                       front_matter_sections=fm_include,
                                       nalt_compliance=nalt_compliance)
-        research_agent.build_abbreviations_page(doc)
+        log("► Generating topic-specific abbreviations...", "accent")
+        abbreviations = research_agent.generate_abbreviations(
+            client, topic, chapters, model=config.MODEL)
+        log(f"  ✓ {len(abbreviations)} abbreviations", "success")
+        research_agent.build_abbreviations_page(doc, abbreviations)
 
         # One FootnoteManager per document — shared across all chapters
         fn_mgr = research_agent.FootnoteManager(doc)

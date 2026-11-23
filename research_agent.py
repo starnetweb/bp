@@ -3074,7 +3074,39 @@ def build_list_of_figures_page(doc):
             p.add_run("____").font.size = Pt(10)
 
 
-def build_abbreviations_page(doc):
+def generate_abbreviations(client, topic: str, chapters: dict, model: str) -> list:
+    """Return [(abbr, meaning), ...] of topic-specific abbreviations actually used in the text."""
+    import json
+    text = "\n\n".join(chapters[n] for n in sorted(chapters))
+    if len(text) > 60000:
+        text = text[:30000] + "\n...\n" + text[-30000:]
+    prompt = (
+        f"Research topic: {topic}\n\n"
+        "Below is the full text of a research document. List the abbreviations, acronyms and "
+        "technical terms with standard short forms that are specific to this topic and "
+        "that actually appear in the text (e.g. for a finance topic: ROE, EPS, IFRS). "
+        "Do NOT include generic items such as APA, GDP, UN, WHO, SPSS, e.g., i.e., et al. "
+        "unless they are genuinely central to this topic and used in the text. "
+        "Return 6-15 entries, alphabetical. Respond with ONLY a JSON array of "
+        '[["ABBR", "Full meaning"], ...] and nothing else.\n\n'
+        f"TEXT:\n{text}"
+    )
+    try:
+        resp = client.messages.create(
+            model=model, max_tokens=1500,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        raw = "".join(b.text for b in resp.content if getattr(b, "type", "") == "text")
+        m = re.search(r"\[.*\]", raw, re.DOTALL)
+        data = json.loads(m.group(0)) if m else []
+        return [(str(a).strip(), str(b).strip()) for a, b in data if str(a).strip() and str(b).strip()]
+    except Exception:
+        return []
+
+
+def build_abbreviations_page(doc, abbreviations=None):
+    if abbreviations is not None and not abbreviations:
+        return
     add_page_break(doc)
     hdr = doc.add_paragraph()
     hdr.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -3089,7 +3121,7 @@ def build_abbreviations_page(doc):
     intro.add_run("The following abbreviations are used throughout this document:").italic = True
     intro.paragraph_format.space_after = Pt(8)
 
-    for abbr, meaning in [
+    for abbr, meaning in (abbreviations or [
         ("APA",    "American Psychological Association"),
         ("GDP",    "Gross Domestic Product"),
         ("ICT",    "Information and Communication Technology"),
@@ -3100,7 +3132,7 @@ def build_abbreviations_page(doc):
         ("e.g.",   "For example (Latin: exempli gratia)"),
         ("i.e.",   "That is (Latin: id est)"),
         ("et al.", "And others (Latin: et alii)"),
-    ]:
+    ]):
         p  = doc.add_paragraph(style="List Bullet")
         rb = p.add_run(f"{abbr}:  ")
         rb.bold = True
