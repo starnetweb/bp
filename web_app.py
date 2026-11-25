@@ -1400,13 +1400,21 @@ def _run_agent(job_id: str, topic: str, research_level: str,
         for num in chapters_list:
             name = research_agent.CHAPTER_SUBTITLES[num]
             log(f"► Chapter {num}: {name}...", "accent")
+            if custom_toc:
+                found = research_agent._parse_chapter_sections(
+                    custom_toc, num, sole_chapter=len(chapters_list) == 1)
+                if found:
+                    log(f"  Using your TOC: {len(found)} sections", "info")
+                else:
+                    log(f"  ⚠ No TOC entries found for Chapter {num}; using default sections", "error")
             chapters[num] = research_agent.generate_chapter(
                 client, topic, num, research_level, model=config.MODEL,
                 custom_instructions=custom_instructions,
                 use_thinking=use_thinking,
                 nalt_compliance=nalt_compliance,
                 custom_toc=custom_toc,
-                use_footnotes=use_footnotes
+                use_footnotes=use_footnotes,
+                sole_chapter=len(chapters_list) == 1
             )
             log(f"  ✓ Chapter {num} complete — {len(chapters[num]):,} chars", "success")
             log("")

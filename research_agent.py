@@ -735,145 +735,134 @@ _CHAPTER_WORD_FORMS = {
     4: ["FOUR", "4"], 5: ["FIVE", "5"],
 }
 
-def _parse_chapter_sections(custom_toc: str, chapter_num: int) -> list:
+def _parse_chapter_sections(custom_toc: str, chapter_num: int,
+                            sole_chapter: bool = False) -> list:
     """
-    Return the list of subsection titles for chapter_num found in custom_toc.
-    Handles 'CHAPTER ONE: TITLE' (title inline) and 'CHAPTER ONE / TITLE' (title on next line).
-    Returns [] when custom_toc is absent or the chapter is not found.
+    Return [(section_title, [researcher_notes]), ...] for chapter_num.
+
+    Accepts a TOC with 'CHAPTER ...' headings, a bare numbered list ('3.1 Research
+    Design') with no headings, or, when only one chapter is being generated, a plain
+    unnumbered list. A line wholly in brackets is a note on the section above it.
+    Returns [] when nothing in the TOC belongs to this chapter.
     """
     if not custom_toc or not custom_toc.strip():
         return []
 
+    lines = []
+    for raw in custom_toc.splitlines():
+        line = re.sub(r'^\s*(?:[•·▪\-–*]\s+|#+\s*)', '', raw).replace('**', '').strip()
+        line = re.sub(r'\s*(?:\.{3,}|…+|\t)[\s.…]*\d*$', '', line).strip()  # dot leaders
+        if line:
+            lines.append(line)
+
     forms = _CHAPTER_WORD_FORMS.get(chapter_num, [str(chapter_num)])
+    any_header = r'^CHAPTER\s+(?:\d+|ONE|TWO|THREE|FOUR|FIVE)\b'
+    this_header = rf'^CHAPTER\s+(?:{"|".join(forms)})\b(.*)$'
+    number = r'^(\d+)\s*[.:]\s*\d'
+    back_matter = r'^(?:references|bibliography|appendix|appendices)\b'
+    has_headers = any(re.match(any_header, l, re.IGNORECASE) for l in lines)
 
-    def _is_this_chapter(s: str) -> bool:
-        return any(
-            re.match(rf'^CHAPTER\s+{form}\b', s, re.IGNORECASE)
-            for form in forms
-        )
-
-    def _is_any_chapter(s: str) -> bool:
-        return bool(re.match(
-            r'^CHAPTER\s+(?:\d+|ONE|TWO|THREE|FOUR|FIVE)\b', s, re.IGNORECASE
-        ))
-
-    sections: list = []
-    in_chapter = False
-    title_consumed = False
-
-    for raw in custom_toc.split('\n'):
-        line = raw.strip()
-        if not line:
-            continue
-        if _is_this_chapter(line):
-            in_chapter = True
-            title_consumed = False
-            continue
-        if in_chapter and _is_any_chapter(line):
-            break
-        if in_chapter:
-            has_num = bool(re.match(r'^\d+[\.:]\d', line))
-            if not title_consumed and not has_num:
-                title_consumed = True   # skip chapter title line
+    def collect(candidates):
+        found, keep = [], False
+        for line in candidates:
+            if re.match(r'^[\(\[].*[\)\]]\.?$', line):
+                if keep and found:
+                    found[-1][1].append(line[1:].rstrip('.')[:-1].strip())
                 continue
-            title_consumed = True
-            sections.append(line)
+            keep = not re.match(back_matter, line, re.IGNORECASE)
+            if keep:
+                found.append((line, []))
+        return found
 
-    return sections
+    # 1) Lines under this chapter's own heading
+    block, in_chapter, expect_title = [], False, False
+    for line in lines:
+        header = re.match(this_header, line, re.IGNORECASE)
+        if header:
+            in_chapter = True
+            expect_title = not header.group(1).strip(" :.-–—")
+            continue
+        if re.match(any_header, line, re.IGNORECASE):
+            in_chapter = False
+            continue
+        if in_chapter:
+            if expect_title and not re.match(number, line):
+                expect_title = False
+                continue
+            expect_title = False
+            block.append(line)
+    if block:
+        return collect(block)
+
+    # 2) Lines numbered for this chapter ('3.x'), with the notes that follow them
+    numbered, keep = [], False
+    for line in lines:
+        m = re.match(number, line)
+        if m:
+            keep = int(m.group(1)) == chapter_num
+        elif not re.match(r'^[\(\[]', line):
+            keep = False
+        if keep:
+            numbered.append(line)
+    if numbered:
+        return collect(numbered)
+
+    # 3) Plain list for a single requested chapter
+    if sole_chapter and not has_headers and not any(re.match(number, l) for l in lines):
+        return collect(lines)
+
+    return []
+
+
+def _custom_structure_prompt(default_prompt: str, chapter_num: int,
+                             sections: list, target_words: int) -> str:
+    """Replace the default subsection list in a chapter prompt with the researcher's own."""
+    cut = default_prompt.find("Write the following subsections")
+    head = default_prompt[:cut] if cut != -1 else default_prompt + "\n\n"
+
+    per_section = max(150, target_words // len(sections))
+    listing = []
+    for title, notes in sections:
+        level = len(re.findall(r'[.:]\s*\d', title.split()[0]))
+        marker = "####" if level >= 2 else "###"
+        listing.append(f"{marker} {title}")
+        listing.extend(f"    Researcher's requirement for this section: {n}" for n in notes)
+
+    body = (
+        "Write the following subsections. This is the researcher's own table of contents "
+        "and it is the ONLY structure for this chapter. Ignore any other subsection names "
+        "or numbers mentioned earlier in these instructions.\n\n"
+        + "\n".join(listing) +
+        "\n\nRules:\n"
+        "- Reproduce every heading above exactly, with the same number, wording, heading "
+        "marker (### or ####) and order.\n"
+        "- Do not add, rename, merge, skip or renumber headings.\n"
+        "- Write full prose under each heading. A heading followed by #### sub-headings "
+        "needs only a short introduction.\n"
+        f"- Aim for about {per_section} words per section. Where a researcher's requirement "
+        "is shown, follow it (one page is about 300 words) and do not print the requirement "
+        "itself.\n"
+        "- Do NOT write a chapter title heading at the top; begin with the first heading above.\n"
+    )
+
+    # Chapter 5 keeps its References and Appendices block
+    tail_at = default_prompt.find("## REFERENCES", cut) if chapter_num == 5 else -1
+    if tail_at != -1:
+        tail = default_prompt[tail_at:].split("Do NOT write a chapter title heading")[0]
+        body += "\nAfter the last section, write the following:\n\n" + tail
+
+    return head + body
 
 
 # ─────────────────────────────────────────────────────────
 #  CHAPTER PROMPT TEMPLATES
 # ─────────────────────────────────────────────────────────
-def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bool = False, use_footnotes: bool = False) -> dict:
+def _chapter_prompts(level_key: str, nalt_compliance: bool = False, use_footnotes: bool = False) -> dict:
     profile = LEVEL_PROFILES[level_key]
     tone    = profile["tone"]
     depth   = profile["depth"]
     targets = profile["word_targets"]
     is_pg   = (level_key == "postgraduate")
-
-    # Helper: extract custom sections for a specific chapter from provided custom_toc
-    # Maps chapter numbers to all recognised forms (word and digit)
-    _CHAPTER_FORMS = {
-        1: ["ONE", "1"], 2: ["TWO", "2"], 3: ["THREE", "3"],
-        4: ["FOUR", "4"], 5: ["FIVE", "5"]
-    }
-
-    def _is_any_chapter_header(line_stripped: str) -> bool:
-        """Return True if line looks like any CHAPTER heading (word or numeric)."""
-        return bool(re.match(
-            r'^CHAPTER\s+(?:\d+|ONE|TWO|THREE|FOUR|FIVE)\b', line_stripped, re.IGNORECASE
-        ))
-
-    def extract_custom_sections(chapter_num: int) -> str:
-        """
-        Parse custom_toc and extract sections for the given chapter.
-        Handles both numeric ('CHAPTER 1') and word ('CHAPTER ONE') formats.
-        Also handles chapter title on a separate line from the CHAPTER heading.
-        Returns instruction text to enforce those sections, or empty string if not provided.
-        """
-        if not custom_toc or not custom_toc.strip():
-            return ""
-
-        forms = _CHAPTER_FORMS.get(chapter_num, [str(chapter_num)])
-
-        def is_chapter_header(s: str) -> bool:
-            return any(
-                re.match(rf'^CHAPTER\s+{form}\b', s, re.IGNORECASE)
-                for form in forms
-            )
-
-        lines = custom_toc.split('\n')
-        chapter_sections = []
-        current_chapter = None
-        chapter_title_consumed = False   # first non-empty line after header = title, skip it
-
-        for line in lines:
-            line_stripped = line.strip()
-            if not line_stripped:
-                continue
-
-            if is_chapter_header(line_stripped):
-                current_chapter = chapter_num
-                chapter_title_consumed = False
-                continue
-
-            # Stop when we reach a different chapter
-            if current_chapter == chapter_num and _is_any_chapter_header(line_stripped):
-                break
-
-            # If we found our chapter, collect its sections
-            if current_chapter == chapter_num:
-                # The first non-empty non-chapter line is the chapter title (e.g. "INTRODUCTION")
-                # Skip it — it is not a subsection
-                has_number_prefix = bool(re.match(r'^\d+[\.:]\d', line_stripped))
-                if not chapter_title_consumed and not has_number_prefix:
-                    chapter_title_consumed = True
-                    continue
-                chapter_title_consumed = True
-                chapter_sections.append(line_stripped)
-
-        if chapter_sections:
-            section_list = "\n".join([f"  {i+1}. {sec}" for i, sec in enumerate(chapter_sections)])
-            return (
-                f"\n[================================================================================]\n"
-                f"| WARNING  CRITICAL - CUSTOM TABLE OF CONTENTS ENFORCEMENT FOR CHAPTER {chapter_num}             |\n"
-                f"[================================================================================]\n\n"
-                f"A CUSTOM TABLE OF CONTENTS HAS BEEN PROVIDED FOR THIS CHAPTER.\n\n"
-                f"YOUR INSTRUCTIONS ARE ABSOLUTE:\n"
-                f"- You MUST create ONLY the sections listed below - NO MORE, NO FEWER\n"
-                f"- You MUST use these section titles EXACTLY as written\n"
-                f"- You MUST create each section as a ### subsection heading\n"
-                f"- You MUST write substantive, developed content under each heading\n"
-                f"- You MUST maintain the section order provided below\n"
-                f"- You MUST NOT add extra sections, rename sections, or reorder sections\n"
-                f"- You MUST NOT include default subsections if they are not listed below\n\n"
-                f"THE SECTIONS YOU MUST INCLUDE (AND ONLY THESE SECTIONS):\n\n"
-                f"{section_list}\n\n"
-                f"FAILURE TO FOLLOW THIS STRUCTURE EXACTLY WILL RESULT IN AN INVALID DOCUMENT.\n"
-                f"Every section listed above must be present in your output.\n\n"
-            )
-        return ""
 
     # Subsection word-count helper - applies 1.0x multiplier to allow full subsection generation (1.1-1.10)
     # Returns PhD/Postgrad word count if at that level, otherwise returns base undergraduate/postgraduate count
@@ -1170,20 +1159,12 @@ def _chapter_prompts(level_key: str, custom_toc: str = None, nalt_compliance: bo
         + "- Do NOT treat visualizations as peripheral - they are central analytical tools\n\n"
     )
 
-    # Build custom ToC instruction for each chapter
-    custom_toc_ch1 = extract_custom_sections(1)
-    custom_toc_ch2 = extract_custom_sections(2)
-    custom_toc_ch3 = extract_custom_sections(3)
-    custom_toc_ch4 = extract_custom_sections(4)
-    custom_toc_ch5 = extract_custom_sections(5)
-
     return {
         1: f"""You are writing CHAPTER ONE: INTRODUCTION for an academic research project.
 Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[1]} words of substantive prose. You MUST reach this minimum.
 Do not stop writing until you have fully developed every subsection. If in doubt, write more.
-{custom_toc_ch1}
 
 {_PG_PREAMBLE if is_pg else ""}
 
@@ -1300,7 +1281,6 @@ Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[2]} words of substantive prose. You MUST reach this minimum.
 The literature review is the longest and most intellectually demanding chapter. Write with depth.
-{custom_toc_ch2}
 
 {_PG_PREAMBLE if is_pg else ""}
 
@@ -1377,7 +1357,6 @@ Research level: {profile['label']}
 MINIMUM word count: {targets[3]} words of substantive prose. You MUST reach this minimum.
 The methodology chapter must be precise, justified, and replicable. Write with rigour.
 {"" if nalt_compliance else "VISUALIZATIONS ARE MANDATORY - include 6-8 figures/tables throughout this chapter."}
-{custom_toc_ch3}
 
 {_PG_PREAMBLE if is_pg else ""}
 
@@ -1502,7 +1481,6 @@ Research level: {profile['label']}
 MINIMUM word count: {targets[4]} words of substantive prose. You MUST reach this minimum.
 Present rich, specific, interpreted findings. This chapter must demonstrate analytical depth.
 {"" if nalt_compliance else "VISUALIZATIONS ARE CRITICAL - include 8-12 figures/tables throughout this chapter to present data professionally."}
-{custom_toc_ch4}
 
 {_PG_PREAMBLE if is_pg else ""}
 
@@ -1607,7 +1585,6 @@ Topic: {{topic}}
 Research level: {profile['label']}
 MINIMUM word count: {targets[5]} words of substantive prose. You MUST reach this minimum.
 This chapter must deliver a satisfying intellectual conclusion - not a mechanical recap.
-{custom_toc_ch5}
 
 {_PG_PREAMBLE if is_pg else ""}
 
@@ -1974,7 +1951,7 @@ def _style_section_heading(paragraph, level):
         run.font.color.rgb = MID_BLUE
         paragraph.paragraph_format.space_before = Pt(14)
         paragraph.paragraph_format.space_after  = Pt(5)
-    elif level == 3:
+    elif level in (3, 4):
         run.font.size    = Pt(11)
         run.font.bold    = True
         run.font.italic  = True
@@ -2570,6 +2547,11 @@ def parse_chapter_content(doc, content, fn_mgr=None):
             _style_section_heading(p, 3)
             i += 1
 
+        elif re.match(r"^#{4,6} ", line):
+            p = doc.add_heading(re.sub(r"^#{4,6} ", "", line).strip(), level=4)
+            _style_section_heading(p, 4)
+            i += 1
+
         elif re.match(r"^[\-\*] ", line):
             text = line[2:].strip()
             p    = doc.add_paragraph(style="List Bullet")
@@ -2646,7 +2628,7 @@ def parse_chapter_content(doc, content, fn_mgr=None):
             while i < len(lines):
                 l = lines[i].rstrip()
                 if (not l.strip()
-                        or re.match(r"^#{1,3} ", l)
+                        or re.match(r"^#{1,6} ", l)
                         or re.match(r"^[\-\*] ", l)
                         or re.match(r"^\d+\. ", l)
                         or l.lstrip().startswith("|")
@@ -2836,6 +2818,8 @@ def build_toc_page(doc, research_level, chapters_list=None, custom_toc=None,
     if custom_toc and custom_toc.strip():
         for line in custom_toc.strip().splitlines():
             line = line.rstrip()
+            if re.match(r'^\s*\(.*\)\.?\s*$', line):
+                continue   # researcher's note, not a TOC entry
             if not line:
                 p = doc.add_paragraph()
                 p.paragraph_format.space_after = Pt(2)
@@ -3669,12 +3653,18 @@ def generate_chapter(client, topic: str, chapter_num: int,
                      use_thinking: bool = False,
                      nalt_compliance: bool = False,
                      custom_toc: str = None,
-                     use_footnotes: bool = False) -> str:
+                     use_footnotes: bool = False,
+                     sole_chapter: bool = False) -> str:
     model    = model or config.MODEL
-    prompts  = _chapter_prompts(research_level, custom_toc=custom_toc, nalt_compliance=nalt_compliance, use_footnotes=use_footnotes)
+    prompts  = _chapter_prompts(research_level, nalt_compliance=nalt_compliance, use_footnotes=use_footnotes)
     prompt   = prompts[chapter_num].format(topic=topic)
     profile  = LEVEL_PROFILES[research_level]
     target   = profile["word_targets"][chapter_num]
+
+    # A user-supplied table of contents replaces the default subsections entirely
+    custom_sections = _parse_chapter_sections(custom_toc, chapter_num, sole_chapter)
+    if custom_sections:
+        prompt = _custom_structure_prompt(prompt, chapter_num, custom_sections, target)
 
     # Append the writing mandate LAST in the user prompt — models attend most to
     # the end of the input, so this placement overrides structural-instruction drift.
@@ -3701,35 +3691,6 @@ def generate_chapter(client, topic: str, chapter_num: int,
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
         "NOW BEGIN WRITING. Every violation of the above is a detection failure.\n"
     )
-
-    # ── Final structural override ─────────────────────────────────────────────
-    # Appended AFTER all default section instructions AND the writing mandate so
-    # this is the last thing the model reads — recency bias makes it decisive.
-    # It explicitly cancels the default section headings that appeared earlier.
-    if custom_toc and custom_toc.strip():
-        _custom_sections = _parse_chapter_sections(custom_toc, chapter_num)
-        if _custom_sections:
-            _per_sec = max(200, target // len(_custom_sections))
-            _sec_list = "\n".join(
-                f"  {i+1}. {sec}" for i, sec in enumerate(_custom_sections)
-            )
-            prompt += (
-                "\n\n"
-                "╔══════════════════════════════════════════════════════════════════════╗\n"
-                "║  *** FINAL STRUCTURAL OVERRIDE — THIS CANCELS ALL DEFAULT SECTIONS ***║\n"
-                "╚══════════════════════════════════════════════════════════════════════╝\n\n"
-                "A CUSTOM TABLE OF CONTENTS was provided by the researcher for this chapter.\n"
-                "Every default section heading shown earlier in this prompt (e.g. Background\n"
-                "of the Study, Statement of the Problem, Research Design, Results, etc.) is a\n"
-                "TEMPLATE PLACEHOLDER that has now been CANCELLED. Do NOT use those headings.\n\n"
-                "YOUR REQUIRED SECTIONS — USE ONLY THESE, IN THIS EXACT ORDER:\n\n"
-                f"{_sec_list}\n\n"
-                f"Target approximately {_per_sec} words per section.\n"
-                "Write each section as a ### heading followed by full substantive prose.\n"
-                "Do NOT add sections not listed above. Do NOT rename any section.\n"
-                "Do NOT reorder any section. Any other structure is a document failure.\n"
-            )
-    # ─────────────────────────────────────────────────────────────────────────
 
     system = (
         f"You are a highly experienced human academic researcher writing at {profile['label']} level. "
