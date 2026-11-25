@@ -842,6 +842,8 @@ def _custom_structure_prompt(default_prompt: str, chapter_num: int,
         f"- Aim for about {per_section} words per section. Where a researcher's requirement "
         "is shown, follow it (one page is about 300 words) and do not print the requirement "
         "itself.\n"
+        "- Any list of required figures or tables given earlier is optional: include one only "
+        "where it fits a section above, and never create a section in order to hold it.\n"
         "- Do NOT write a chapter title heading at the top; begin with the first heading above.\n"
     )
 
